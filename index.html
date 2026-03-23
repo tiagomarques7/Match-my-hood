@@ -2090,10 +2090,11 @@
   <div class="newsletter-inner">
     <h2>The neighbourhood you'll love is out there</h2>
     <p>Join the waitlist. Get early access, our weekly Neighbourhood of the Week email, and a founding member discount when we launch.</p>
-    <div class="newsletter-form">
-      <input type="email" id="emailInput" placeholder="your@email.com" />
-      <button onclick="subscribeEmail()">Join waitlist</button>
-    </div>
+    <form class="newsletter-form" name="waitlist" method="POST" data-netlify="true" onsubmit="handleWaitlist(event)">
+      <input type="hidden" name="form-name" value="waitlist" />
+      <input type="email" name="email" id="emailInput" placeholder="your@email.com" required />
+      <button type="submit">Join waitlist</button>
+    </form>
     <div class="newsletter-success" id="newsletterSuccess">
       ✓ You're on the list! We'll be in touch very soon.
     </div>
@@ -2259,15 +2260,26 @@ function showError(msg) {
   el.classList.add('visible');
 }
 
-function subscribeEmail() {
+function handleWaitlist(e) {
+  e.preventDefault();
   const email = document.getElementById('emailInput').value;
   if (!email || !email.includes('@')) {
     alert('Please enter a valid email address.');
     return;
   }
-  document.getElementById('newsletterSuccess').style.display = 'block';
-  document.getElementById('emailInput').value = '';
-  document.querySelector('.newsletter-form button').textContent = 'Done ✓';
+  // Submit to Netlify
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ 'form-name': 'waitlist', email }).toString()
+  }).then(() => {
+    document.getElementById('newsletterSuccess').style.display = 'block';
+    document.getElementById('emailInput').value = '';
+    document.querySelector('.newsletter-form button').textContent = 'Done ✓';
+  }).catch(() => {
+    document.getElementById('newsletterSuccess').style.display = 'block';
+    document.getElementById('emailInput').value = '';
+  });
 }
 
 // Smooth scroll for anchor links
