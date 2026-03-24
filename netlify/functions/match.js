@@ -52,29 +52,29 @@ Respond ONLY with a valid JSON array, no markdown, no extra text:
     "name": "Neighbourhood Name",
     "city": "${safedestCity}",
     "matchScore": 92,
-    "tagline": "One evocative sentence describing this neighbourhood",
-    "whyItMatches": "2-3 sentences explaining exactly why this matches ${safehomeHood}. Be specific.",
-    "vibes": ["tag1", "tag2", "tag3", "tag4"],
+    "tagline": "One sentence describing this neighbourhood",
+    "whyItMatches": "2 sentences explaining why this matches ${safehomeHood}.",
+    "vibes": ["tag1", "tag2", "tag3"],
     "top3Restaurants": [
-      {"name": "Real Restaurant Name", "description": "One line — must be inside this neighbourhood", "googleMapsQuery": "Restaurant Name ${safedestCity}"},
-      {"name": "Real Restaurant Name", "description": "One line — must be inside this neighbourhood", "googleMapsQuery": "Restaurant Name ${safedestCity}"},
-      {"name": "Real Restaurant Name", "description": "One line — must be inside this neighbourhood", "googleMapsQuery": "Restaurant Name ${safedestCity}"}
+      {"name": "Restaurant Name", "description": "One short line", "googleMapsQuery": "Restaurant Name ${safedestCity}"},
+      {"name": "Restaurant Name", "description": "One short line", "googleMapsQuery": "Restaurant Name ${safedestCity}"},
+      {"name": "Restaurant Name", "description": "One short line", "googleMapsQuery": "Restaurant Name ${safedestCity}"}
     ],
     "top3WineBars": [
-      {"name": "Real Bar Name", "description": "One line — must be inside this neighbourhood", "googleMapsQuery": "Bar Name ${safedestCity}"},
-      {"name": "Real Bar Name", "description": "One line — must be inside this neighbourhood", "googleMapsQuery": "Bar Name ${safedestCity}"},
-      {"name": "Real Bar Name", "description": "One line — must be inside this neighbourhood", "googleMapsQuery": "Bar Name ${safedestCity}"}
+      {"name": "Bar Name", "description": "One short line", "googleMapsQuery": "Bar Name ${safedestCity}"},
+      {"name": "Bar Name", "description": "One short line", "googleMapsQuery": "Bar Name ${safedestCity}"},
+      {"name": "Bar Name", "description": "One short line", "googleMapsQuery": "Bar Name ${safedestCity}"}
     ],
     "top3ThingsToDo": [
-      {"name": "Experience or Attraction", "description": "One line", "gygQuery": "experience name ${safedestCity}", "isPaid": false},
-      {"name": "Experience or Attraction", "description": "One line", "gygQuery": "experience name ${safedestCity}", "isPaid": true},
-      {"name": "Experience or Attraction", "description": "One line", "gygQuery": "experience name ${safedestCity}", "isPaid": false}
+      {"name": "Thing to do", "description": "One short line", "gygQuery": "experience ${safedestCity}", "isPaid": false},
+      {"name": "Thing to do", "description": "One short line", "gygQuery": "experience ${safedestCity}", "isPaid": true},
+      {"name": "Thing to do", "description": "One short line", "gygQuery": "experience ${safedestCity}", "isPaid": false}
     ],
-    "mustTry": "The one iconic food or drink specific to this neighbourhood and where to get it — e.g. ginjinha at A Ginjinha, pastel de nata at Pasteis de Belem",
+    "mustTry": "One iconic food or drink and where to get it",
     "walkScore": "High",
     "costLevel": "Mid-range",
-    "bestFor": "Who this neighbourhood suits best",
-    "unsplashQuery": "3-5 word search query for great street photos",
+    "bestFor": "One short sentence",
+    "unsplashQuery": "3-4 word photo query",
     "lat": 41.1234,
     "lng": -8.6789
   }
@@ -100,7 +100,7 @@ Rules:
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 2800,
+        max_tokens: 1500,
         messages: [{ role: "user", content: prompt }],
       }),
     });
@@ -108,7 +108,7 @@ Rules:
     if (!response.ok) {
       const err = await response.text();
       console.error("Claude API error:", response.status, err);
-      return { statusCode: 502, body: JSON.stringify({ error: "Matching service unavailable. Please try again." }) };
+      return { statusCode: 502, body: JSON.stringify({ error: "Claude API error: " + response.status + " — " + err }) };
     }
 
     const data = await response.json();
