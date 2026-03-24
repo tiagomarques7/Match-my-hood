@@ -95,7 +95,7 @@ Rules:
   try {
     const requestBody = JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 1500,
+      max_tokens: 2500,
       messages: [{ role: "user", content: prompt }],
     });
 
@@ -135,7 +135,7 @@ Rules:
       if (!Array.isArray(matches) || matches.length === 0) throw new Error("Invalid format");
     } catch {
       console.error("Parse error:", text);
-      return { statusCode: 502, body: JSON.stringify({ error: "Could not parse results. Please try again." }) };
+      return { statusCode: 502, body: JSON.stringify({ error: "Could not parse results. Raw: " + text.slice(0, 200) }) };
     }
 
     return {
