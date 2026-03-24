@@ -1842,7 +1842,6 @@
 
     <div class="error-msg" id="errorMsg"></div>
 
-    <div class="results-area" id="resultsArea"></div>
   </div>
 </section>
 
@@ -1968,6 +1967,14 @@
       </div>
     </div>
 
+  </div>
+</section>
+
+<!-- DYNAMIC RESULTS -->
+<section class="search-section" id="results" style="padding-top:0; background: transparent;">
+  <div class="search-inner" style="max-width:900px;">
+    <div class="loading-msg" id="loadingMsgMoved" style="display:none"></div>
+    <div class="results-area" id="resultsArea"></div>
   </div>
 </section>
 
@@ -2363,15 +2370,12 @@ async function loadStaticCardPhotos() {
     if (url) {
       card.style.backgroundImage = `url('${url}')`;
     }
-    // Small delay to avoid hitting Unsplash rate limits
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 350));
   }
 }
 
-// Load static card photos on page load
-document.addEventListener('DOMContentLoaded', () => {
-  loadStaticCardPhotos();
-});
+// Load static card photos immediately (script is at bottom, DOM is ready)
+loadStaticCardPhotos();
 
 async function runMatch() {
   const homeCity = document.getElementById('homeCity').value;
