@@ -2395,12 +2395,17 @@ async function runMatch() {
       body: JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent })
     });
 
+    const responseText = await response.text();
+    console.error('Raw response:', responseText);
+
     if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error || 'API error ' + response.status);
+      let errMsg = 'API error ' + response.status;
+      try { errMsg = JSON.parse(responseText).error || errMsg; } catch {}
+      showError('DEBUG: ' + errMsg);
+      return;
     }
 
-    const data = await response.json();
+    const data = JSON.parse(responseText);
     const matches = data.matches;
 
     if (!matches || !Array.isArray(matches)) {
