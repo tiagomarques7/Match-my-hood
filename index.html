@@ -1472,6 +1472,8 @@
   .pick-info { flex: 1; }
   .pick-name { font-size: 14px; color: var(--cream); font-weight: 600; margin-bottom: 2px; }
   .pick-desc { font-size: 12px; color: rgba(248,241,231,0.5); line-height: 1.4; }
+  .pick-link { font-size: 11px; color: var(--terracotta-light); text-decoration: none; margin-top: 4px; display: inline-block; transition: color 0.2s; }
+  .pick-link:hover { color: var(--cream); }
 
   /* MUST TRY */
   .must-try { margin: 12px 0; padding: 12px 14px; background: rgba(196,98,45,0.1); border-radius: 10px; border: 1px solid rgba(196,98,45,0.2); font-size: 13px; color: rgba(248,241,231,0.85); line-height: 1.5; }
@@ -1695,19 +1697,59 @@
       <div class="form-group">
         <label>Your home city</label>
         <select id="homeCity">
-          <option value="">Select city...</option>
-          <option value="Lisbon">Lisbon</option>
-          <option value="London">London</option>
-          <option value="Paris">Paris</option>
-          <option value="Barcelona">Barcelona</option>
-          <option value="New York">New York</option>
-          <option value="Amsterdam">Amsterdam</option>
-          <option value="Rome">Rome</option>
-          <option value="Berlin">Berlin</option>
-          <option value="Tokyo">Tokyo</option>
-          <option value="Porto">Porto</option>
-          <option value="Madrid">Madrid</option>
-          <option value="Vienna">Vienna</option>
+          <option value="">Select your city...</option>
+          <optgroup label="🇪🇺 Europe">
+            <option value="Lisbon">Lisbon</option>
+            <option value="Porto">Porto</option>
+            <option value="London">London</option>
+            <option value="Paris">Paris</option>
+            <option value="Barcelona">Barcelona</option>
+            <option value="Madrid">Madrid</option>
+            <option value="Amsterdam">Amsterdam</option>
+            <option value="Rome">Rome</option>
+            <option value="Berlin">Berlin</option>
+            <option value="Vienna">Vienna</option>
+            <option value="Munich">Munich</option>
+            <option value="Düsseldorf">Düsseldorf</option>
+            <option value="Frankfurt">Frankfurt</option>
+            <option value="Copenhagen">Copenhagen</option>
+            <option value="Stockholm">Stockholm</option>
+            <option value="Prague">Prague</option>
+            <option value="Budapest">Budapest</option>
+            <option value="Seville">Seville</option>
+            <option value="Florence">Florence</option>
+            <option value="Milan">Milan</option>
+            <option value="Brussels">Brussels</option>
+          </optgroup>
+          <optgroup label="🌎 Americas">
+            <option value="New York">New York</option>
+            <option value="Los Angeles">Los Angeles</option>
+            <option value="San Francisco">San Francisco</option>
+            <option value="Chicago">Chicago</option>
+            <option value="Miami">Miami</option>
+            <option value="Boston">Boston</option>
+            <option value="Washington DC">Washington DC</option>
+            <option value="Toronto">Toronto</option>
+            <option value="Montreal">Montreal</option>
+            <option value="Mexico City">Mexico City</option>
+            <option value="São Paulo">São Paulo</option>
+            <option value="Buenos Aires">Buenos Aires</option>
+          </optgroup>
+          <optgroup label="🌏 Asia Pacific">
+            <option value="Tokyo">Tokyo</option>
+            <option value="Seoul">Seoul</option>
+            <option value="Singapore">Singapore</option>
+            <option value="Dubai">Dubai</option>
+            <option value="Sydney">Sydney</option>
+            <option value="Melbourne">Melbourne</option>
+            <option value="Beijing">Beijing</option>
+            <option value="Shanghai">Shanghai</option>
+            <option value="Bangkok">Bangkok</option>
+          </optgroup>
+          <optgroup label="🌍 Africa & Middle East">
+            <option value="Cape Town">Cape Town</option>
+            <option value="Marrakech">Marrakech</option>
+          </optgroup>
         </select>
       </div>
       <div class="form-group">
@@ -1717,27 +1759,62 @@
       <div class="form-group">
         <label>Destination city</label>
         <select id="destCity">
-          <option value="">Select city...</option>
-          <option value="Lisbon">Lisbon</option>
-          <option value="London">London</option>
-          <option value="Paris">Paris</option>
-          <option value="Barcelona">Barcelona</option>
-          <option value="New York">New York</option>
-          <option value="Amsterdam">Amsterdam</option>
-          <option value="Rome">Rome</option>
-          <option value="Berlin">Berlin</option>
-          <option value="Tokyo">Tokyo</option>
-          <option value="Porto">Porto</option>
-          <option value="Madrid">Madrid</option>
-          <option value="Vienna">Vienna</option>
-          <option value="Copenhagen">Copenhagen</option>
-          <option value="Prague">Prague</option>
-          <option value="Budapest">Budapest</option>
-          <option value="Seville">Seville</option>
-          <option value="Florence">Florence</option>
-          <option value="Istanbul">Istanbul</option>
-          <option value="Marrakech">Marrakech</option>
-          <option value="Mexico City">Mexico City</option>
+          <option value="">Select destination...</option>
+          <optgroup label="🇪🇺 Europe">
+            <option value="Lisbon">Lisbon</option>
+            <option value="Porto">Porto</option>
+            <option value="London">London</option>
+            <option value="Paris">Paris</option>
+            <option value="Barcelona">Barcelona</option>
+            <option value="Madrid">Madrid</option>
+            <option value="Amsterdam">Amsterdam</option>
+            <option value="Rome">Rome</option>
+            <option value="Berlin">Berlin</option>
+            <option value="Vienna">Vienna</option>
+            <option value="Munich">Munich</option>
+            <option value="Düsseldorf">Düsseldorf</option>
+            <option value="Frankfurt">Frankfurt</option>
+            <option value="Copenhagen">Copenhagen</option>
+            <option value="Stockholm">Stockholm</option>
+            <option value="Prague">Prague</option>
+            <option value="Budapest">Budapest</option>
+            <option value="Seville">Seville</option>
+            <option value="Florence">Florence</option>
+            <option value="Milan">Milan</option>
+            <option value="Istanbul">Istanbul</option>
+            <option value="Brussels">Brussels</option>
+          </optgroup>
+          <optgroup label="🌎 Americas">
+            <option value="New York">New York</option>
+            <option value="Los Angeles">Los Angeles</option>
+            <option value="San Francisco">San Francisco</option>
+            <option value="Chicago">Chicago</option>
+            <option value="Miami">Miami</option>
+            <option value="Boston">Boston</option>
+            <option value="Washington DC">Washington DC</option>
+            <option value="Toronto">Toronto</option>
+            <option value="Montreal">Montreal</option>
+            <option value="Mexico City">Mexico City</option>
+            <option value="São Paulo">São Paulo</option>
+            <option value="Rio de Janeiro">Rio de Janeiro</option>
+            <option value="Buenos Aires">Buenos Aires</option>
+          </optgroup>
+          <optgroup label="🌏 Asia Pacific">
+            <option value="Tokyo">Tokyo</option>
+            <option value="Seoul">Seoul</option>
+            <option value="Singapore">Singapore</option>
+            <option value="Dubai">Dubai</option>
+            <option value="Sydney">Sydney</option>
+            <option value="Melbourne">Melbourne</option>
+            <option value="Beijing">Beijing</option>
+            <option value="Shanghai">Shanghai</option>
+            <option value="Bangkok">Bangkok</option>
+            <option value="Bali">Bali</option>
+          </optgroup>
+          <optgroup label="🌍 Africa & Middle East">
+            <option value="Cape Town">Cape Town</option>
+            <option value="Marrakech">Marrakech</option>
+          </optgroup>
         </select>
       </div>
       <button class="search-btn" id="matchBtn" onclick="runMatch()">
@@ -1777,7 +1854,7 @@
   <div class="matches-scroll">
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80')">
+      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=600&q=80')">
         <div class="match-photo-overlay">
           <div class="match-from">Lisbon, Portugal</div>
           <div class="match-from-name">Chiado</div>
@@ -1800,7 +1877,7 @@
     </div>
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80')">
+      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=600&q=80')">
         <div class="match-photo-overlay">
           <div class="match-from">Rome, Italy</div>
           <div class="match-from-name">Trastevere</div>
@@ -1823,7 +1900,7 @@
     </div>
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1551862777-1c0b3d3a32b9?w=600&q=80')">
+      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80')">
         <div class="match-photo-overlay">
           <div class="match-from">London, UK</div>
           <div class="match-from-name">Shoreditch</div>
@@ -1846,7 +1923,7 @@
     </div>
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1493993544685-a94361dc1e1b?w=600&q=80')">
+      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80')">
         <div class="match-photo-overlay">
           <div class="match-from">Paris, France</div>
           <div class="match-from-name">Le Marais</div>
@@ -1869,7 +1946,7 @@
     </div>
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&q=80')">
+      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&q=80')">
         <div class="match-photo-overlay">
           <div class="match-from">Barcelona, Spain</div>
           <div class="match-from-name">Gràcia</div>
@@ -2017,8 +2094,10 @@
         <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#F8F1E7" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#F8F1E7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Neighbourhood maps</li>
         <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#F8F1E7" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#F8F1E7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Weekly newsletter</li>
       </ul>
-      <a href="#newsletter" onclick="selectPlan('explorer')" class="price-btn price-btn-light">Start for €49/year</a>
-      <p style="font-size:11px; margin-top:10px; opacity:0.6; text-align:center;">or €5.90/month, cancel anytime</p>
+      <button onclick="handleStripeCheckout('explorer_annual')" class="price-btn price-btn-light" style="width:100%;cursor:pointer;border:none;">
+        💳 Subscribe — €49/year
+      </button>
+      <p style="font-size:11px; margin-top:10px; opacity:0.6; text-align:center;">or <button onclick="handleStripeCheckout('explorer_monthly')" style="background:none;border:none;font-size:11px;opacity:0.8;cursor:pointer;text-decoration:underline;font-family:inherit;">€5.90/month</button>, cancel anytime</p>
     </div>
 
     <div class="price-card price-card-lifetime">
@@ -2034,7 +2113,9 @@
         <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#C9A455" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#C9A455" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Founding member badge & input</li>
         <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#C9A455" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#C9A455" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Priority access to new cities</li>
       </ul>
-      <a href="#newsletter" onclick="selectPlan('founding')" class="price-btn price-btn-gold">Claim lifetime access</a>
+      <button onclick="handleStripeCheckout('founding_member')" class="price-btn price-btn-gold" style="width:100%;cursor:pointer;border:none;">
+        ⭐ Claim lifetime access — €149
+      </button>
       <p style="font-size:11px; margin-top:10px; color:var(--gold); text-align:center; font-weight:600;">Only 500 available · Never repeated</p>
     </div>
 
@@ -2233,7 +2314,9 @@
 <script>
 const UNSPLASH_KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
 const FOURSQUARE_KEY = '244GKZ3SYN0QA4CMYR4VXURO3PLM00MUWHAXLJUV04UE05T1';
-const BOOKING_AFF = 'YOUR_BOOKING_AFFILIATE_ID';
+const BOOKING_AFF = 'YOUR_BOOKING_AFFILIATE_ID'; // CJ Publisher ID: 7909431
+const GYG_AFF = 'YOUR_GYG_PARTNER_ID';
+const VIATOR_AFF = 'P00293970';
 
 // Track active vibes
 let activeVibes = [];
@@ -2345,32 +2428,43 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
     const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(m.name + ' ' + destCity)}&aid=${BOOKING_AFF}`;
     const airbnbUrl = `https://www.airbnb.com/s/${encodeURIComponent(destCity + '--' + m.name)}/homes`;
 
-    const restaurants = (m.top3Restaurants || []).map((r, j) => `
-      <div class="pick-item">
+    const restaurants = (m.top3Restaurants || []).map((r, j) => {
+      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(r.googleMapsQuery || r.name + ' ' + destCity)}`;
+      return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         <div class="pick-info">
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
+          <a href="${mapsUrl}" target="_blank" class="pick-link">📍 View on map →</a>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
-    const wineBars = (m.top3WineBars || []).map((r, j) => `
-      <div class="pick-item">
+    const wineBars = (m.top3WineBars || []).map((r, j) => {
+      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(r.googleMapsQuery || r.name + ' ' + destCity)}`;
+      return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         <div class="pick-info">
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
+          <a href="${mapsUrl}" target="_blank" class="pick-link">📍 View on map →</a>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
-    const thingsToDo = (m.top3ThingsToDo || []).map((r, j) => `
-      <div class="pick-item">
+    const thingsToDo = (m.top3ThingsToDo || []).map((r, j) => {
+      const gygUrl = `https://www.getyourguide.com/s/?q=${encodeURIComponent(r.gygQuery || r.name + ' ' + destCity)}&partner_id=${GYG_AFF}`;
+      const viatorUrl = `https://www.viator.com/search/${encodeURIComponent(destCity)}?text=${encodeURIComponent(r.name)}&pid=${VIATOR_AFF}`;
+      const badge = r.isPaid ? '<span style="font-size:10px;background:rgba(196,98,45,0.2);color:var(--terracotta-light);padding:2px 8px;border-radius:100px;margin-left:6px;">Bookable</span>' : '<span style="font-size:10px;background:rgba(107,124,74,0.2);color:#8BA55A;padding:2px 8px;border-radius:100px;margin-left:6px;">Free</span>';
+      return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         <div class="pick-info">
-          <div class="pick-name">${r.name}</div>
+          <div class="pick-name">${r.name}${badge}</div>
           <div class="pick-desc">${r.description}</div>
+          ${r.isPaid ? `<a href="${gygUrl}" target="_blank" class="pick-link">🎫 Book on GetYourGuide →</a>` : ''}
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     return `
     <div class="result-card" id="card-${i}" style="animation-delay:${i * 0.1}s">
@@ -2425,43 +2519,84 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
     </button>
   </div>`;
 
-  results.innerHTML = header + cards + shareText;
+  const premiumTeaser = `
+  <div style="margin-top:24px; padding:28px; background:linear-gradient(135deg, rgba(201,164,85,0.08), rgba(61,43,31,0.3)); border-radius:20px; border:1.5px solid rgba(201,164,85,0.3); text-align:center;">
+    <div style="font-size:11px; letter-spacing:0.8px; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:12px;">✦ Explorer & Founding Members</div>
+    <h3 style="font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--cream); font-weight:600; margin-bottom:8px;">Unlock the full neighbourhood deep-dive</h3>
+    <p style="font-size:14px; color:rgba(248,241,231,0.6); margin-bottom:20px; max-width:400px; margin-left:auto; margin-right:auto; line-height:1.6;">
+      Neighbourhood boundary maps · Restaurant & bar pins · Public transport layer · Events & what's on · Rental & real estate links · Off the beaten track picks
+    </p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <button onclick="handleStripeCheckout('explorer_annual')" style="background:var(--terracotta); color:white; border:none; border-radius:100px; padding:14px 28px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s;">
+        🗺️ Explorer — €49/year
+      </button>
+      <button onclick="handleStripeCheckout('founding_member')" style="background:linear-gradient(135deg, #C9A455, #B8922E); color:white; border:none; border-radius:100px; padding:14px 28px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s;">
+        ⭐ Founding Member — €149 forever
+      </button>
+    </div>
+    <p style="font-size:11px; color:rgba(248,241,231,0.3); margin-top:12px;">First 500 founding members only · Never repeated</p>
+  </div>`;
+
+  results.innerHTML = header + cards + shareText + premiumTeaser;
   results.classList.add('visible');
   results.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  // Load photos and maps async after rendering
-  matches.forEach(async (m, i) => {
-    // Load Unsplash photo
-    if (m.unsplashQuery) {
-      const photoUrl = await fetchUnsplashPhoto(m.unsplashQuery);
-      const photoEl = document.getElementById(`photo-${i}`);
-      if (photoEl && photoUrl) {
-        photoEl.outerHTML = `<img src="${photoUrl}" class="result-photo" alt="${m.name} neighbourhood" loading="lazy"/>`;
+  // Load photos and maps — staggered to avoid Unsplash rate limits
+  (async () => {
+    for (let i = 0; i < matches.length; i++) {
+      const m = matches[i];
+      if (i > 0) await new Promise(r => setTimeout(r, 1000));
+
+      // Load Unsplash photo with fallback queries
+      if (m.unsplashQuery) {
+        const queries = [m.unsplashQuery, `${m.name} ${m.city} street`, `${m.city} neighbourhood`];
+        let photoUrl = null;
+        for (const q of queries) {
+          photoUrl = await fetchUnsplashPhoto(q);
+          if (photoUrl) break;
+          await new Promise(r => setTimeout(r, 500));
+        }
+        const photoEl = document.getElementById(`photo-${i}`);
+        if (photoEl && photoUrl) {
+          photoEl.outerHTML = `<img src="${photoUrl}" class="result-photo" alt="${m.name} neighbourhood" loading="lazy"/>`;
+        } else if (photoEl) {
+          photoEl.innerHTML = `🏘️ ${m.name}`;
+        }
+      }
+
+      // Init Leaflet map
+      if (m.lat && m.lng) {
+        setTimeout(() => {
+          const mapEl = document.getElementById(`map-${i}`);
+          if (mapEl && !mapInstances[i]) {
+            try {
+              const map = L.map(`map-${i}`, { zoomControl: true, scrollWheelZoom: false }).setView([m.lat, m.lng], 15);
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+              }).addTo(map);
+
+              // neighbourhood label marker
+              const icon = L.divIcon({
+                html: `<div style="background:#C4622D;color:white;padding:6px 12px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${m.name}</div>`,
+                className: '',
+                iconAnchor: [40, 15]
+              });
+              L.marker([m.lat, m.lng], { icon }).addTo(map);
+
+              // Add restaurant pins if available
+              const allPins = [
+                ...(m.top3Restaurants || []).map(r => ({...r, type: '🍽️'})),
+                ...(m.top3WineBars || []).map(r => ({...r, type: '🍷'})),
+                ...(m.top3ThingsToDo || []).map(r => ({...r, type: '🏛️'}))
+              ];
+              // We don't have coords for POIs yet — show map note
+              mapInstances[i] = map;
+            } catch(e) { console.error('Map error:', e); }
+          }
+        }, 400 + i * 200);
       }
     }
-
-    // Init Leaflet map
-    if (m.lat && m.lng) {
-      setTimeout(() => {
-        const mapEl = document.getElementById(`map-${i}`);
-        if (mapEl && !mapInstances[i]) {
-          try {
-            const map = L.map(`map-${i}`, { zoomControl: true, scrollWheelZoom: false }).setView([m.lat, m.lng], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-            const icon = L.divIcon({
-              html: `<div style="background:var(--terracotta,#C4622D);color:white;padding:6px 12px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${m.name}</div>`,
-              className: '',
-              iconAnchor: [40, 15]
-            });
-            L.marker([m.lat, m.lng], { icon }).addTo(map);
-            mapInstances[i] = map;
-          } catch(e) { console.error('Map error:', e); }
-        }
-      }, 300 + i * 100);
-    }
-  });
+  })();
 }
 
 function shareMatch(fromHood, fromCity, toHood, toCity) {
@@ -2479,6 +2614,8 @@ function showError(msg) {
   el.classList.add('visible');
 }
 
+const BEEHIIV_PUBLICATION_ID = 'YOUR_BEEHIIV_PUBLICATION_ID'; // Get from beehiiv.com dashboard
+
 function handleWaitlist(e) {
   e.preventDefault();
   const email = document.getElementById('emailInput').value;
@@ -2487,6 +2624,8 @@ function handleWaitlist(e) {
     alert('Please enter a valid email address.');
     return;
   }
+
+  // Submit to Netlify Forms
   fetch('/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -2499,6 +2638,15 @@ function handleWaitlist(e) {
     document.getElementById('newsletterSuccess').style.display = 'block';
     document.getElementById('emailInput').value = '';
   });
+
+  // Also subscribe to Beehiiv newsletter
+  if (!BEEHIIV_PUBLICATION_ID.includes('YOUR_')) {
+    fetch(`https://api.beehiiv.com/v2/publications/${BEEHIIV_PUBLICATION_ID}/subscriptions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, reactivate_existing: true, send_welcome_email: true })
+    }).catch(err => console.log('Beehiiv:', err));
+  }
 }
 
 function handleSuggestion(e, type) {
@@ -2518,6 +2666,28 @@ function handleSuggestion(e, type) {
 }
 
 // Pre-select plan in waitlist from pricing card clicks
+// Stripe checkout handler — replace with real Stripe links when ready
+const STRIPE_LINKS = {
+  explorer_monthly: 'https://buy.stripe.com/YOUR_EXPLORER_MONTHLY_LINK',
+  explorer_annual: 'https://buy.stripe.com/YOUR_EXPLORER_ANNUAL_LINK',
+  founding_member: 'https://buy.stripe.com/YOUR_FOUNDING_MEMBER_LINK'
+};
+
+function handleStripeCheckout(plan) {
+  const link = STRIPE_LINKS[plan];
+  if (link.includes('YOUR_')) {
+    // Stripe not yet set up — redirect to waitlist
+    document.querySelector('#newsletter').scrollIntoView({ behavior: 'smooth' });
+    const sel = document.getElementById('waitlistPlan');
+    if (sel) {
+      if (plan === 'founding_member') sel.value = 'founding';
+      else if (plan.startsWith('explorer')) sel.value = 'explorer';
+    }
+    return;
+  }
+  window.open(link, '_blank');
+}
+
 function selectPlan(plan) {
   const sel = document.getElementById('waitlistPlan');
   if (sel) sel.value = plan;
