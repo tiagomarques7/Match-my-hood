@@ -1854,7 +1854,7 @@
   <div class="matches-scroll">
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=600&q=80')">
+      <div class="match-photo static-match-photo" data-photo-query="Chiado Lisbon street cafes">
         <div class="match-photo-overlay">
           <div class="match-from">Lisbon, Portugal</div>
           <div class="match-from-name">Chiado</div>
@@ -1877,7 +1877,7 @@
     </div>
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=600&q=80')">
+      <div class="match-photo static-match-photo" data-photo-query="Trastevere Rome cobblestone alley">
         <div class="match-photo-overlay">
           <div class="match-from">Rome, Italy</div>
           <div class="match-from-name">Trastevere</div>
@@ -1900,7 +1900,7 @@
     </div>
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80')">
+      <div class="match-photo static-match-photo" data-photo-query="Shoreditch London street art graffiti">
         <div class="match-photo-overlay">
           <div class="match-from">London, UK</div>
           <div class="match-from-name">Shoreditch</div>
@@ -1923,7 +1923,7 @@
     </div>
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80')">
+      <div class="match-photo static-match-photo" data-photo-query="Le Marais Paris street boutiques">
         <div class="match-photo-overlay">
           <div class="match-from">Paris, France</div>
           <div class="match-from-name">Le Marais</div>
@@ -1946,7 +1946,7 @@
     </div>
 
     <div class="match-pair">
-      <div class="match-photo" style="background-image:url('https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&q=80')">
+      <div class="match-photo static-match-photo" data-photo-query="Gracia Barcelona neighbourhood street">
         <div class="match-photo-overlay">
           <div class="match-from">Barcelona, Spain</div>
           <div class="match-from-name">Gràcia</div>
@@ -2304,13 +2304,13 @@
   <ul class="footer-links">
     <li><a href="#how">How it works</a></li>
     <li><a href="#match">Try it free</a></li>
-    <li><a href="mailto:hello@matchmyhood.com">Contact</a></li>
+    <li><a href="/cdn-cgi/l/email-protection#b6ded3dadad9f6dbd7c2d5dedbcfded9d9d298d5d9db">Contact</a></li>
     <li><a href="#">Privacy</a></li>
   </ul>
   <div class="footer-copy">© 2026 MatchMyHood</div>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const UNSPLASH_KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
 const FOURSQUARE_KEY = '244GKZ3SYN0QA4CMYR4VXURO3PLM00MUWHAXLJUV04UE05T1';
@@ -2353,6 +2353,25 @@ async function fetchUnsplashPhoto(query) {
     return data.urls?.regular || null;
   } catch { return null; }
 }
+
+async function loadStaticCardPhotos() {
+  const cards = document.querySelectorAll('.static-match-photo');
+  for (const card of cards) {
+    const query = card.dataset.photoQuery;
+    if (!query) continue;
+    const url = await fetchUnsplashPhoto(query);
+    if (url) {
+      card.style.backgroundImage = `url('${url}')`;
+    }
+    // Small delay to avoid hitting Unsplash rate limits
+    await new Promise(r => setTimeout(r, 300));
+  }
+}
+
+// Load static card photos on page load
+document.addEventListener('DOMContentLoaded', () => {
+  loadStaticCardPhotos();
+});
 
 async function runMatch() {
   const homeCity = document.getElementById('homeCity').value;
@@ -2549,7 +2568,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
 
       // Load Unsplash photo with fallback queries
       if (m.unsplashQuery) {
-        const queries = [m.unsplashQuery, `${m.name} ${m.city} street`, `${m.city} neighbourhood`];
+        const queries = [m.unsplashQuery, `${m.name} ${m.city} street photography`, `${m.name} neighbourhood street`];
         let photoUrl = null;
         for (const q of queries) {
           photoUrl = await fetchUnsplashPhoto(q);
@@ -2704,11 +2723,4 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 // Nav scroll effect
 window.addEventListener('scroll', () => {
-  const nav = document.querySelector('nav');
-  nav.style.boxShadow = window.scrollY > 40
-    ? '0 4px 24px rgba(61,43,31,0.10)'
-    : 'none';
-});
-</script>
-</body>
-</html>
+  const nav = docume
