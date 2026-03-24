@@ -35,42 +35,41 @@ exports.handler = async function (event) {
     ? "\nThis person is RELOCATING — emphasise cost, community feel, daily life amenities, and long-term liveability."
     : "\nThis person is VISITING — emphasise walkability, food scene, nightlife, and things to do.";
 
-  const prompt = `You are MatchMyHood, an expert AI neighbourhood matching tool for travellers and relocators.
+  const prompt = `You are MatchMyHood, an expert neighbourhood matching tool.
 
 A person loves "${safehomeHood}" in ${safehomeCity}. They are ${safeIntent} to ${safedestCity}.${vibeContext}${intentContext}
 
-Analyse what makes ${safehomeHood} special — its character, energy, demographics, architecture, food scene, nightlife, and price point — then find the top 3 genuinely matching neighbourhoods in ${safedestCity}.
+Find the TOP 3 matching neighbourhoods in ${safedestCity} based on character, energy, food scene, nightlife, and price point.
 
-CRITICAL GEOGRAPHIC ACCURACY RULES — violating these will make the product unusable:
-- Every neighbourhood you return MUST genuinely exist and be commonly known by that name in ${safedestCity}.
-- Every restaurant and bar MUST be physically located INSIDE or directly on the border of that specific neighbourhood — NOT elsewhere in the city. If a venue is famous but located in a different neighbourhood, exclude it entirely and pick one you ARE confident about.
-- If you are not certain a venue is inside the neighbourhood, omit it. Accuracy matters more than completeness.
-- The neighbourhood match must reflect genuine character similarity — a gritty creative district should match another gritty creative district, not a polished riverside development.
-- lat and lng must be the actual coordinates of that neighbourhood centre, not the city centre.
+CRITICAL RULES:
+- Neighbourhoods must genuinely exist in ${safedestCity}
+- Every restaurant and bar MUST be physically inside that neighbourhood — not elsewhere in the city. If unsure, omit it.
+- Match character genuinely — gritty creative = gritty creative, not polished riverside
+- lat/lng must be the neighbourhood centre coordinates, not the city centre
 
-Respond ONLY with a valid JSON array, no markdown, no extra text:
+Respond ONLY with a valid JSON array, no markdown:
 [
   {
     "name": "Neighbourhood Name",
     "city": "${safedestCity}",
     "matchScore": 92,
-    "tagline": "One sentence describing this neighbourhood",
+    "tagline": "One sentence",
     "whyItMatches": "2 sentences explaining why this matches ${safehomeHood}.",
     "vibes": ["tag1", "tag2", "tag3"],
     "top3Restaurants": [
-      {"name": "Restaurant Name", "description": "One short line", "googleMapsQuery": "Restaurant Name ${safedestCity}"},
-      {"name": "Restaurant Name", "description": "One short line", "googleMapsQuery": "Restaurant Name ${safedestCity}"},
-      {"name": "Restaurant Name", "description": "One short line", "googleMapsQuery": "Restaurant Name ${safedestCity}"}
+      {"name": "Name", "description": "Short line", "googleMapsQuery": "Name ${safedestCity}"},
+      {"name": "Name", "description": "Short line", "googleMapsQuery": "Name ${safedestCity}"},
+      {"name": "Name", "description": "Short line", "googleMapsQuery": "Name ${safedestCity}"}
     ],
     "top3WineBars": [
-      {"name": "Bar Name", "description": "One short line", "googleMapsQuery": "Bar Name ${safedestCity}"},
-      {"name": "Bar Name", "description": "One short line", "googleMapsQuery": "Bar Name ${safedestCity}"},
-      {"name": "Bar Name", "description": "One short line", "googleMapsQuery": "Bar Name ${safedestCity}"}
+      {"name": "Name", "description": "Short line", "googleMapsQuery": "Name ${safedestCity}"},
+      {"name": "Name", "description": "Short line", "googleMapsQuery": "Name ${safedestCity}"},
+      {"name": "Name", "description": "Short line", "googleMapsQuery": "Name ${safedestCity}"}
     ],
     "top3ThingsToDo": [
-      {"name": "Thing to do", "description": "One short line", "gygQuery": "experience ${safedestCity}", "isPaid": false},
-      {"name": "Thing to do", "description": "One short line", "gygQuery": "experience ${safedestCity}", "isPaid": true},
-      {"name": "Thing to do", "description": "One short line", "gygQuery": "experience ${safedestCity}", "isPaid": false}
+      {"name": "Name", "description": "Short line", "gygQuery": "experience ${safedestCity}", "isPaid": false},
+      {"name": "Name", "description": "Short line", "gygQuery": "experience ${safedestCity}", "isPaid": true},
+      {"name": "Name", "description": "Short line", "gygQuery": "experience ${safedestCity}", "isPaid": false}
     ],
     "mustTry": "One iconic food or drink and where to get it",
     "walkScore": "High",
@@ -82,15 +81,7 @@ Respond ONLY with a valid JSON array, no markdown, no extra text:
   }
 ]
 
-Rules:
-- ONLY valid JSON array, nothing else
-- Only real neighbourhoods in ${safedestCity}
-- Match scores descending: 88-96%, 82-91%, 78-88%
-- All restaurant/bar names must be real and located inside the matched neighbourhood
-- googleMapsQuery should find the venue on Google Maps
-- gygQuery should find the experience on GetYourGuide
-- isPaid: true for ticketed experiences, false for free
-- lat/lng: actual coordinates of neighbourhood centre`;
+Rules: 3 results only, descending match scores (88-96%, 82-91%, 78-88%), JSON only, real venues inside the neighbourhood, lat/lng = neighbourhood centre.`;
 
   try {
     const requestBody = JSON.stringify({
