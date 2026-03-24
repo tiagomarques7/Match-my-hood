@@ -2389,7 +2389,7 @@ async function runMatch() {
   mapInstances = {};
 
   try {
-    const response = await fetch('/.netlify/functions/match', {
+    const response = await fetch('/api/match', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent })
