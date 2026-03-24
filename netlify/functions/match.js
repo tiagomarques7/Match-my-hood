@@ -1,3 +1,5 @@
+const https = require("https");
+
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
@@ -91,27 +93,39 @@ Rules:
 - lat/lng: actual coordinates of neighbourhood centre`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.CLAUDE_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1500,
-        messages: [{ role: "user", content: prompt }],
-      }),
+    const requestBody = JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      messages: [{ role: "user", content: prompt }],
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("Claude API error:", response.status, err);
-      return { statusCode: 502, body: JSON.stringify({ error: "Claude API error: " + response.status + " — " + err }) };
+    const claudeResponse = await new Promise((resolve, reject) => {
+      const req = https.request({
+        hostname: "api.anthropic.com",
+        path: "/v1/messages",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.CLAUDE_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "Content-Length": Buffer.byteLength(requestBody),
+        },
+      }, (res) => {
+        let data = "";
+        res.on("data", chunk => data += chunk);
+        res.on("end", () => resolve({ status: res.statusCode, body: data }));
+      });
+      req.on("error", reject);
+      req.write(requestBody);
+      req.end();
+    });
+
+    if (claudeResponse.status !== 200) {
+      console.error("Claude API error:", claudeResponse.status, claudeResponse.body);
+      return { statusCode: 502, body: JSON.stringify({ error: "Claude API error: " + claudeResponse.status + " — " + claudeResponse.body }) };
     }
 
-    const data = await response.json();
+    const data = JSON.parse(claudeResponse.body);
     const text = data.content[0].text.trim();
 
     let matches;
