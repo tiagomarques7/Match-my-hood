@@ -2710,4 +2710,15 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 // Nav scroll effect
 window.addEventListener('scroll', () => {
-  const nav = docume
+  const nav = document.querySelector('nav');
+  if (nav) {
+    if (window.scrollY > 20) {
+      nav.style.boxShadow = '0 4px 24px rgba(61,43,31,0.1)';
+    } else {
+      nav.style.boxShadow = 'none';
+    }
+  }
+});
+</script>
+</body>
+</html>
