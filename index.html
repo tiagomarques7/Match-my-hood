@@ -2440,7 +2440,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
     const airbnbUrl = `https://www.airbnb.com/s/${encodeURIComponent(destCity + '--' + m.name)}/homes`;
 
     const restaurants = (m.top3Restaurants || []).map((r, j) => {
-      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(r.googleMapsQuery || r.name + ' ' + destCity)}`;
+      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         <div class="pick-info">
@@ -2452,7 +2452,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
     }).join('');
 
     const wineBars = (m.top3WineBars || []).map((r, j) => {
-      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(r.googleMapsQuery || r.name + ' ' + destCity)}`;
+      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         <div class="pick-info">
