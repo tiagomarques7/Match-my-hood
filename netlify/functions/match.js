@@ -1,11 +1,7 @@
 exports.handler = async function (event) {
-  // Only allow POST
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
   }
-
-  // Basic rate limiting check via headers (Netlify adds these)
-  const ip = event.headers["x-forwarded-for"] || "unknown";
 
   let body;
   try {
@@ -14,9 +10,8 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: JSON.stringify({ error: "Invalid request body" }) };
   }
 
-  const { homeCity, homeHood, destCity } = body;
+  const { homeCity, homeHood, destCity, vibes, intent } = body;
 
-  // Input validation
   if (!homeCity || !homeHood || !destCity) {
     return { statusCode: 400, body: JSON.stringify({ error: "Missing required fields" }) };
   }
@@ -25,42 +20,69 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: JSON.stringify({ error: "Home city and destination must be different" }) };
   }
 
-  // Sanitise inputs — strip any prompt injection attempts
   const sanitise = (str) => str.replace(/[<>{}]/g, "").slice(0, 80);
   const safehomeCity = sanitise(homeCity);
   const safehomeHood = sanitise(homeHood);
-  const safedestCity  = sanitise(destCity);
+  const safedestCity = sanitise(destCity);
+  const safeVibes = Array.isArray(vibes) ? vibes.map(v => sanitise(v)).join(", ") : "";
+  const safeIntent = intent === "move" ? "relocating long-term" : "visiting as a traveller";
 
-  const prompt = `You are MatchMyHood, an AI-powered neighbourhood matching tool for travellers.
+  const vibeContext = safeVibes
+    ? `\nThe traveller especially values: ${safeVibes}. Weight these dimensions more heavily in your matching.`
+    : "";
 
-A traveller loves "${safehomeHood}" in ${safehomeCity}. They are travelling to ${safedestCity} and want to find the most similar neighbourhoods there.
+  const intentContext = intent === "move"
+    ? "\nThis person is RELOCATING — emphasise cost, community feel, daily life amenities, and long-term liveability."
+    : "\nThis person is VISITING — emphasise walkability, food scene, nightlife, and things to do.";
 
-Analyse what makes ${safehomeHood} special (vibe, walkability, food scene, wine bars, nightlife, safety, cost level, community feel, architecture) and find the top 3 matching neighbourhoods in ${safedestCity}.
+  const prompt = `You are MatchMyHood, an expert AI neighbourhood matching tool for travellers and relocators.
 
-Respond ONLY with a valid JSON array (no markdown, no extra text, no code fences) with exactly this structure:
+A person loves "${safehomeHood}" in ${safehomeCity}. They are ${safeIntent} to ${safedestCity} and want to find the most similar neighbourhoods.${vibeContext}${intentContext}
+
+Analyse what makes ${safehomeHood} special and find the top 3 matching neighbourhoods in ${safedestCity}.
+
+Respond ONLY with a valid JSON array (no markdown, no extra text, no code fences):
 [
   {
     "name": "Neighbourhood Name",
     "city": "${safedestCity}",
     "matchScore": 92,
     "tagline": "One evocative sentence describing this neighbourhood",
-    "whyItMatches": "2-3 sentences explaining exactly why this matches ${safehomeHood} in ${safehomeCity}. Be specific about shared qualities.",
+    "whyItMatches": "2-3 sentences explaining exactly why this matches ${safehomeHood}. Be specific about shared qualities.",
     "vibes": ["tag1", "tag2", "tag3", "tag4"],
-    "foodPick": "One specific real restaurant or food market name",
-    "winePick": "One specific real wine bar or bar name",
+    "top3Restaurants": [
+      {"name": "Restaurant Name", "description": "One line description"},
+      {"name": "Restaurant Name", "description": "One line description"},
+      {"name": "Restaurant Name", "description": "One line description"}
+    ],
+    "top3WineBars": [
+      {"name": "Bar Name", "description": "One line description"},
+      {"name": "Bar Name", "description": "One line description"},
+      {"name": "Bar Name", "description": "One line description"}
+    ],
+    "top3ThingsToDo": [
+      {"name": "Thing to do", "description": "One line description"},
+      {"name": "Thing to do", "description": "One line description"},
+      {"name": "Thing to do", "description": "One line description"}
+    ],
+    "mustTry": "The one iconic food or drink you MUST try here e.g. croissant at X, ginjinha at Y",
     "walkScore": "High",
     "costLevel": "Mid-range",
-    "bestFor": "Who this neighbourhood suits best in one short sentence"
+    "bestFor": "Who this neighbourhood suits best in one short sentence",
+    "unsplashQuery": "neighbourhood city street photography search query",
+    "lat": 41.1234,
+    "lng": -8.6789
   }
 ]
 
 Rules:
 - Return ONLY the JSON array, nothing else
-- Be accurate — only use real neighbourhoods that actually exist in ${safedestCity}
-- Match scores: top match 88-96%, second 82-91%, third 78-88%
-- All three scores must be different and descending
-- Vibes: 3-5 short punchy tags max
-- foodPick and winePick must be real named establishments if possible`;
+- Only use real neighbourhoods that actually exist in ${safedestCity}
+- Match scores: top match 88-96%, second 82-91%, third 78-88% all different and descending
+- Vibes: 3-5 short punchy tags
+- All restaurant and bar names must be real establishments if possible
+- lat and lng must be the actual approximate coordinates of the neighbourhood centre
+- unsplashQuery should be 3-5 words that would find great street photos of this neighbourhood`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -72,7 +94,7 @@ Rules:
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 1200,
+        max_tokens: 2500,
         messages: [{ role: "user", content: prompt }],
       }),
     });
@@ -89,7 +111,6 @@ Rules:
     const data = await response.json();
     const text = data.content[0].text.trim();
 
-    // Parse and validate JSON
     let matches;
     try {
       const cleaned = text.replace(/```json|```/g, "").trim();
