@@ -2389,24 +2389,41 @@ async function runMatch() {
   mapInstances = {};
 
   try {
-    const response = await fetch('https://matchmyhood-api-production.up.railway.app/api/match', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent })
+    const matches = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "https://matchmyhood-api-production.up.railway.app/api/match");
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onprogress = () => {
+        // Check if we have a complete SSE data line
+        const text = xhr.responseText;
+        const lines = text.split("\n");
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const parsed = JSON.parse(line.slice(6));
+              if (parsed.matches) resolve(parsed.matches);
+              if (parsed.error) reject(new Error(parsed.error));
+            } catch {}
+          }
+        }
+      };
+      xhr.onload = () => {
+        // Final parse attempt on complete response
+        const lines = xhr.responseText.split("\n");
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const parsed = JSON.parse(line.slice(6));
+              if (parsed.matches) { resolve(parsed.matches); return; }
+              if (parsed.error) { reject(new Error(parsed.error)); return; }
+            } catch {}
+          }
+        }
+        reject(new Error("No valid response received"));
+      };
+      xhr.onerror = () => reject(new Error("Network error"));
+      xhr.send(JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent }));
     });
-
-    const responseText = await response.text();
-    console.error('Raw response:', responseText);
-
-    if (!response.ok) {
-      let errMsg = 'API error ' + response.status;
-      try { errMsg = JSON.parse(responseText).error || errMsg; } catch {}
-      showError('DEBUG: ' + errMsg);
-      return;
-    }
-
-    const data = JSON.parse(responseText);
-    const matches = data.matches;
 
     if (!matches || !Array.isArray(matches)) {
       throw new Error('Could not parse match results. Please try again.');
@@ -2415,7 +2432,7 @@ async function runMatch() {
     await renderResults(matches, homeHood, homeCity, destCity);
 
   } catch (err) {
-    showError('Something went wrong finding your match. Please try again in a moment.');
+    showError(err.message || 'Something went wrong finding your match. Please try again in a moment.');
     console.error(err);
   } finally {
     btn.disabled = false;
