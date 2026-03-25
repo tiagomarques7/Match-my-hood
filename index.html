@@ -2547,7 +2547,7 @@ async function runMatch() {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "https://api.matchmyhood.com/api/match");
       xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.timeout = 90000; // 90s
+      xhr.timeout = 120000; // 2 minutes
       xhr.onload = () => {
         try {
           const data = JSON.parse(xhr.responseText);
