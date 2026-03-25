@@ -2402,7 +2402,7 @@ const PROPERTY_SITES = {
                { name:"Fotocasa",     url:(h,c)=>`https://www.fotocasa.es/es/alquiler/viviendas/sevilla-capital/${slug(h)}/l` }],
   // Amsterdam — Funda slugs are Dutch, Pararius works better in English
   "Amsterdam":[{ name:"Funda",        url:(h,c)=>`https://www.funda.nl/huur/amsterdam/?q=${enc(h)}` },
-               { name:"Pararius",     url:(h,c)=>`https://www.pararius.com/apartments/amsterdam/${slug(h)}` }],
+               { name:"Pararius",     url:(h,c)=>`https://www.pararius.com/apartment-for-rent/amsterdam?q=${enc(h)}` }],
   "Rome":     [{ name:"Immobiliare",  url:(h,c)=>`https://www.immobiliare.it/affitto-case/roma/?qTesto=${enc(h)}` },
                { name:"Idealista",    url:(h,c)=>`https://www.idealista.it/affitto-case/roma/${slug(h)}/` }],
   "Florence": [{ name:"Immobiliare",  url:(h,c)=>`https://www.immobiliare.it/affitto-case/firenze/?qTesto=${enc(h)}` },
@@ -2489,6 +2489,19 @@ const PROPERTY_SITES = {
 // Track active vibes
 let activeVibes = [];
 let currentIntent = 'visit';
+// Lightweight circle GeoJSON (no turf.js needed)
+function turf_circle(center, radiusKm, steps = 64) {
+  const [lng, lat] = center;
+  const coords = [];
+  for (let i = 0; i <= steps; i++) {
+    const angle = (i / steps) * 2 * Math.PI;
+    const dLat = (radiusKm / 111.32) * Math.cos(angle);
+    const dLng = (radiusKm / (111.32 * Math.cos(lat * Math.PI / 180))) * Math.sin(angle);
+    coords.push([lng + dLng, lat + dLat]);
+  }
+  return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [coords] } };
+}
+
 let mapInstances = {};
 
 function toggleVibe(el) {
@@ -2945,34 +2958,31 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
 
               map.on('load', () => {
                 // ── NEIGHBOURHOOD BOUNDARY ──────────────────────────────
-                // Nominatim requires stagger + User-Agent, rate limit 1 req/sec
+                // Nominatim rate limit 1 req/sec — stagger by hood index, min 800ms
                 setTimeout(() => {
                 const hoodQuery = encodeURIComponent(m.name + ', ' + m.city);
-                fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`, {
-                  headers: { 'User-Agent': 'MatchMyHood/1.0 (matchmyhood.com)' }
-                })
+                fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`)
                   .then(r => r.json())
                   .then(data => {
                     const feature = data.features?.[0];
-                    if (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') {
+                    if (!feature) return;
+                    if (feature.geometry?.type === 'Polygon' || feature.geometry?.type === 'MultiPolygon') {
                       if (!map.getSource('neighbourhood')) {
                         map.addSource('neighbourhood', { type: 'geojson', data: feature });
-                        map.addLayer({
-                          id: 'neighbourhood-fill',
-                          type: 'fill',
-                          source: 'neighbourhood',
-                          paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 }
-                        });
-                        map.addLayer({
-                          id: 'neighbourhood-border',
-                          type: 'line',
-                          source: 'neighbourhood',
-                          paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 }
-                        });
+                        map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 } });
+                        map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 } });
+                      }
+                    } else {
+                      // Fallback: draw a ~600m circle for point results
+                      if (!map.getSource('neighbourhood')) {
+                        const circle = turf_circle([m.lng, m.lat], 0.6);
+                        map.addSource('neighbourhood', { type: 'geojson', data: circle });
+                        map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.10 } });
+                        map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.6, 'line-dasharray': [3, 2] } });
                       }
                     }
                   }).catch(() => {});
-                }, i * 2000); // 2s stagger — Nominatim rate limit is 1 req/sec
+                }, Math.max(800, i * 2200));
 
                 // ── NEIGHBOURHOOD LABEL MARKER ──────────────────────────
                 const el = document.createElement('div');
@@ -3019,8 +3029,15 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
                   paint: { 'circle-radius': 8, 'circle-color': '#7A3030', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }
                 });
 
-                // ── TRANSPORT PINS from Overpass ────────────────────────
-                const transitQuery = encodeURIComponent(`[out:json][timeout:10];node["railway"~"station|subway_entrance"](around:800,${m.lat},${m.lng});out 5;`);
+                // ── TRANSPORT PINS from Overpass (metro + tram + rail) ──────────────
+                const transitQuery = encodeURIComponent(`[out:json][timeout:15];
+(
+  node["railway"~"station|subway_entrance|tram_stop|halt"](around:800,${m.lat},${m.lng});
+  node["station"="subway"](around:800,${m.lat},${m.lng});
+  node["public_transport"="stop_position"]["tram"="yes"](around:800,${m.lat},${m.lng});
+  node["public_transport"="stop_position"]["subway"="yes"](around:800,${m.lat},${m.lng});
+);
+out 10;`);
                 fetch(`https://overpass-api.de/api/interpreter?data=${transitQuery}`)
                   .then(r => r.json())
                   .then(data => {
