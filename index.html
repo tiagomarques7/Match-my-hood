@@ -1946,7 +1946,7 @@
         <span id="btnText">✦ Match it</span>
       </button>
       <div class="vibe-selector-wrap">
-        <div class="vibe-selector-label">✦ Your vibe (optional — select all that apply)</div>
+        <div class="vibe-selector-label" id="vibeSelectorLabel">✦ Your vibe (optional — select all that apply)</div>
         <div class="vibe-pills" id="vibePills">
           <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Wine &amp; Nightlife">🍷 Wine &amp; Nightlife</span>
           <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Shopping &amp; Boutiques">🛍️ Shopping &amp; Boutiques</span>
@@ -2022,8 +2022,8 @@
           <path d="M24 8.5 L24 10 L25 11" stroke="#C4622D" stroke-width="1" stroke-linecap="round"/>
         </svg>
       </div>
-      <h3>Built by a travel insider</h3>
-      <p>Founded by an airline distribution specialist with a decade inside the aviation industry. Every data point is chosen by someone who genuinely travels for a living.</p>
+      <h3>Built by someone who actually moved</h3>
+      <p>Founded by a Senior Distribution Specialist at Corendon Airlines who has lived in Ireland, Bolivia, Brazil, Italy, and the UK. MatchMyHood is the tool he spent hours wishing existed every time he landed somewhere new and had to figure out which neighbourhood actually felt like home.</p>
     </div>
 
     <div class="why-card">
@@ -2320,9 +2320,107 @@
 <script>
 const UNSPLASH_KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
 const FOURSQUARE_KEY = '244GKZ3SYN0QA4CMYR4VXURO3PLM00MUWHAXLJUV04UE05T1';
-const BOOKING_AFF = 'YOUR_BOOKING_AFFILIATE_ID'; // CJ Publisher ID: 7909431
-const GYG_AFF = 'YOUR_GYG_PARTNER_ID';
+const BOOKING_AFF = '7909431';
+const GYG_AFF = 'MLFUF2A';
 const VIATOR_AFF = 'P00293970';
+
+// Property sites per city for LIVE mode
+const PROPERTY_SITES = {
+  "Lisbon":        [{ name: "Idealista", url: (hood, city) => `https://www.idealista.pt/arrendar-casas/${encodeURIComponent(city.toLowerCase())}/` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "Porto":         [{ name: "Idealista", url: (hood, city) => `https://www.idealista.pt/arrendar-casas/porto/` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "London":        [{ name: "Rightmove", url: (hood, city) => `https://www.rightmove.co.uk/property-to-rent/find.html?searchLocation=${encodeURIComponent(hood + ', London')}` },
+                   { name: "Zoopla", url: (hood, city) => `https://www.zoopla.co.uk/to-rent/property/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/` }],
+  "Paris":         [{ name: "SeLoger", url: (hood, city) => `https://www.seloger.com/list.htm?ci=750056&idtypebien=1&idtt=1` },
+                   { name: "LeBonCoin", url: (hood, city) => `https://www.leboncoin.fr/recherche?category=10&locations=${encodeURIComponent(city)}` }],
+  "Barcelona":     [{ name: "Idealista", url: (hood, city) => `https://www.idealista.com/alquiler-viviendas/barcelona-provincia/` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "Madrid":        [{ name: "Idealista", url: (hood, city) => `https://www.idealista.com/alquiler-viviendas/madrid-provincia/` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "Seville":       [{ name: "Idealista", url: (hood, city) => `https://www.idealista.com/alquiler-viviendas/sevilla-provincia/` },
+                   { name: "Fotocasa", url: (hood, city) => `https://www.fotocasa.es/es/alquiler/viviendas/sevilla-capital/todas-las-zonas/l` }],
+  "Amsterdam":     [{ name: "Funda", url: (hood, city) => `https://www.funda.nl/huur/amsterdam/` },
+                   { name: "Pararius", url: (hood, city) => `https://www.pararius.com/apartments/amsterdam` }],
+  "Rome":          [{ name: "Immobiliare.it", url: (hood, city) => `https://www.immobiliare.it/affitto-case/roma/` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "Florence":      [{ name: "Immobiliare.it", url: (hood, city) => `https://www.immobiliare.it/affitto-case/firenze/` },
+                   { name: "Idealista", url: (hood, city) => `https://www.idealista.it/affitto-case/firenze-provincia/` }],
+  "Milan":         [{ name: "Immobiliare.it", url: (hood, city) => `https://www.immobiliare.it/affitto-case/milano/` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "Berlin":        [{ name: "ImmoScout24", url: (hood, city) => `https://www.immobilienscout24.de/Suche/de/berlin/berlin/wohnung-mieten` },
+                   { name: "WG-Gesucht", url: (hood, city) => `https://www.wg-gesucht.de/wohnungen-in-Berlin.8.2.1.0.html` }],
+  "Munich":        [{ name: "ImmoScout24", url: (hood, city) => `https://www.immobilienscout24.de/Suche/de/bayern/muenchen/wohnung-mieten` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "Frankfurt":     [{ name: "ImmoScout24", url: (hood, city) => `https://www.immobilienscout24.de/Suche/de/hessen/frankfurt-am-main/wohnung-mieten` },
+                   { name: "Immowelt", url: (hood, city) => `https://www.immowelt.de/liste/frankfurt-am-main/wohnungen/mieten` }],
+  "Düsseldorf":    [{ name: "ImmoScout24", url: (hood, city) => `https://www.immobilienscout24.de/Suche/de/nordrhein-westfalen/duesseldorf/wohnung-mieten` },
+                   { name: "Immowelt", url: (hood, city) => `https://www.immowelt.de/liste/duesseldorf/wohnungen/mieten` }],
+  "Vienna":        [{ name: "Willhaben", url: (hood, city) => `https://www.willhaben.at/iad/immobilien/mietwohnungen/wien/` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "Copenhagen":    [{ name: "Lejebolig", url: (hood, city) => `https://www.lejebolig.dk/lejebolig/koebenhavn` },
+                   { name: "Boligsiden", url: (hood, city) => `https://www.boligsiden.dk/leje/` }],
+  "Stockholm":     [{ name: "Blocket", url: (hood, city) => `https://www.blocket.se/bostad/hyra/lagenheter/stockholm` },
+                   { name: "Bostadsportal", url: (hood, city) => `https://bostadsportal.se/` }],
+  "Prague":        [{ name: "Sreality", url: (hood, city) => `https://www.sreality.cz/hledani/pronajem/byty/praha` },
+                   { name: "Bezrealitky", url: (hood, city) => `https://www.bezrealitky.cz/vypis/pronajem-byt/praha` }],
+  "Budapest":      [{ name: "Ingatlan.com", url: (hood, city) => `https://ingatlan.com/lista/kiado+lakas+budapest` },
+                   { name: "Albérlet.hu", url: (hood, city) => `https://www.alberlet.hu/kiado-alberlet/budapest` }],
+  "Brussels":      [{ name: "Immoweb", url: (hood, city) => `https://www.immoweb.be/en/search/house-and-apartment/for-rent/brussels/region` },
+                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
+  "Istanbul":      [{ name: "Sahibinden", url: (hood, city) => `https://www.sahibinden.com/kiralik-daire/istanbul` },
+                   { name: "Emlakjet", url: (hood, city) => `https://www.emlakjet.com/kiralik-daire/istanbul/` }],
+  "New York":      [{ name: "StreetEasy", url: (hood, city) => `https://streeteasy.com/for-rent/nyc/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}` },
+                   { name: "Zillow", url: (hood, city) => `https://www.zillow.com/new-york-ny/rentals/` }],
+  "Los Angeles":   [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/los-angeles-ca/rentals/` },
+                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/los-angeles-ca/` }],
+  "San Francisco": [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/san-francisco-ca/rentals/` },
+                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/san-francisco-ca/` }],
+  "Chicago":       [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/chicago-il/rentals/` },
+                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/chicago-il/` }],
+  "Miami":         [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/miami-fl/rentals/` },
+                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/miami-fl/` }],
+  "Boston":        [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/boston-ma/rentals/` },
+                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/boston-ma/` }],
+  "Washington DC": [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/washington-dc/rentals/` },
+                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/washington-dc/` }],
+  "Toronto":       [{ name: "Realtor.ca", url: (hood, city) => `https://www.realtor.ca/map#ZoomLevel=13&Center=43.700000,-79.400000&LatitudeMax=43.85&LatitudeMin=43.55&LongitudeMax=-79.25&LongitudeMin=-79.55&view=list&TransactionTypeId=3&PropertyTypeGroupId=1` },
+                   { name: "PadMapper", url: (hood, city) => `https://www.padmapper.com/apartments/toronto-on` }],
+  "Montreal":      [{ name: "Realtor.ca", url: (hood, city) => `https://www.realtor.ca/map#ZoomLevel=12&Center=45.508888,-73.561668&view=list&TransactionTypeId=3` },
+                   { name: "Kijiji", url: (hood, city) => `https://www.kijiji.ca/b-apartments-condos/montreal/c37l80002` }],
+  "Mexico City":   [{ name: "Inmuebles24", url: (hood, city) => `https://www.inmuebles24.com/departamentos-en-renta-en-ciudad-de-mexico.html` },
+                   { name: "Lamudi", url: (hood, city) => `https://www.lamudi.com.mx/distrito-federal/departamento/for-rent/` }],
+  "São Paulo":     [{ name: "ZAP Imóveis", url: (hood, city) => `https://www.zapimoveis.com.br/aluguel/imoveis/sp+sao-paulo/` },
+                   { name: "VivaReal", url: (hood, city) => `https://www.vivareal.com.br/aluguel/sp/sao-paulo/` }],
+  "Rio de Janeiro":[{ name: "ZAP Imóveis", url: (hood, city) => `https://www.zapimoveis.com.br/aluguel/imoveis/rj+rio-de-janeiro/` },
+                   { name: "VivaReal", url: (hood, city) => `https://www.vivareal.com.br/aluguel/rj/rio-de-janeiro/` }],
+  "Buenos Aires":  [{ name: "ZonaProp", url: (hood, city) => `https://www.zonaprop.com.ar/departamentos-alquiler-capital-federal.html` },
+                   { name: "Argenprop", url: (hood, city) => `https://www.argenprop.com/departamento?operacion=alquiler&localidad=capital-federal` }],
+  "Tokyo":         [{ name: "Suumo", url: (hood, city) => `https://suumo.jp/chintai/tokyo/` },
+                   { name: "GaijinPot", url: (hood, city) => `https://housing.gaijinpot.com/en/rent/` }],
+  "Seoul":         [{ name: "Dabang", url: (hood, city) => `https://www.dabangapp.com/` },
+                   { name: "Zigbang", url: (hood, city) => `https://www.zigbang.com/` }],
+  "Singapore":     [{ name: "PropertyGuru", url: (hood, city) => `https://www.propertyguru.com.sg/property-for-rent` },
+                   { name: "99.co", url: (hood, city) => `https://www.99.co/singapore/rent` }],
+  "Dubai":         [{ name: "Property Finder", url: (hood, city) => `https://www.propertyfinder.ae/en/rent/` },
+                   { name: "Bayut", url: (hood, city) => `https://www.bayut.com/to-rent/` }],
+  "Sydney":        [{ name: "Realestate.com.au", url: (hood, city) => `https://www.realestate.com.au/rent/in-sydney%2c+nsw/list-1` },
+                   { name: "Domain", url: (hood, city) => `https://www.domain.com.au/rent/sydney-nsw-2000/` }],
+  "Melbourne":     [{ name: "Realestate.com.au", url: (hood, city) => `https://www.realestate.com.au/rent/in-melbourne%2c+vic/list-1` },
+                   { name: "Domain", url: (hood, city) => `https://www.domain.com.au/rent/melbourne-vic-3000/` }],
+  "Bangkok":       [{ name: "DDProperty", url: (hood, city) => `https://www.ddproperty.com/en/property-for-rent/` },
+                   { name: "FazWaz", url: (hood, city) => `https://www.fazwaz.com/property-for-rent/thailand/bangkok` }],
+  "Bali":          [{ name: "FazWaz", url: (hood, city) => `https://www.fazwaz.com/property-for-rent/indonesia/bali` },
+                   { name: "Dot Property", url: (hood, city) => `https://www.dotproperty.id/properties-for-rent/bali` }],
+  "Beijing":       [{ name: "Lianjia", url: (hood, city) => `https://bj.lianjia.com/zufang/` },
+                   { name: "Anjuke", url: (hood, city) => `https://beijing.anjuke.com/rent/` }],
+  "Shanghai":      [{ name: "Lianjia", url: (hood, city) => `https://sh.lianjia.com/zufang/` },
+                   { name: "Anjuke", url: (hood, city) => `https://shanghai.anjuke.com/rent/` }],
+  "Cape Town":     [{ name: "Property24", url: (hood, city) => `https://www.property24.com/property-to-rent/cape-town/western-cape/9` },
+                   { name: "Private Property", url: (hood, city) => `https://www.privateproperty.co.za/to-rent/western-cape/cape-town/` }],
+  "Marrakech":     [{ name: "Mubawab", url: (hood, city) => `https://www.mubawab.ma/fr/sc/marrakech:location-appartement` },
+                   { name: "Avito.ma", url: (hood, city) => `https://www.avito.ma/fr/marrakech/appartements/%C3%A0_louer` }],
+};
 
 // Track active vibes
 let activeVibes = [];
@@ -2339,15 +2437,52 @@ function toggleVibe(el) {
   }
 }
 
+const VISIT_VIBES = [
+  {vibe: "Wine & Nightlife", emoji: "🍷"},
+  {vibe: "Shopping & Boutiques", emoji: "🛍️"},
+  {vibe: "Food & Restaurants", emoji: "🍽️"},
+  {vibe: "Parks & Outdoors", emoji: "🌿"},
+  {vibe: "Culture & Architecture", emoji: "🏛️"},
+  {vibe: "Music & Arts", emoji: "🎵"},
+  {vibe: "Cafés & Chill", emoji: "☕"},
+  {vibe: "Family Friendly", emoji: "👨‍👩‍👧"},
+  {vibe: "Digital Nomad", emoji: "💻"},
+];
+
+const LIVE_VIBES = [
+  {vibe: "Good Transport Links", emoji: "🚇"},
+  {vibe: "Parks & Green Spaces", emoji: "🌿"},
+  {vibe: "Family Friendly", emoji: "👨‍👩‍👧"},
+  {vibe: "Quiet & Residential", emoji: "🏡"},
+  {vibe: "Vibrant Local Scene", emoji: "🎭"},
+  {vibe: "Expat Community", emoji: "🌍"},
+  {vibe: "Budget Friendly", emoji: "💶"},
+  {vibe: "Digital Nomad", emoji: "💻"},
+  {vibe: "Cafés & Coworking", emoji: "☕"},
+];
+
 function setIntent(type) {
   currentIntent = type;
   document.querySelectorAll('.intent-card').forEach(c => c.classList.remove('active'));
   document.getElementById('intent' + type.charAt(0).toUpperCase() + type.slice(1))?.classList.add('active');
-  const label = type === 'move'
-    ? 'Find where to live — match your neighbourhood'
-    : 'Find where to stay — match your neighbourhood';
+
   const h2 = document.querySelector('.search-inner h2');
-  if (h2) h2.innerHTML = label.replace('match', '<em>match</em>');
+  if (h2) h2.innerHTML = type === 'move'
+    ? 'Find where to <em>live</em>'
+    : 'Find your <em>match</em> now';
+
+  // Swap vibe pills
+  activeVibes = [];
+  const pills = document.getElementById('vibePills');
+  const vibes = type === 'move' ? LIVE_VIBES : VISIT_VIBES;
+  pills.innerHTML = vibes.map(v =>
+    `<span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="${v.vibe}">${v.emoji} ${v.vibe}</span>`
+  ).join('');
+
+  const label = document.getElementById('vibeSelectorLabel');
+  if (label) label.textContent = type === 'move'
+    ? '✦ What matters most to you (optional)'
+    : '✦ Your vibe (optional — select all that apply)';
 }
 
 async function fetchUnsplashPhoto(query) {
@@ -2389,15 +2524,15 @@ async function runMatch() {
   mapInstances = {};
 
   try {
-    const matches = await new Promise((resolve, reject) => {
+    const result = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "https://api.matchmyhood.com/api/match");
       xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.timeout = 120000; // 2 minute timeout
+      xhr.timeout = 120000;
       xhr.onload = () => {
         try {
           const data = JSON.parse(xhr.responseText);
-          if (data.matches) resolve(data.matches);
+          if (data.matches) resolve({matches: data.matches, intent: data.intent});
           else reject(new Error(data.error || "No matches returned"));
         } catch {
           reject(new Error("Could not parse response"));
@@ -2407,6 +2542,8 @@ async function runMatch() {
       xhr.ontimeout = () => reject(new Error("Request timed out"));
       xhr.send(JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent }));
     });
+
+    const matches = result.matches;
 
     if (!matches || !Array.isArray(matches)) {
       throw new Error('Could not parse match results. Please try again.');
@@ -2472,17 +2609,96 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
         <div class="pick-info">
           <div class="pick-name">${r.name}${badge}</div>
           <div class="pick-desc">${r.description}</div>
-          ${r.isPaid ? `<a href="${gygUrl}" target="_blank" class="pick-link">🎫 Book on GetYourGuide →</a>` : ''}
+          ${r.isPaid ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+            <a href="${gygUrl}" target="_blank" class="pick-link">🎫 GetYourGuide →</a>
+            <a href="${viatorUrl}" target="_blank" class="pick-link">🎟️ Viator →</a>
+          </div>` : ''}
         </div>
       </div>`;
     }).join('');
+
+    // Pros & cons
+    const prosHtml = (m.pros || []).map(p =>
+      `<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(248,241,231,0.8);margin-bottom:6px;">
+        <span style="color:#8BA55A;font-size:16px;">✓</span> ${p}
+      </div>`
+    ).join('');
+
+    const consHtml = (m.cons || []).map(c =>
+      `<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(248,241,231,0.8);margin-bottom:6px;">
+        <span style="color:var(--terracotta-light);font-size:16px;">!</span> ${c}
+      </div>`
+    ).join('');
+
+    const prosConsHtml = (prosHtml || consHtml) ? `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0;padding:16px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.06);">
+        ${prosHtml ? `<div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#8BA55A;margin-bottom:10px;">✓ Highlights</div>${prosHtml}</div>` : ''}
+        ${consHtml ? `<div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--terracotta-light);margin-bottom:10px;">! Watch out</div>${consHtml}</div>` : ''}
+      </div>` : '';
+
+    // Transport
+    const transportHtml = m.nearestMetro?.length ? `
+      <div style="margin:14px 0;padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.4);margin-bottom:8px;">🚇 Nearest Metro / Transit</div>
+        <div style="font-size:13px;color:rgba(248,241,231,0.8);">${m.nearestMetro.join(' · ')}</div>
+      </div>` : '';
+
+    // LIVE amenities
+    const amenitiesHtml = m.amenities ? `
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0;">
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">💊</div>
+          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.pharmacies || '—'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Pharmacies</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🛒</div>
+          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.supermarkets || '—'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Supermarkets</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🌳</div>
+          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.parks || '—'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Parks</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🏋️</div>
+          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.gyms || '—'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Gyms</div>
+        </div>
+      </div>` : '';
+
+    // Rent info (LIVE only)
+    const rentHtml = m.averageRent1bed ? `
+      <div style="margin:14px 0;padding:12px 14px;background:rgba(201,164,85,0.08);border-radius:10px;border:1px solid rgba(201,164,85,0.2);">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--gold);">🏠 Average 1-bed rent: </span>
+        <span style="font-size:14px;color:var(--cream);font-weight:600;">${m.averageRent1bed}</span>
+      </div>` : '';
+
+    // Property links for LIVE mode
+    const propertySites = PROPERTY_SITES[destCity] || [];
+    const propertyLinksHtml = isLive && propertySites.length ? `
+      <div style="margin-top:12px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.4);margin-bottom:8px;">🏠 Find a place to rent</div>
+        <div class="booking-btns">
+          ${propertySites.map((s, idx) => `
+            <a href="${s.url(m.name, destCity)}" target="_blank" class="${idx === 0 ? 'booking-btn-hotel' : 'booking-btn-airbnb'}">
+              🔍 ${s.name} →
+            </a>`).join('')}
+          <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">🏠 Airbnb →</a>
+        </div>
+      </div>` : `
+      <div class="booking-btns">
+        <a href="${bookingUrl}" target="_blank" class="booking-btn-hotel">🏨 Hotels in ${m.name} →</a>
+        <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">🏠 Airbnb in ${m.name} →</a>
+      </div>`;
 
     return `
     <div class="result-card" id="card-${i}" style="animation-delay:${i * 0.1}s">
       <div id="photo-${i}" class="result-photo-placeholder">Loading photo…</div>
       <div class="result-header">
         <div>
-          <div class="result-city">${m.city}</div>
+          <div class="result-city">${m.city} · <span style="color:var(--terracotta-light);font-size:11px;">${isLive ? '🏡 LIVE' : '✈️ VISIT'}</span></div>
           <div class="result-hood-name">${m.name}</div>
         </div>
         <div class="result-score">${m.matchScore}% match</div>
@@ -2490,6 +2706,11 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
       <p style="font-size:15px; color:rgba(248,241,231,0.85); font-style:italic; margin-bottom:10px; font-family:'Cormorant Garamond',serif;">"${m.tagline}"</p>
       <div class="result-desc">${m.whyItMatches}</div>
       <div class="result-tags">${(m.vibes||[]).map(v=>`<span class="result-tag">${v}</span>`).join('')}</div>
+
+      ${prosConsHtml}
+      ${transportHtml}
+      ${isLive ? amenitiesHtml : ''}
+      ${isLive ? rentHtml : ''}
 
       ${m.mustTry ? `<div class="must-try">⭐ <strong>Must try:</strong> ${m.mustTry}</div>` : ''}
 
@@ -2511,15 +2732,13 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
       <div class="result-extras">
         <div class="result-extra"><div class="result-extra-label">🚶 Walkability</div><div class="result-extra-val">${m.walkScore||'—'}</div></div>
         <div class="result-extra"><div class="result-extra-label">💶 Cost level</div><div class="result-extra-val">${m.costLevel||'—'}</div></div>
+        <div class="result-extra"><div class="result-extra-label">🔒 Safety</div><div class="result-extra-val">${m.safetyRating||'—'}</div></div>
       </div>
       <p style="font-size:12px; color:rgba(248,241,231,0.4); margin-top:12px;">🎯 Best for: ${m.bestFor||'—'}</p>
 
       ${(m.lat && m.lng) ? `<div class="result-map" id="map-${i}"></div>` : ''}
 
-      <div class="booking-btns">
-        <a href="${bookingUrl}" target="_blank" class="booking-btn-hotel">🏨 Hotels in ${m.name} →</a>
-        <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">🏠 Airbnb in ${m.name} →</a>
-      </div>
+      ${propertyLinksHtml}
     </div>`;
   }).join('');
 
