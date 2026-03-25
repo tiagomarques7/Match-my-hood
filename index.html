@@ -2744,13 +2744,13 @@ async function runMatch(isAlternative = false) {
             if (transitWrap) transitWrap.style.display = 'block';
           }
 
-          // Always update all tiles
-          ['pharmacies','supermarkets','parks','gyms','intlSchools','museums','restaurants','bars'].forEach(key => {
+          // Always update all tiles (both modes)
+          ['pharmacies','supermarkets','parks','gyms','intlSchools','museums','restaurants','bars','cafes'].forEach(key => {
             const el = document.getElementById(`amenity-${i}-${key}`);
             if (el) el.textContent = m.amenities?.[key] ?? '0';
           });
 
-          // Helper: populate a map source when the map is ready, then clear loading indicator
+          // Helper: set a map source when ready, then remove ⏳ from pill if provided
           const fillMapSource = (sourceId, coords, label, pillId) => {
             const map = mapInstances[i];
             if (!map || !coords?.length) return;
@@ -2765,6 +2765,8 @@ async function runMatch(isAlternative = false) {
             go();
           };
           fillMapSource('transport',    m.transitCoords,     'Station',     `pill-transport-${i}`);
+          fillMapSource('restaurants',  m.restaurantCoords,  'Restaurant',  null);
+          fillMapSource('bars',         m.barCoords,         'Bar',         null);
           fillMapSource('supermarkets', m.supermarketCoords, 'Supermarket', null);
           fillMapSource('gyms',         m.gymCoords,         'Gym',         null);
           fillMapSource('museums',      m.museumCoords,      'Museum',      null);
@@ -2901,9 +2903,9 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         🚇 <span id="station-names-text-${i}">${m.nearestMetro?.join(' · ') || ''}</span>
       </div>`;
 
-    // VISIT amenity grid — restaurants, bars, museums, stations
+    // VISIT amenity grid — restaurants, bars, coffees, parks, museums, stations
     const visitAmenitiesHtml = `
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 0;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🍽️</div>
           <div id="amenity-${i}-restaurants" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.restaurants ?? '…'}</div>
@@ -2913,6 +2915,16 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div style="font-size:20px;margin-bottom:4px;">🍷</div>
           <div id="amenity-${i}-bars" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.bars ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Bars & Pubs</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">☕</div>
+          <div id="amenity-${i}-cafes" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.cafes ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Coffee Shops</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🌳</div>
+          <div id="amenity-${i}-parks" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.parks ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Parks</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🏛️</div>
@@ -2927,9 +2939,9 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       </div>
       ${stationNamesHtml}`;
 
-    // LIVE amenities grid (Museums removed — shown on map instead)
+    // LIVE amenities grid
     const amenitiesHtml = `
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 0;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">💊</div>
           <div id="amenity-${i}-pharmacies" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.pharmacies ?? '…'}</div>
@@ -2954,6 +2966,11 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div style="font-size:20px;margin-bottom:4px;">🎓</div>
           <div id="amenity-${i}-intlSchools" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.intlSchools ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Schools</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🏛️</div>
+          <div id="amenity-${i}-museums" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.museums ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Museums</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🚇</div>
@@ -3194,43 +3211,11 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                   .setLngLat([m.lng, m.lat])
                   .addTo(map);
 
-                // ── RESTAURANT PINS ─────────────────────────────────────
-                const restaurantFeatures = (m.top3Restaurants || []).map((r, ri) => {
-                  const lng = m.lng + (ri - 1) * 0.003 + (Math.random()-0.5)*0.002;
-                  const lat = m.lat + (Math.random()-0.5)*0.003;
-                  return {
-                    type: 'Feature',
-                    geometry: { type: 'Point', coordinates: [lng, lat] },
-                    properties: { name: r.name, desc: r.description, mapsUrl: `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}` }
-                  };
-                });
-                map.addSource('restaurants', { type: 'geojson', data: { type: 'FeatureCollection', features: restaurantFeatures }});
-                map.addLayer({
-                  id: 'restaurants-layer',
-                  type: 'circle',
-                  source: 'restaurants',
-                  layout: { visibility: 'none' },
-                  paint: { 'circle-radius': 8, 'circle-color': '#C4622D', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }
-                });
-
-                // ── WINE BAR PINS ───────────────────────────────────────
-                const barFeatures = (m.top3WineBars || []).map((r, ri) => {
-                  const lng = m.lng + (ri - 1) * 0.003 + (Math.random()-0.5)*0.002;
-                  const lat = m.lat + (Math.random()-0.5)*0.003;
-                  return {
-                    type: 'Feature',
-                    geometry: { type: 'Point', coordinates: [lng, lat] },
-                    properties: { name: r.name, desc: r.description, mapsUrl: `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}` }
-                  };
-                });
-                map.addSource('bars', { type: 'geojson', data: { type: 'FeatureCollection', features: barFeatures }});
-                map.addLayer({
-                  id: 'bars-layer',
-                  type: 'circle',
-                  source: 'bars',
-                  layout: { visibility: 'none' },
-                  paint: { 'circle-radius': 8, 'circle-color': '#7A3030', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }
-                });
+                // ── RESTAURANT + BAR PINS — empty sources, filled from server Overpass coords ──
+                map.addSource('restaurants', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
+                map.addLayer({ id: 'restaurants-layer', type: 'circle', source: 'restaurants', layout: { visibility: 'none' }, paint: { 'circle-radius': 7, 'circle-color': '#C4622D', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
+                map.addSource('bars', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
+                map.addLayer({ id: 'bars-layer', type: 'circle', source: 'bars', layout: { visibility: 'none' }, paint: { 'circle-radius': 7, 'circle-color': '#7A3030', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
 
                 // ── EXTRA LAYERS — empty sources, filled by amenity callback ──
                 map.addSource('supermarkets', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
@@ -3246,11 +3231,11 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 map.addSource('transport', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'transport-layer', type: 'circle', source: 'transport', layout: { visibility: 'none' }, paint: { 'circle-radius': 9, 'circle-color': '#185FA5', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
 
-                // ── PARKS — empty source, browser fetches polygons after 45s ──
+                // ── PARKS — empty source, browser fetches NAMED park polygons after 45s ──
                 map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: 'none' }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }});
                 setTimeout(() => {
-                  const parksQuery = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"](around:700,${m.lat},${m.lng});out geom 5;`);
+                  const parksQuery = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"]["name"](around:700,${m.lat},${m.lng});out geom 5;`);
                   fetch(`https://overpass-api.de/api/interpreter?data=${parksQuery}`)
                     .then(r => r.text())
                     .then(raw => {
