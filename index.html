@@ -2645,7 +2645,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
 
     // LIVE amenities
     const amenitiesHtml = m.amenities ? `
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0;">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">💊</div>
           <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.pharmacies || '—'}</div>
@@ -2665,6 +2665,11 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
           <div style="font-size:20px;margin-bottom:4px;">🏋️</div>
           <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.gyms || '—'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Gyms</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🎓</div>
+          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.intlSchools || '—'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Schools</div>
         </div>
       </div>` : '';
 
