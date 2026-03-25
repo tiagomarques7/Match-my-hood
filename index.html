@@ -1693,7 +1693,7 @@
         </svg>
       </div>
       <h3>Get your matches</h3>
-      <p>We return your top 3 neighbourhood matches with a similarity score, personality explanation, food & wine picks, and direct booking links.</p>
+      <p>We return your single best neighbourhood match with a similarity score, personality explanation, food & wine picks, and direct booking links.</p>
     </div>
   </div>
 </section>
@@ -2489,8 +2489,24 @@ const PROPERTY_SITES = {
 // Track active vibes
 let activeVibes = [];
 let currentIntent = 'visit';
-// Lightweight circle GeoJSON (no turf.js needed)
-function turf_circle(center, radiusKm, steps = 64) {
+// ── NOMINATIM SERIAL QUEUE ──────────────────────────────────────────────────
+// Nominatim rate limit: 1 req/sec. We must process sequentially, not with
+// setTimeout offsets — response times vary and can cause concurrent requests.
+const _nomQ = [];
+let _nomRunning = false;
+function queueNominatim(fn) {
+  _nomQ.push(fn);
+  if (!_nomRunning) _drainNomQ();
+}
+async function _drainNomQ() {
+  _nomRunning = true;
+  while (_nomQ.length > 0) {
+    const fn = _nomQ.shift();
+    try { await fn(); } catch(e) {}
+    await new Promise(r => setTimeout(r, 1600)); // guaranteed 1.6s gap
+  }
+  _nomRunning = false;
+}
   const [lng, lat] = center;
   const coords = [];
   for (let i = 0; i <= steps; i++) {
@@ -2655,7 +2671,7 @@ async function runMatch() {
             if (transitWrap) transitWrap.style.display = 'block';
           }
           if (m.amenities) {
-            ['pharmacies','supermarkets','parks','gyms','intlSchools'].forEach(key => {
+            ['pharmacies','supermarkets','parks','gyms','intlSchools','museums'].forEach(key => {
               const el = document.getElementById(`amenity-${i}-${key}`);
               if (el) el.textContent = m.amenities[key] ?? '0';
             });
@@ -2682,9 +2698,12 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
   const results = document.getElementById('resultsArea');
 
   const header = `<div style="margin-bottom:24px;">
-    <p style="font-size:13px; color:rgba(248,241,231,0.5); letter-spacing:0.8px; text-transform:uppercase; font-weight:600; margin-bottom:8px;">✦ Your matches</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
+      <p style="font-size:13px; color:rgba(248,241,231,0.5); letter-spacing:0.8px; text-transform:uppercase; font-weight:600;">✦ Your match</p>
+      <button onclick="document.getElementById('match').scrollIntoView({behavior:'smooth'})" style="background:transparent;border:1px solid rgba(248,241,231,0.2);color:rgba(248,241,231,0.6);padding:6px 14px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--terracotta-light)';this.style.color='var(--terracotta-light)'" onmouseout="this.style.borderColor='rgba(248,241,231,0.2)';this.style.color='rgba(248,241,231,0.6)'">↑ Search again</button>
+    </div>
     <p style="font-size:18px; color:var(--cream); font-family:'Cormorant Garamond',serif; font-weight:600;">
-      If you love <em style="color:var(--terracotta-light)">${homeHood}</em> in ${homeCity}, here's where you'll feel at home in ${destCity}:
+      If you love <em style="color:var(--terracotta-light)">${homeHood}</em> in ${homeCity}, here's your perfect neighbourhood in ${destCity}:
     </p>
   </div>`;
 
@@ -2766,7 +2785,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
 
     // LIVE amenities
     const amenitiesHtml = `
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">💊</div>
           <div id="amenity-${i}-pharmacies" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.pharmacies ?? '…'}</div>
@@ -2791,6 +2810,11 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
           <div style="font-size:20px;margin-bottom:4px;">🎓</div>
           <div id="amenity-${i}-intlSchools" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.intlSchools ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Schools</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🏛️</div>
+          <div id="amenity-${i}-museums" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.museums ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Museums</div>
         </div>
       </div>`;
 
@@ -2907,7 +2931,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
 
   results.innerHTML = header + cards + shareText + premiumTeaser;
   results.classList.add('visible');
-  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   // Load photos and maps — staggered to avoid Unsplash rate limits
   (async () => {
@@ -2958,31 +2982,35 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
 
               map.on('load', () => {
                 // ── NEIGHBOURHOOD BOUNDARY ──────────────────────────────
-                // Nominatim rate limit 1 req/sec — stagger by hood index, min 800ms
-                setTimeout(() => {
-                const hoodQuery = encodeURIComponent(m.name + ', ' + m.city);
-                fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`)
-                  .then(r => r.json())
-                  .then(data => {
-                    const feature = data.features?.[0];
-                    if (!feature) return;
-                    if (feature.geometry?.type === 'Polygon' || feature.geometry?.type === 'MultiPolygon') {
-                      if (!map.getSource('neighbourhood')) {
-                        map.addSource('neighbourhood', { type: 'geojson', data: feature });
-                        map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 } });
-                        map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 } });
-                      }
-                    } else {
-                      // Fallback: draw a ~600m circle for point results
-                      if (!map.getSource('neighbourhood')) {
-                        const circle = turf_circle([m.lng, m.lat], 0.6);
-                        map.addSource('neighbourhood', { type: 'geojson', data: circle });
-                        map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.10 } });
-                        map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.6, 'line-dasharray': [3, 2] } });
-                      }
-                    }
-                  }).catch(() => {});
-                }, Math.max(800, i * 2200));
+                // Uses serial queue — guarantees 1.6s between Nominatim requests
+                queueNominatim(() => new Promise(resolve => {
+                  const hoodQuery = encodeURIComponent(m.name + ', ' + m.city);
+                  fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`)
+                    .then(r => r.json())
+                    .then(data => {
+                      const feature = data.features?.[0];
+                      if (!feature) { resolve(); return; }
+                      const applyBoundary = () => {
+                        if (map.getSource('neighbourhood')) { resolve(); return; }
+                        if (feature.geometry?.type === 'Polygon' || feature.geometry?.type === 'MultiPolygon') {
+                          map.addSource('neighbourhood', { type: 'geojson', data: feature });
+                          map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 } });
+                          map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 } });
+                        } else {
+                          // Point result — draw a dashed circle ~600m radius
+                          const circle = turf_circle([m.lng, m.lat], 0.6);
+                          map.addSource('neighbourhood', { type: 'geojson', data: circle });
+                          map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.10 } });
+                          map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.6, 'line-dasharray': [3, 2] } });
+                        }
+                        resolve();
+                      };
+                      // Map may not be loaded yet if Nominatim responded very fast
+                      if (map.isStyleLoaded()) { applyBoundary(); }
+                      else { map.once('load', applyBoundary); }
+                    })
+                    .catch(() => resolve());
+                }));
 
                 // ── NEIGHBOURHOOD LABEL MARKER ──────────────────────────
                 const el = document.createElement('div');
