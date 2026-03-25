@@ -2489,6 +2489,8 @@ const PROPERTY_SITES = {
 // Track active vibes
 let activeVibes = [];
 let currentIntent = 'visit';
+// Track last shown neighbourhoods — passed as excludeHood to avoid repetition
+let lastShownHoods = [];
 // ── NOMINATIM SERIAL QUEUE ──────────────────────────────────────────────────
 // Nominatim rate limit: 1 req/sec. We must process sequentially, not with
 // setTimeout offsets — response times vary and can cause concurrent requests.
@@ -2591,7 +2593,7 @@ async function fetchUnsplashPhoto(query) {
   } catch { return null; }
 }
 
-async function runMatch() {
+async function runMatch(isAlternative = false) {
   const homeCity = document.getElementById('homeCity').value;
   const homeHood = document.getElementById('homeHood').value.trim();
   const destCity = document.getElementById('destCity').value;
@@ -2614,10 +2616,18 @@ async function runMatch() {
   btn.disabled = true;
   btnText.textContent = 'Matching…';
   loading.classList.add('visible');
-  results.classList.remove('visible');
-  results.innerHTML = '';
   errorEl.classList.remove('visible');
-  mapInstances = {};
+
+  // For a fresh search, wipe old results and reset state
+  if (!isAlternative) {
+    results.classList.remove('visible');
+    results.innerHTML = '';
+    lastShownHoods = [];
+    mapInstances = {};
+  }
+
+  // Pass the last shown hood to avoid repetition
+  const excludeHood = lastShownHoods.length > 0 ? lastShownHoods[lastShownHoods.length - 1] : null;
 
   try {
     // STEP 1 — Fast call: Claude + Foursquare (~15s)
@@ -2637,7 +2647,7 @@ async function runMatch() {
       };
       xhr.onerror = () => reject(new Error("Network error"));
       xhr.ontimeout = () => reject(new Error("Request timed out"));
-      xhr.send(JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent }));
+      xhr.send(JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent, excludeHood }));
     });
 
     const matches = result.matches;
@@ -2646,8 +2656,14 @@ async function runMatch() {
       throw new Error('Could not parse match results. Please try again.');
     }
 
-    // Show results immediately
-    await renderResults(matches, homeHood, homeCity, destCity);
+    // Track the returned hood to exclude next time
+    if (matches[0]?.name) lastShownHoods.push(matches[0].name);
+
+    // Capture current card count BEFORE rendering so amenity fetch targets correct DOM IDs
+    const domOffset = document.getElementById('resultsArea').querySelectorAll('.result-card-wrap').length;
+
+    // Show results — append if alternative, replace if fresh
+    await renderResults(matches, homeHood, homeCity, destCity, isAlternative);
 
     // STEP 2 — Background call: Overpass amenities + transit (~30s, silent)
     if (currentIntent === 'move') {
@@ -2666,7 +2682,8 @@ async function runMatch() {
       .then(data => {
         document.getElementById('amenity-loading')?.remove();
         if (!data.matches) return;
-        data.matches.forEach((m, i) => {
+        data.matches.forEach((m, idx) => {
+          const i = idx + domOffset; // matches DOM IDs which include offset
           if (m.nearestMetro?.length) {
             const transitEl = document.getElementById(`transit-${i}`);
             if (transitEl) transitEl.textContent = m.nearestMetro.join(' · ');
@@ -2697,21 +2714,32 @@ async function runMatch() {
   }
 }
 
-async function renderResults(matches, homeHood, homeCity, destCity) {
+async function renderResults(matches, homeHood, homeCity, destCity, isAlternative = false) {
   const results = document.getElementById('resultsArea');
 
-  const header = `<div style="margin-bottom:24px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
-      <p style="font-size:13px; color:rgba(248,241,231,0.5); letter-spacing:0.8px; text-transform:uppercase; font-weight:600;">✦ Your match</p>
-      <button onclick="document.getElementById('match').scrollIntoView({behavior:'smooth'})" style="background:transparent;border:1px solid rgba(248,241,231,0.2);color:rgba(248,241,231,0.6);padding:6px 14px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--terracotta-light)';this.style.color='var(--terracotta-light)'" onmouseout="this.style.borderColor='rgba(248,241,231,0.2)';this.style.color='rgba(248,241,231,0.6)'">↑ Search again</button>
-    </div>
-    <p style="font-size:18px; color:var(--cream); font-family:'Cormorant Garamond',serif; font-weight:600;">
-      If you love <em style="color:var(--terracotta-light)">${homeHood}</em> in ${homeCity}, here's your perfect neighbourhood in ${destCity}:
-    </p>
-  </div>`;
+  // Determine global match index offset so DOM IDs stay unique across appended cards
+  const existingCards = results.querySelectorAll('.result-card-wrap').length;
+  const indexOffset = existingCards;
+
+  const header = isAlternative
+    ? `<div style="margin:32px 0 24px;padding-top:24px;border-top:1px solid rgba(248,241,231,0.1);">
+        <p style="font-size:13px; color:rgba(248,241,231,0.5); letter-spacing:0.8px; text-transform:uppercase; font-weight:600; margin-bottom:10px;">✦ Your alternative match</p>
+        <p style="font-size:18px; color:var(--cream); font-family:'Cormorant Garamond',serif; font-weight:600;">
+          Here's another neighbourhood in ${destCity} for you:
+        </p>
+      </div>`
+    : `<div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
+          <p style="font-size:13px; color:rgba(248,241,231,0.5); letter-spacing:0.8px; text-transform:uppercase; font-weight:600;">✦ Your match</p>
+        </div>
+        <p style="font-size:18px; color:var(--cream); font-family:'Cormorant Garamond',serif; font-weight:600;">
+          If you love <em style="color:var(--terracotta-light)">${homeHood}</em> in ${homeCity}, here's your perfect neighbourhood in ${destCity}:
+        </p>
+      </div>`;
 
   // Build cards HTML
-  const cards = matches.map((m, i) => {
+  const cards = matches.map((m, idx) => {
+    const i = idx + indexOffset; // unique index across all appended cards
     const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(m.name + ' ' + destCity)}&aid=${BOOKING_AFF}`;
     const airbnbUrl = `https://www.airbnb.com/s/${encodeURIComponent(destCity + '--' + m.name)}/homes`;
 
@@ -2849,6 +2877,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
       </div>`;
 
     return `
+    <div class="result-card-wrap">
     <div class="result-card" id="card-${i}" style="animation-delay:${i * 0.1}s">
       <div id="photo-${i}" class="result-photo-placeholder">Loading photo…</div>
       <div class="result-header">
@@ -2904,6 +2933,12 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
       </div>` : ''}
 
       ${propertyLinksHtml}
+    </div>
+    </div>
+    <div style="text-align:center;margin:20px 0 8px;">
+      <button onclick="runMatch(true)" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid rgba(196,98,45,0.5);color:var(--terracotta-light);padding:13px 26px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.2px;" onmouseover="this.style.borderColor='var(--terracotta-light)';this.style.background='rgba(196,98,45,0.08)'" onmouseout="this.style.borderColor='rgba(196,98,45,0.5)';this.style.background='transparent'">
+        Search for an alternative match →
+      </button>
     </div>`;
   }).join('');
 
@@ -2932,15 +2967,29 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
     <p style="font-size:11px; color:rgba(248,241,231,0.3); margin-top:12px;">First 500 founding members only · Never repeated</p>
   </div>`;
 
-  results.innerHTML = header + cards + shareText + premiumTeaser;
-  results.classList.add('visible');
-  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (isAlternative) {
+    // Remove old premiumTeaser + shareText before appending new content
+    results.querySelectorAll('.results-footer').forEach(el => el.remove());
+    const newContent = document.createElement('div');
+    newContent.innerHTML = header + cards + `<div class="results-footer">${shareText}${premiumTeaser}</div>`;
+    results.appendChild(newContent);
+    // Scroll to new alternative match, not top of results
+    newContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    results.innerHTML = header + cards + `<div class="results-footer">${shareText}${premiumTeaser}</div>`;
+    results.classList.add('visible');
+    // UX fix: scroll to results section but offset down just enough — form stays partially visible
+    const resultsSection = document.getElementById('results');
+    const offset = resultsSection.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: offset, behavior: 'smooth' });
+  }
 
   // Load photos and maps — staggered to avoid Unsplash rate limits
   (async () => {
-    for (let i = 0; i < matches.length; i++) {
-      const m = matches[i];
-      if (i > 0) await new Promise(r => setTimeout(r, 1000));
+    for (let idx = 0; idx < matches.length; idx++) {
+      const m = matches[idx];
+      const i = idx + indexOffset; // match DOM IDs
+      if (idx > 0) await new Promise(r => setTimeout(r, 1000));
 
       // Load Unsplash photo with fallback queries
       if (m.unsplashQuery) {
@@ -2993,24 +3042,29 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
                     .then(data => {
                       const feature = data.features?.[0];
                       if (!feature) { resolve(); return; }
+                      // We are inside map.on('load') — style is guaranteed loaded.
+                      // Do NOT use isStyleLoaded() here: if it somehow returned false,
+                      // map.once('load') would never fire again, hanging the Nominatim queue.
                       const applyBoundary = () => {
                         if (map.getSource('neighbourhood')) { resolve(); return; }
-                        if (feature.geometry?.type === 'Polygon' || feature.geometry?.type === 'MultiPolygon') {
-                          map.addSource('neighbourhood', { type: 'geojson', data: feature });
-                          map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 } });
-                          map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 } });
-                        } else {
-                          // Point result — draw a dashed circle ~600m radius
-                          const circle = turf_circle([m.lng, m.lat], 0.6);
-                          map.addSource('neighbourhood', { type: 'geojson', data: circle });
-                          map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.10 } });
-                          map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.6, 'line-dasharray': [3, 2] } });
+                        try {
+                          if (feature.geometry?.type === 'Polygon' || feature.geometry?.type === 'MultiPolygon') {
+                            map.addSource('neighbourhood', { type: 'geojson', data: feature });
+                            map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 } });
+                            map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 } });
+                          } else {
+                            // Point result — draw a dashed circle ~600m radius
+                            const circle = turf_circle([m.lng, m.lat], 0.6);
+                            map.addSource('neighbourhood', { type: 'geojson', data: circle });
+                            map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.10 } });
+                            map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.6, 'line-dasharray': [3, 2] } });
+                          }
+                        } catch(e) {
+                          console.error('Boundary error:', e.message);
                         }
                         resolve();
                       };
-                      // Map may not be loaded yet if Nominatim responded very fast
-                      if (map.isStyleLoaded()) { applyBoundary(); }
-                      else { map.once('load', applyBoundary); }
+                      applyBoundary();
                     })
                     .catch(() => resolve());
                 }));
