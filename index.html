@@ -2744,47 +2744,21 @@ async function runMatch(isAlternative = false) {
             if (transitWrap) transitWrap.style.display = 'block';
           }
 
-          // Update all amenity tiles regardless of mode — always runs
           ['pharmacies','supermarkets','parks','gyms','intlSchools','museums','restaurants','bars'].forEach(key => {
             const el = document.getElementById(`amenity-${i}-${key}`);
             if (el) el.textContent = m.amenities?.[key] ?? '0';
           });
 
-          // Populate map sources from server-provided coords (no extra Overpass calls needed)
-          const fillSource = (sourceId, features) => {
+          // Populate supermarket + gym map pins from server coords
+          const fillMapSource = (sourceId, coords, label) => {
             const map = mapInstances[i];
-            if (!map) return;
-            const attempt = () => {
-              const src = map.getSource(sourceId);
-              if (src) src.setData({ type: 'FeatureCollection', features });
-              else setTimeout(attempt, 500);
-            };
+            if (!map || !coords?.length) return;
+            const features = coords.map(c => ({ type:'Feature', geometry:{ type:'Point', coordinates:[c.lon,c.lat] }, properties:{ name:c.name||label } }));
+            const attempt = () => { const src = map.getSource(sourceId); if (src) src.setData({ type:'FeatureCollection', features }); else setTimeout(attempt, 500); };
             attempt();
           };
-
-          if (m.transitCoords?.length)
-            fillSource('transport', m.transitCoords.map(s => ({ type:'Feature', geometry:{ type:'Point', coordinates:[s.lon,s.lat] }, properties:{ name:s.name||'Station' } })));
-
-          if (m.supermarketCoords?.length)
-            fillSource('supermarkets', m.supermarketCoords.map(s => ({ type:'Feature', geometry:{ type:'Point', coordinates:[s.lon,s.lat] }, properties:{ name:s.name||'Supermarket' } })));
-
-          if (m.gymCoords?.length)
-            fillSource('gyms', m.gymCoords.map(s => ({ type:'Feature', geometry:{ type:'Point', coordinates:[s.lon,s.lat] }, properties:{ name:s.name||'Gym' } })));
-
-          // Parks polygons — fetched from Overpass in the browser but AFTER the server's
-          // Overpass call (~30s delay), so rate-limit window has passed
-          if (m.lat && m.lng) {
-            const pq = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"](around:700,${m.lat},${m.lng});out geom 5;`);
-            fetch(`https://overpass-api.de/api/interpreter?data=${pq}`)
-              .then(r => r.text())
-              .then(raw => {
-                if (raw.trimStart().startsWith('<')) return;
-                const pd = JSON.parse(raw);
-                const pf = (pd.elements||[]).filter(e=>e.geometry?.length>2).slice(0,5)
-                  .map(e => ({ type:'Feature', geometry:{ type:'Polygon', coordinates:[e.geometry.map(p=>[p.lon,p.lat])] }, properties:{ name:e.tags?.name||'Park' } }));
-                if (pf.length) fillSource('parks', pf);
-              }).catch(()=>{});
-          }
+          fillMapSource('supermarkets', m.supermarketCoords, 'Supermarket');
+          fillMapSource('gyms', m.gymCoords, 'Gym');
         });
       })
       .catch(err => {
@@ -3058,7 +3032,11 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       ${(m.lat && m.lng) ? `
       <div class="map-layer-pills" id="map-pills-${i}">
         <span class="map-layer-pill active" data-layer="neighbourhood" onclick="toggleMapLayer(${i},'neighbourhood',this)">🏘️ Neighbourhood</span>
-        ${isLive ? `<span class="map-layer-pill" data-layer="supermarkets" onclick="toggleMapLayer(${i},'supermarkets',this)">🛒 Supermarkets</span><span class="map-layer-pill" data-layer="gyms" onclick="toggleMapLayer(${i},'gyms',this)">🏋️ Gyms</span>` : `<span class="map-layer-pill" data-layer="restaurants" onclick="toggleMapLayer(${i},'restaurants',this)">🍽️ Restaurants</span><span class="map-layer-pill" data-layer="bars" onclick="toggleMapLayer(${i},'bars',this)">🍷 Wine Bars</span>`}
+        ${isLive
+          ? `<span class="map-layer-pill" data-layer="supermarkets" onclick="toggleMapLayer(${i},'supermarkets',this)">🛒 Supermarkets</span>
+             <span class="map-layer-pill" data-layer="gyms" onclick="toggleMapLayer(${i},'gyms',this)">🏋️ Gyms</span>`
+          : `<span class="map-layer-pill" data-layer="restaurants" onclick="toggleMapLayer(${i},'restaurants',this)">🍽️ Restaurants</span>
+             <span class="map-layer-pill" data-layer="bars" onclick="toggleMapLayer(${i},'bars',this)">🍷 Wine Bars</span>`}
         <span class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport</span>
         <span class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks</span>
       </div>
@@ -3247,19 +3225,76 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                   paint: { 'circle-radius': 8, 'circle-color': '#7A3030', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }
                 });
 
-                // ── TRANSPORT — empty source, populated by amenity callback ────────
-                map.addSource('transport', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'transport-layer', type: 'circle', source: 'transport', layout: { visibility: 'none' }, paint: { 'circle-radius': 9, 'circle-color': '#185FA5', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
-
-                // ── PARKS — empty source, populated by amenity callback ─────────────
-                map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: 'none' }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }});
-
-                // ── SUPERMARKETS + GYMS (LIVE) — empty, populated by amenity callback ──
+                // ── SUPERMARKETS + GYMS (LIVE) — empty sources, filled by amenity callback ──
                 map.addSource('supermarkets', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'supermarkets-layer', type: 'circle', source: 'supermarkets', layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': '#2E7D32', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
                 map.addSource('gyms', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'gyms-layer', type: 'circle', source: 'gyms', layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': '#6A1B9A', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+
+                // ── TRANSPORT PINS from Overpass (metro + tram + rail) ──────────────
+                const transitQuery = encodeURIComponent(`[out:json][timeout:15];
+(
+  nwr["railway"~"station"](around:800,${m.lat},${m.lng});
+  nwr["station"="subway"](around:800,${m.lat},${m.lng});
+  node["railway"~"subway_entrance|tram_stop|halt"](around:800,${m.lat},${m.lng});
+  node["public_transport"="stop_position"]["tram"="yes"](around:800,${m.lat},${m.lng});
+  node["public_transport"="stop_position"]["subway"="yes"](around:800,${m.lat},${m.lng});
+);
+out center 15;`);
+                fetch(`https://overpass-api.de/api/interpreter?data=${transitQuery}`)
+                  .then(r => r.json())
+                  .then(data => {
+                    const transitFeatures = (data.elements || [])
+                      .map(e => {
+                        // nodes have lat/lon directly; ways/relations have center.lat/center.lon
+                        const lat = e.lat ?? e.center?.lat;
+                        const lon = e.lon ?? e.center?.lon;
+                        return { lat, lon, name: e.tags?.name };
+                      })
+                      .filter(e => e.lat && e.lon)
+                      .map(e => ({
+                        type: 'Feature',
+                        geometry: { type: 'Point', coordinates: [e.lon, e.lat] },
+                        properties: { name: e.name || 'Station' }
+                      }));
+                    map.addSource('transport', { type: 'geojson', data: { type: 'FeatureCollection', features: transitFeatures }});
+                    map.addLayer({
+                      id: 'transport-layer',
+                      type: 'circle',
+                      source: 'transport',
+                      layout: { visibility: 'none' },
+                      paint: { 'circle-radius': 9, 'circle-color': '#185FA5', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }
+                    });
+                  }).catch(() => {
+                    map.addSource('transport', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
+                    map.addLayer({ id: 'transport-layer', type: 'circle', source: 'transport', layout: { visibility: 'none' }, paint: { 'circle-radius': 9, 'circle-color': '#185FA5' }});
+                  });
+
+                // ── PARKS from Overpass ─────────────────────────────────
+                const parksQuery = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"](around:600,${m.lat},${m.lng});out geom 5;`);
+                fetch(`https://overpass-api.de/api/interpreter?data=${parksQuery}`)
+                  .then(r => r.json())
+                  .then(data => {
+                    const parkFeatures = (data.elements || [])
+                      .filter(e => e.geometry?.length > 2)
+                      .slice(0, 5)
+                      .map(e => ({
+                        type: 'Feature',
+                        geometry: { type: 'Polygon', coordinates: [e.geometry.map(p => [p.lon, p.lat])] },
+                        properties: { name: e.tags?.name || 'Park' }
+                      }));
+                    map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: parkFeatures }});
+                    map.addLayer({
+                      id: 'parks-layer',
+                      type: 'fill',
+                      source: 'parks',
+                      layout: { visibility: 'none' },
+                      paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }
+                    });
+                  }).catch(() => {
+                    map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
+                    map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: 'none' }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }});
+                  });
 
                 // Popup on pin click with Google Maps link
                 ['restaurants-layer', 'bars-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer'].forEach(layerId => {
