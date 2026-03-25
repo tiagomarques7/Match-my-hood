@@ -2676,6 +2676,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
       </div>` : '';
 
     // Property links for LIVE mode
+    const isLive = currentIntent === 'move';
     const propertySites = PROPERTY_SITES[destCity] || [];
     const propertyLinksHtml = isLive && propertySites.length ? `
       <div style="margin-top:12px;">
