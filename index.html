@@ -2720,23 +2720,38 @@ async function runMatch(isAlternative = false) {
         if (!data.matches) return;
         data.matches.forEach((m, idx) => {
           const i = idx + amenityDomOffset;
-          if (m.nearestMetro?.length) {
+
+          // Always update stations count + names (even if 0 / empty)
+          const metroArr = m.nearestMetro || [];
+          const stationsEl = document.getElementById(`amenity-${i}-stations`);
+          if (stationsEl) stationsEl.textContent = metroArr.length;
+          const stationNamesWrap = document.getElementById(`station-names-${i}`);
+          const stationNamesText = document.getElementById(`station-names-text-${i}`);
+          if (stationNamesWrap && stationNamesText) {
+            if (metroArr.length) {
+              stationNamesText.textContent = metroArr.join(' · ');
+              stationNamesWrap.style.display = 'block';
+            } else {
+              stationNamesWrap.style.display = 'none';
+            }
+          }
+
+          // Legacy transit-wrap (LIVE mode transit section above map)
+          if (metroArr.length) {
             const transitEl = document.getElementById(`transit-${i}`);
-            if (transitEl) transitEl.textContent = m.nearestMetro.join(' · ');
+            if (transitEl) transitEl.textContent = metroArr.join(' · ');
             const transitWrap = document.getElementById(`transit-wrap-${i}`);
             if (transitWrap) transitWrap.style.display = 'block';
-            // VISIT stations tile
-            const stationsEl = document.getElementById(`amenity-${i}-stations`);
-            if (stationsEl) stationsEl.textContent = m.nearestMetro.length;
           }
+
           if (m.amenities) {
             // LIVE tiles
             ['pharmacies','supermarkets','parks','gyms','intlSchools','museums'].forEach(key => {
               const el = document.getElementById(`amenity-${i}-${key}`);
               if (el) el.textContent = m.amenities[key] ?? '0';
             });
-            // VISIT tiles
-            ['restaurants','bars','museums'].forEach(key => {
+            // VISIT tiles (restaurants, bars share museums key above)
+            ['restaurants','bars'].forEach(key => {
               const el = document.getElementById(`amenity-${i}-${key}`);
               if (el) el.textContent = m.amenities[key] ?? '0';
             });
@@ -2867,9 +2882,15 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <div id="transit-${i}" style="font-size:13px;color:rgba(248,241,231,0.8);">${m.nearestMetro?.join(' · ') || ''}</div>
       </div>`;
 
+    // Station names row — shown below amenity grids in both modes
+    const stationNamesHtml = `
+      <div id="station-names-${i}" style="margin:-6px 0 14px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.05);font-size:12px;color:rgba(248,241,231,0.5);display:${m.nearestMetro?.length ? 'block' : 'none'};">
+        🚇 <span id="station-names-text-${i}">${m.nearestMetro?.join(' · ') || ''}</span>
+      </div>`;
+
     // VISIT amenity grid — restaurants, bars, museums, stations
     const visitAmenitiesHtml = `
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🍽️</div>
           <div id="amenity-${i}-restaurants" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.restaurants ?? '…'}</div>
@@ -2890,11 +2911,12 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div id="amenity-${i}-stations" style="font-size:18px;font-weight:700;color:var(--cream);">${m.nearestMetro?.length ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Stations</div>
         </div>
-      </div>`;
+      </div>
+      ${stationNamesHtml}`;
 
     // LIVE amenities grid
     const amenitiesHtml = `
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">💊</div>
           <div id="amenity-${i}-pharmacies" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.pharmacies ?? '…'}</div>
@@ -2925,7 +2947,13 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div id="amenity-${i}-museums" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.museums ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Museums</div>
         </div>
-      </div>`;
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🚇</div>
+          <div id="amenity-${i}-stations" style="font-size:18px;font-weight:700;color:var(--cream);">${m.nearestMetro?.length ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Stations</div>
+        </div>
+      </div>
+      ${stationNamesHtml}`;
 
     // Rent info (LIVE only)
     const rentHtml = m.averageRent1bed ? `
