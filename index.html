@@ -1462,6 +1462,9 @@
 
   /* RESULT MAP */
   .result-map { width: 100%; height: 280px; border-radius: 12px; margin: 16px 0; overflow: hidden; position: relative; }
+  .result-map.fullscreen { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; border-radius: 0 !important; z-index: 9999 !important; margin: 0 !important; }
+  .map-expand-btn { position: absolute; top: 8px; left: 8px; z-index: 10; background: rgba(61,43,31,0.85); color: var(--cream); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; backdrop-filter: blur(4px); }
+  .map-expand-btn:hover { background: var(--terracotta); }
   .map-layer-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
   .map-layer-pill { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 100px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: rgba(248,241,231,0.6); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; }
   .map-layer-pill:hover { border-color: var(--terracotta-light); color: var(--cream); }
@@ -2765,7 +2768,9 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
         <span class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport</span>
         <span class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks</span>
       </div>
-      <div class="result-map" id="map-${i}"></div>` : ''}
+      <div class="result-map" id="map-${i}">
+        <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
+      </div>` : ''}
 
       ${propertyLinksHtml}
     </div>`;
@@ -2880,11 +2885,15 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
                   .addTo(map);
 
                 // ── RESTAURANT PINS ─────────────────────────────────────
-                const restaurantFeatures = (m.top3Restaurants || []).map(r => ({
-                  type: 'Feature',
-                  geometry: { type: 'Point', coordinates: [m.lng + (Math.random()-0.5)*0.008, m.lat + (Math.random()-0.5)*0.006] },
-                  properties: { name: r.name, type: 'restaurant' }
-                }));
+                const restaurantFeatures = (m.top3Restaurants || []).map((r, ri) => {
+                  const lng = m.lng + (ri - 1) * 0.003 + (Math.random()-0.5)*0.002;
+                  const lat = m.lat + (Math.random()-0.5)*0.003;
+                  return {
+                    type: 'Feature',
+                    geometry: { type: 'Point', coordinates: [lng, lat] },
+                    properties: { name: r.name, desc: r.description, mapsUrl: `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}` }
+                  };
+                });
                 map.addSource('restaurants', { type: 'geojson', data: { type: 'FeatureCollection', features: restaurantFeatures }});
                 map.addLayer({
                   id: 'restaurants-layer',
@@ -2895,11 +2904,15 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
                 });
 
                 // ── WINE BAR PINS ───────────────────────────────────────
-                const barFeatures = (m.top3WineBars || []).map(r => ({
-                  type: 'Feature',
-                  geometry: { type: 'Point', coordinates: [m.lng + (Math.random()-0.5)*0.008, m.lat + (Math.random()-0.5)*0.006] },
-                  properties: { name: r.name, type: 'bar' }
-                }));
+                const barFeatures = (m.top3WineBars || []).map((r, ri) => {
+                  const lng = m.lng + (ri - 1) * 0.003 + (Math.random()-0.5)*0.002;
+                  const lat = m.lat + (Math.random()-0.5)*0.003;
+                  return {
+                    type: 'Feature',
+                    geometry: { type: 'Point', coordinates: [lng, lat] },
+                    properties: { name: r.name, desc: r.description, mapsUrl: `https://www.google.com/maps/search/${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}` }
+                  };
+                });
                 map.addSource('bars', { type: 'geojson', data: { type: 'FeatureCollection', features: barFeatures }});
                 map.addLayer({
                   id: 'bars-layer',
@@ -2960,13 +2973,18 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
                     map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: 'none' }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }});
                   });
 
-                // Popup on restaurant/bar click
+                // Popup on pin click with Google Maps link
                 ['restaurants-layer', 'bars-layer', 'transport-layer'].forEach(layerId => {
                   map.on('click', layerId, e => {
                     const props = e.features[0].properties;
-                    new mapboxgl.Popup({ closeButton: false, className: 'mmh-popup' })
+                    const mapsUrl = props.mapsUrl || `https://www.google.com/maps/search/${encodeURIComponent(props.name)}`;
+                    new mapboxgl.Popup({ closeButton: true, maxWidth: '220px' })
                       .setLngLat(e.lngLat)
-                      .setHTML(`<div style="font-size:13px;font-weight:600;padding:4px 8px;">${props.name}</div>`)
+                      .setHTML(`
+                        <div style="font-size:13px;font-weight:700;color:var(--cream);margin-bottom:4px;">${props.name}</div>
+                        ${props.desc ? `<div style="font-size:11px;color:rgba(248,241,231,0.6);margin-bottom:8px;line-height:1.4;">${props.desc}</div>` : ''}
+                        <a href="${mapsUrl}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;">📍 Open in Google Maps →</a>
+                      `)
                       .addTo(map);
                   });
                   map.on('mouseenter', layerId, () => map.getCanvas().style.cursor = 'pointer');
@@ -2980,6 +2998,23 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
       }
     }
   })();
+}
+
+function toggleMapFullscreen(mapId, btn) {
+  const mapEl = document.getElementById(mapId);
+  if (!mapEl) return;
+  const isFullscreen = mapEl.classList.toggle('fullscreen');
+  btn.textContent = isFullscreen ? '✕ Close' : '⛶ Expand';
+  // Resize the Mapbox map after container size changes
+  const idx = parseInt(mapId.replace('map-', ''));
+  if (mapInstances[idx]) {
+    setTimeout(() => mapInstances[idx].resize(), 100);
+  }
+  // Close on Escape
+  if (isFullscreen) {
+    const handler = (e) => { if (e.key === 'Escape') { toggleMapFullscreen(mapId, btn); document.removeEventListener('keydown', handler); }};
+    document.addEventListener('keydown', handler);
+  }
 }
 
 function toggleMapLayer(mapIndex, layer, pillEl) {
