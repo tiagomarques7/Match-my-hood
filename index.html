@@ -2744,17 +2744,34 @@ async function runMatch(isAlternative = false) {
             if (transitWrap) transitWrap.style.display = 'block';
           }
 
-          if (m.amenities) {
-            // LIVE tiles
-            ['pharmacies','supermarkets','parks','gyms','intlSchools','museums'].forEach(key => {
-              const el = document.getElementById(`amenity-${i}-${key}`);
-              if (el) el.textContent = m.amenities[key] ?? '0';
-            });
-            // VISIT tiles (restaurants, bars share museums key above)
-            ['restaurants','bars'].forEach(key => {
-              const el = document.getElementById(`amenity-${i}-${key}`);
-              if (el) el.textContent = m.amenities[key] ?? '0';
-            });
+          // Update ALL amenity tiles — both LIVE and VISIT keys — regardless of mode.
+          // Uses ?. so tiles show '0' even if m.amenities is missing (e.g. Overpass failed).
+          ['pharmacies','supermarkets','parks','gyms','intlSchools','museums','restaurants','bars'].forEach(key => {
+            const el = document.getElementById(`amenity-${i}-${key}`);
+            if (el) el.textContent = m.amenities?.[key] ?? '0';
+          });
+
+          // Use transit coords from server to populate map transport layer —
+          // avoids a second browser-side Overpass call that can fail if rate-limited.
+          if (m.transitCoords?.length) {
+            const map = mapInstances[i];
+            if (map) {
+              const features = m.transitCoords.map(s => ({
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [s.lon, s.lat] },
+                properties: { name: s.name || 'Station' }
+              }));
+              const tryUpdate = () => {
+                const src = map.getSource('transport');
+                if (src) {
+                  src.setData({ type: 'FeatureCollection', features });
+                } else {
+                  // Map may still be loading — wait and retry
+                  setTimeout(tryUpdate, 500);
+                }
+              };
+              tryUpdate();
+            }
           }
         });
       })
@@ -3230,10 +3247,8 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 );
 out center 15;`);
                 fetch(`https://overpass-api.de/api/interpreter?data=${transitQuery}`)
-                  .then(r => r.text())
-                  .then(raw => {
-                    if (raw.trimStart().startsWith('<')) throw new Error('rate-limited');
-                    const data = JSON.parse(raw);
+                  .then(r => r.json())
+                  .then(data => {
                     const transitFeatures = (data.elements || [])
                       .map(e => {
                         // nodes have lat/lon directly; ways/relations have center.lat/center.lon
@@ -3263,10 +3278,8 @@ out center 15;`);
                 // ── PARKS from Overpass ─────────────────────────────────
                 const parksQuery = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"](around:600,${m.lat},${m.lng});out geom 5;`);
                 fetch(`https://overpass-api.de/api/interpreter?data=${parksQuery}`)
-                  .then(r => r.text())
-                  .then(raw => {
-                    if (raw.trimStart().startsWith('<')) throw new Error('rate-limited');
-                    const data = JSON.parse(raw);
+                  .then(r => r.json())
+                  .then(data => {
                     const parkFeatures = (data.elements || [])
                       .filter(e => e.geometry?.length > 2)
                       .slice(0, 5)
