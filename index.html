@@ -3229,7 +3229,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
   node["public_transport"="stop_position"]["subway"="yes"](around:800,${m.lat},${m.lng});
 );
 out center 15;`);
-                fetch(`https://overpass.kumi.systems/api/interpreter?data=${transitQuery}`)
+                fetch(`https://overpass-api.de/api/interpreter?data=${transitQuery}`)
                   .then(r => r.text())
                   .then(raw => {
                     if (raw.trimStart().startsWith('<')) throw new Error('rate-limited');
@@ -3262,7 +3262,7 @@ out center 15;`);
 
                 // ── PARKS from Overpass ─────────────────────────────────
                 const parksQuery = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"](around:600,${m.lat},${m.lng});out geom 5;`);
-                fetch(`https://overpass.kumi.systems/api/interpreter?data=${parksQuery}`)
+                fetch(`https://overpass-api.de/api/interpreter?data=${parksQuery}`)
                   .then(r => r.text())
                   .then(raw => {
                     if (raw.trimStart().startsWith('<')) throw new Error('rate-limited');
