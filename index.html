@@ -2378,107 +2378,112 @@ const GYG_AFF = 'MLFUF2A';
 const VIATOR_AFF = 'P00293970';
 
 // Property sites per city for LIVE mode
+// Helper functions for property URL building
+const slug = s => encodeURIComponent(s.toLowerCase().replace(/ /g,'-'));
+const enc  = s => encodeURIComponent(s);
+
 const PROPERTY_SITES = {
-  "Lisbon":        [{ name: "Idealista", url: (hood, city) => `https://www.idealista.pt/arrendar-casas/lisboa/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/` },
-                   { name: "Imovirtual", url: (hood, city) => `https://www.imovirtual.com/arrendar/apartamento/lisboa/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/lisbon--portugal` }],
-  "Porto":         [{ name: "Idealista", url: (hood, city) => `https://www.idealista.pt/arrendar-casas/porto/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/` },
-                   { name: "Imovirtual", url: (hood, city) => `https://www.imovirtual.com/arrendar/apartamento/porto/` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/porto--portugal` }],
-  "London":        [{ name: "Rightmove", url: (hood, city) => `https://www.rightmove.co.uk/property-to-rent/find.html?searchLocation=${encodeURIComponent(hood + ', London')}&useLocationIdentifier=false&radius=0.25&_includeLetAgreed=on&sortType=6` },
-                   { name: "Zoopla", url: (hood, city) => `https://www.zoopla.co.uk/to-rent/property/london/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/` },
-                   { name: "SpareRoom", url: (hood, city) => `https://www.spareroom.co.uk/flatshare/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}` }],
-  "Paris":         [{ name: "SeLoger", url: (hood, city) => `https://www.seloger.com/list.htm?ci=750056&idtypebien=1&idtt=1` },
-                   { name: "LeBonCoin", url: (hood, city) => `https://www.leboncoin.fr/recherche?category=10&locations=${encodeURIComponent(city)}` }],
-  "Barcelona":     [{ name: "Idealista", url: (hood, city) => `https://www.idealista.com/alquiler-viviendas/barcelona/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/` },
-                   { name: "Fotocasa", url: (hood, city) => `https://www.fotocasa.es/es/alquiler/viviendas/barcelona-capital/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/l` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/barcelona--spain` }],
-  "Madrid":        [{ name: "Idealista", url: (hood, city) => `https://www.idealista.com/alquiler-viviendas/madrid/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/` },
-                   { name: "Fotocasa", url: (hood, city) => `https://www.fotocasa.es/es/alquiler/viviendas/madrid-capital/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/l` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/madrid--spain` }],
-  "Seville":       [{ name: "Idealista", url: (hood, city) => `https://www.idealista.com/alquiler-viviendas/sevilla-provincia/` },
-                   { name: "Fotocasa", url: (hood, city) => `https://www.fotocasa.es/es/alquiler/viviendas/sevilla-capital/todas-las-zonas/l` }],
-  "Amsterdam":     [{ name: "Funda", url: (hood, city) => `https://www.funda.nl/huur/amsterdam/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}/` },
-                   { name: "Pararius", url: (hood, city) => `https://www.pararius.com/apartments/amsterdam/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}` },
-                   { name: "HousingAnywhere", url: (hood, city) => `https://housinganywhere.com/Amsterdam--Netherlands/search` }],
-  "Rome":          [{ name: "Immobiliare.it", url: (hood, city) => `https://www.immobiliare.it/affitto-case/roma/` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
-  "Florence":      [{ name: "Immobiliare.it", url: (hood, city) => `https://www.immobiliare.it/affitto-case/firenze/` },
-                   { name: "Idealista", url: (hood, city) => `https://www.idealista.it/affitto-case/firenze-provincia/` }],
-  "Milan":         [{ name: "Immobiliare.it", url: (hood, city) => `https://www.immobiliare.it/affitto-case/milano/` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
-  "Berlin":        [{ name: "ImmoScout24", url: (hood, city) => `https://www.immobilienscout24.de/Suche/de/berlin/berlin/wohnung-mieten` },
-                   { name: "WG-Gesucht", url: (hood, city) => `https://www.wg-gesucht.de/wohnungen-in-Berlin.8.2.1.0.html` }],
-  "Munich":        [{ name: "ImmoScout24", url: (hood, city) => `https://www.immobilienscout24.de/Suche/de/bayern/muenchen/wohnung-mieten` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
-  "Frankfurt":     [{ name: "ImmoScout24", url: (hood, city) => `https://www.immobilienscout24.de/Suche/de/hessen/frankfurt-am-main/wohnung-mieten` },
-                   { name: "Immowelt", url: (hood, city) => `https://www.immowelt.de/liste/frankfurt-am-main/wohnungen/mieten` }],
-  "Düsseldorf":    [{ name: "ImmoScout24", url: (hood, city) => `https://www.immobilienscout24.de/Suche/de/nordrhein-westfalen/duesseldorf/wohnung-mieten` },
-                   { name: "Immowelt", url: (hood, city) => `https://www.immowelt.de/liste/duesseldorf/wohnungen/mieten` }],
-  "Vienna":        [{ name: "Willhaben", url: (hood, city) => `https://www.willhaben.at/iad/immobilien/mietwohnungen/wien/` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
-  "Copenhagen":    [{ name: "Lejebolig", url: (hood, city) => `https://www.lejebolig.dk/lejebolig/koebenhavn` },
-                   { name: "Boligsiden", url: (hood, city) => `https://www.boligsiden.dk/leje/` }],
-  "Stockholm":     [{ name: "Blocket", url: (hood, city) => `https://www.blocket.se/bostad/hyra/lagenheter/stockholm` },
-                   { name: "Bostadsportal", url: (hood, city) => `https://bostadsportal.se/` }],
-  "Prague":        [{ name: "Sreality", url: (hood, city) => `https://www.sreality.cz/hledani/pronajem/byty/praha` },
-                   { name: "Bezrealitky", url: (hood, city) => `https://www.bezrealitky.cz/vypis/pronajem-byt/praha` }],
-  "Budapest":      [{ name: "Ingatlan.com", url: (hood, city) => `https://ingatlan.com/lista/kiado+lakas+budapest` },
-                   { name: "Albérlet.hu", url: (hood, city) => `https://www.alberlet.hu/kiado-alberlet/budapest` }],
-  "Brussels":      [{ name: "Immoweb", url: (hood, city) => `https://www.immoweb.be/en/search/house-and-apartment/for-rent/brussels/region` },
-                   { name: "Spotahome", url: (hood, city) => `https://www.spotahome.com/s/${encodeURIComponent(city)}` }],
-  "Istanbul":      [{ name: "Sahibinden", url: (hood, city) => `https://www.sahibinden.com/kiralik-daire/istanbul` },
-                   { name: "Emlakjet", url: (hood, city) => `https://www.emlakjet.com/kiralik-daire/istanbul/` }],
-  "New York":      [{ name: "StreetEasy", url: (hood, city) => `https://streeteasy.com/for-rent/nyc/${encodeURIComponent(hood.toLowerCase().replace(/ /g,'-'))}` },
-                   { name: "Zillow", url: (hood, city) => `https://www.zillow.com/new-york-ny/rentals/` }],
-  "Los Angeles":   [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/los-angeles-ca/rentals/` },
-                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/los-angeles-ca/` }],
-  "San Francisco": [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/san-francisco-ca/rentals/` },
-                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/san-francisco-ca/` }],
-  "Chicago":       [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/chicago-il/rentals/` },
-                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/chicago-il/` }],
-  "Miami":         [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/miami-fl/rentals/` },
-                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/miami-fl/` }],
-  "Boston":        [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/boston-ma/rentals/` },
-                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/boston-ma/` }],
-  "Washington DC": [{ name: "Zillow", url: (hood, city) => `https://www.zillow.com/washington-dc/rentals/` },
-                   { name: "Apartments.com", url: (hood, city) => `https://www.apartments.com/washington-dc/` }],
-  "Toronto":       [{ name: "Realtor.ca", url: (hood, city) => `https://www.realtor.ca/map#ZoomLevel=13&Center=43.700000,-79.400000&LatitudeMax=43.85&LatitudeMin=43.55&LongitudeMax=-79.25&LongitudeMin=-79.55&view=list&TransactionTypeId=3&PropertyTypeGroupId=1` },
-                   { name: "PadMapper", url: (hood, city) => `https://www.padmapper.com/apartments/toronto-on` }],
-  "Montreal":      [{ name: "Realtor.ca", url: (hood, city) => `https://www.realtor.ca/map#ZoomLevel=12&Center=45.508888,-73.561668&view=list&TransactionTypeId=3` },
-                   { name: "Kijiji", url: (hood, city) => `https://www.kijiji.ca/b-apartments-condos/montreal/c37l80002` }],
-  "Mexico City":   [{ name: "Inmuebles24", url: (hood, city) => `https://www.inmuebles24.com/departamentos-en-renta-en-ciudad-de-mexico.html` },
-                   { name: "Lamudi", url: (hood, city) => `https://www.lamudi.com.mx/distrito-federal/departamento/for-rent/` }],
-  "São Paulo":     [{ name: "ZAP Imóveis", url: (hood, city) => `https://www.zapimoveis.com.br/aluguel/imoveis/sp+sao-paulo/` },
-                   { name: "VivaReal", url: (hood, city) => `https://www.vivareal.com.br/aluguel/sp/sao-paulo/` }],
-  "Rio de Janeiro":[{ name: "ZAP Imóveis", url: (hood, city) => `https://www.zapimoveis.com.br/aluguel/imoveis/rj+rio-de-janeiro/` },
-                   { name: "VivaReal", url: (hood, city) => `https://www.vivareal.com.br/aluguel/rj/rio-de-janeiro/` }],
-  "Buenos Aires":  [{ name: "ZonaProp", url: (hood, city) => `https://www.zonaprop.com.ar/departamentos-alquiler-capital-federal.html` },
-                   { name: "Argenprop", url: (hood, city) => `https://www.argenprop.com/departamento?operacion=alquiler&localidad=capital-federal` }],
-  "Tokyo":         [{ name: "Suumo", url: (hood, city) => `https://suumo.jp/chintai/tokyo/` },
-                   { name: "GaijinPot", url: (hood, city) => `https://housing.gaijinpot.com/en/rent/` }],
-  "Seoul":         [{ name: "Dabang", url: (hood, city) => `https://www.dabangapp.com/` },
-                   { name: "Zigbang", url: (hood, city) => `https://www.zigbang.com/` }],
-  "Singapore":     [{ name: "PropertyGuru", url: (hood, city) => `https://www.propertyguru.com.sg/property-for-rent` },
-                   { name: "99.co", url: (hood, city) => `https://www.99.co/singapore/rent` }],
-  "Dubai":         [{ name: "Property Finder", url: (hood, city) => `https://www.propertyfinder.ae/en/rent/` },
-                   { name: "Bayut", url: (hood, city) => `https://www.bayut.com/to-rent/` }],
-  "Sydney":        [{ name: "Realestate.com.au", url: (hood, city) => `https://www.realestate.com.au/rent/in-sydney%2c+nsw/list-1` },
-                   { name: "Domain", url: (hood, city) => `https://www.domain.com.au/rent/sydney-nsw-2000/` }],
-  "Melbourne":     [{ name: "Realestate.com.au", url: (hood, city) => `https://www.realestate.com.au/rent/in-melbourne%2c+vic/list-1` },
-                   { name: "Domain", url: (hood, city) => `https://www.domain.com.au/rent/melbourne-vic-3000/` }],
-  "Bangkok":       [{ name: "DDProperty", url: (hood, city) => `https://www.ddproperty.com/en/property-for-rent/` },
-                   { name: "FazWaz", url: (hood, city) => `https://www.fazwaz.com/property-for-rent/thailand/bangkok` }],
-  "Bali":          [{ name: "FazWaz", url: (hood, city) => `https://www.fazwaz.com/property-for-rent/indonesia/bali` },
-                   { name: "Dot Property", url: (hood, city) => `https://www.dotproperty.id/properties-for-rent/bali` }],
-  "Beijing":       [{ name: "Lianjia", url: (hood, city) => `https://bj.lianjia.com/zufang/` },
-                   { name: "Anjuke", url: (hood, city) => `https://beijing.anjuke.com/rent/` }],
-  "Shanghai":      [{ name: "Lianjia", url: (hood, city) => `https://sh.lianjia.com/zufang/` },
-                   { name: "Anjuke", url: (hood, city) => `https://shanghai.anjuke.com/rent/` }],
-  "Cape Town":     [{ name: "Property24", url: (hood, city) => `https://www.property24.com/property-to-rent/cape-town/western-cape/9` },
-                   { name: "Private Property", url: (hood, city) => `https://www.privateproperty.co.za/to-rent/western-cape/cape-town/` }],
-  "Marrakech":     [{ name: "Mubawab", url: (hood, city) => `https://www.mubawab.ma/fr/sc/marrakech:location-appartement` },
-                   { name: "Avito.ma", url: (hood, city) => `https://www.avito.ma/fr/marrakech/appartements/%C3%A0_louer` }],
+  "Lisbon":   [{ name:"Idealista",    url:(h,c)=>`https://www.idealista.pt/arrendar-casas/lisboa/${slug(h)}/` },
+               { name:"Imovirtual",   url:(h,c)=>`https://www.imovirtual.com/arrendar/apartamento/lisboa/?q=${enc(h)}` }],
+  "Porto":    [{ name:"Idealista",    url:(h,c)=>`https://www.idealista.pt/arrendar-casas/porto/${slug(h)}/` },
+               { name:"Imovirtual",   url:(h,c)=>`https://www.imovirtual.com/arrendar/apartamento/porto/?q=${enc(h)}` }],
+  "London":   [{ name:"Rightmove",    url:(h,c)=>`https://www.rightmove.co.uk/property-to-rent/find.html?searchLocation=${enc(h+', London')}&radius=0.5&sortType=6` },
+               { name:"Zoopla",       url:(h,c)=>`https://www.zoopla.co.uk/to-rent/property/london/${slug(h)}/` },
+               { name:"SpareRoom",    url:(h,c)=>`https://www.spareroom.co.uk/flatshare/search_results.pl?where=${enc(h+', London')}&search_type=flatshares` }],
+  // Paris — SeLoger/PAP don't support neighbourhood URLs, LeBonCoin is best available
+  "Paris":    [{ name:"LeBonCoin",    url:(h,c)=>`https://www.leboncoin.fr/recherche?category=10&text=${enc(h+' Paris')}&real_estate_type=2` },
+               { name:"SeLoger",      url:(h,c)=>`https://www.seloger.com/list.htm?idtypebien=1&idtt=1&tri=initial&q=${enc(h+' Paris')}` },
+               { name:"PAP",          url:(h,c)=>`https://www.pap.fr/annonce/locations-appartement-paris-g439?q=${enc(h)}` }],
+  "Barcelona":[{ name:"Idealista",    url:(h,c)=>`https://www.idealista.com/alquiler-viviendas/barcelona/${slug(h)}/` },
+               { name:"Fotocasa",     url:(h,c)=>`https://www.fotocasa.es/es/alquiler/viviendas/barcelona-capital/${slug(h)}/l` }],
+  "Madrid":   [{ name:"Idealista",    url:(h,c)=>`https://www.idealista.com/alquiler-viviendas/madrid/${slug(h)}/` },
+               { name:"Fotocasa",     url:(h,c)=>`https://www.fotocasa.es/es/alquiler/viviendas/madrid-capital/${slug(h)}/l` }],
+  "Seville":  [{ name:"Idealista",    url:(h,c)=>`https://www.idealista.com/alquiler-viviendas/sevilla/${slug(h)}/` },
+               { name:"Fotocasa",     url:(h,c)=>`https://www.fotocasa.es/es/alquiler/viviendas/sevilla-capital/${slug(h)}/l` }],
+  // Amsterdam — Funda slugs are Dutch, Pararius works better in English
+  "Amsterdam":[{ name:"Funda",        url:(h,c)=>`https://www.funda.nl/huur/amsterdam/?q=${enc(h)}` },
+               { name:"Pararius",     url:(h,c)=>`https://www.pararius.com/apartments/amsterdam/${slug(h)}` }],
+  "Rome":     [{ name:"Immobiliare",  url:(h,c)=>`https://www.immobiliare.it/affitto-case/roma/?qTesto=${enc(h)}` },
+               { name:"Idealista",    url:(h,c)=>`https://www.idealista.it/affitto-case/roma/${slug(h)}/` }],
+  "Florence": [{ name:"Immobiliare",  url:(h,c)=>`https://www.immobiliare.it/affitto-case/firenze/?qTesto=${enc(h)}` },
+               { name:"Idealista",    url:(h,c)=>`https://www.idealista.it/affitto-case/firenze/${slug(h)}/` }],
+  "Milan":    [{ name:"Immobiliare",  url:(h,c)=>`https://www.immobiliare.it/affitto-case/milano/?qTesto=${enc(h)}` },
+               { name:"Idealista",    url:(h,c)=>`https://www.idealista.it/affitto-case/milano/${slug(h)}/` }],
+  "Berlin":   [{ name:"ImmoScout24",  url:(h,c)=>`https://www.immobilienscout24.de/Suche/de/berlin/berlin/wohnung-mieten?freetext=${enc(h)}` },
+               { name:"WG-Gesucht",   url:(h,c)=>`https://www.wg-gesucht.de/wg-zimmer-und-1-zimmer-wohnungen-und-wohnungen-in-Berlin.8.0.1.0.html?freetext=${enc(h)}` }],
+  "Munich":   [{ name:"ImmoScout24",  url:(h,c)=>`https://www.immobilienscout24.de/Suche/de/bayern/muenchen/wohnung-mieten?freetext=${enc(h)}` },
+               { name:"Immowelt",     url:(h,c)=>`https://www.immowelt.de/classified-search?distributionTypes=Rent&estateTypes=Apartment&searchDescription=${enc(h)}` }],
+  "Frankfurt":[{ name:"ImmoScout24",  url:(h,c)=>`https://www.immobilienscout24.de/Suche/de/hessen/frankfurt-am-main/wohnung-mieten?freetext=${enc(h)}` },
+               { name:"Immowelt",     url:(h,c)=>`https://www.immowelt.de/classified-search?distributionTypes=Rent&estateTypes=Apartment&searchDescription=${enc(h)}` }],
+  "Düsseldorf":[{ name:"ImmoScout24", url:(h,c)=>`https://www.immobilienscout24.de/Suche/de/nordrhein-westfalen/duesseldorf/wohnung-mieten?freetext=${enc(h)}` },
+                { name:"Immowelt",    url:(h,c)=>`https://www.immowelt.de/classified-search?distributionTypes=Rent&estateTypes=Apartment&searchDescription=${enc(h)}` }],
+  "Vienna":   [{ name:"Willhaben",    url:(h,c)=>`https://www.willhaben.at/iad/immobilien/mietwohnungen/wien/?keyword=${enc(h)}` },
+               { name:"ImmoScout AT", url:(h,c)=>`https://www.immobilienscout24.at/immobilien/wohnung-mieten/wien?freetext=${enc(h)}` }],
+  "Copenhagen":[{ name:"Lejebolig",   url:(h,c)=>`https://www.lejebolig.dk/lejebolig?q=${enc(h+' København')}` },
+                { name:"Boligsiden",  url:(h,c)=>`https://www.boligsiden.dk/leje/?searchTerm=${enc(h)}` }],
+  "Stockholm":[{ name:"Blocket",      url:(h,c)=>`https://www.blocket.se/bostad/hyra/lagenheter/stockholm?q=${enc(h)}` },
+               { name:"Hemnet",       url:(h,c)=>`https://www.hemnet.se/bostader?q=${enc(h)}` }],
+  "Prague":   [{ name:"Sreality",     url:(h,c)=>`https://www.sreality.cz/hledani/pronajem/byty/praha?hledani=${enc(h)}` },
+               { name:"Bezrealitky",  url:(h,c)=>`https://www.bezrealitky.cz/vypis/pronajem-byt/praha?fulltext=${enc(h)}` }],
+  "Budapest": [{ name:"Ingatlan.com", url:(h,c)=>`https://ingatlan.com/lista/kiado+lakas+budapest?q=${enc(h)}` },
+               { name:"Albérlet.hu",  url:(h,c)=>`https://www.alberlet.hu/kiado-alberlet/budapest/?q=${enc(h)}` }],
+  "Brussels": [{ name:"Immoweb",      url:(h,c)=>`https://www.immoweb.be/en/search/house-and-apartment/for-rent?countries=BE&localities=${enc(h)}&orderBy=relevance` },
+               { name:"Zimmo",        url:(h,c)=>`https://www.zimmo.be/en/to-rent/?search=${enc(h+' Brussels')}` }],
+  "Istanbul": [{ name:"Sahibinden",   url:(h,c)=>`https://www.sahibinden.com/kiralik-daire/istanbul?query=${enc(h)}` },
+               { name:"Emlakjet",     url:(h,c)=>`https://www.emlakjet.com/kiralik-daire/istanbul/?text=${enc(h)}` }],
+  "New York": [{ name:"StreetEasy",   url:(h,c)=>`https://streeteasy.com/for-rent/nyc/${slug(h)}` },
+               { name:"Apartments",   url:(h,c)=>`https://www.apartments.com/${slug(h)}-new-york-ny/` }],
+  "Los Angeles":[{ name:"Zillow",     url:(h,c)=>`https://www.zillow.com/${slug(h)}-los-angeles-ca/rentals/` },
+                 { name:"Apartments", url:(h,c)=>`https://www.apartments.com/${slug(h)}-los-angeles-ca/` }],
+  "San Francisco":[{ name:"Zillow",   url:(h,c)=>`https://www.zillow.com/${slug(h)}-san-francisco-ca/rentals/` },
+                   { name:"Apartments",url:(h,c)=>`https://www.apartments.com/${slug(h)}-san-francisco-ca/` }],
+  "Chicago":  [{ name:"Zillow",       url:(h,c)=>`https://www.zillow.com/${slug(h)}-chicago-il/rentals/` },
+               { name:"Apartments",   url:(h,c)=>`https://www.apartments.com/${slug(h)}-chicago-il/` }],
+  "Miami":    [{ name:"Zillow",       url:(h,c)=>`https://www.zillow.com/${slug(h)}-miami-fl/rentals/` },
+               { name:"Apartments",   url:(h,c)=>`https://www.apartments.com/${slug(h)}-miami-fl/` }],
+  "Boston":   [{ name:"Zillow",       url:(h,c)=>`https://www.zillow.com/${slug(h)}-boston-ma/rentals/` },
+               { name:"Apartments",   url:(h,c)=>`https://www.apartments.com/${slug(h)}-boston-ma/` }],
+  "Washington DC":[{ name:"Zillow",   url:(h,c)=>`https://www.zillow.com/${slug(h)}-washington-dc/rentals/` },
+                   { name:"Apartments",url:(h,c)=>`https://www.apartments.com/${slug(h)}-washington-dc/` }],
+  // Canada — Realtor.ca has no neighbourhood URL, use Kijiji + PadMapper
+  "Toronto":  [{ name:"Kijiji",       url:(h,c)=>`https://www.kijiji.ca/b-apartments-condos/city-of-toronto/q=${enc(h)}/c37l1700273` },
+               { name:"PadMapper",    url:(h,c)=>`https://www.padmapper.com/apartments/toronto-on?q=${enc(h)}` }],
+  "Montreal": [{ name:"Kijiji",       url:(h,c)=>`https://www.kijiji.ca/b-apartments-condos/montreal/q=${enc(h)}/c37l80002` },
+               { name:"PadMapper",    url:(h,c)=>`https://www.padmapper.com/apartments/montreal-qc?q=${enc(h)}` }],
+  // Mexico City — Inmuebles24 SEO paths only exist for indexed hoods, use search instead
+  "Mexico City":[{ name:"Inmuebles24",url:(h,c)=>`https://www.inmuebles24.com/inmuebles?operacion=2&tipo=1&provincia=df&q=${enc(h)}` },
+                 { name:"Lamudi",     url:(h,c)=>`https://www.lamudi.com.mx/buscar/?q=${enc(h+' Ciudad de Mexico')}&for=rent` }],
+  "São Paulo":[{ name:"ZAP Imóveis",  url:(h,c)=>`https://www.zapimoveis.com.br/aluguel/imoveis/sp+sao-paulo+${slug(h)}/` },
+               { name:"VivaReal",     url:(h,c)=>`https://www.vivareal.com.br/aluguel/sp/sao-paulo/${slug(h)}_bairro/` }],
+  "Rio de Janeiro":[{ name:"ZAP Imóveis", url:(h,c)=>`https://www.zapimoveis.com.br/aluguel/imoveis/rj+rio-de-janeiro+${slug(h)}/` },
+                    { name:"VivaReal",    url:(h,c)=>`https://www.vivareal.com.br/aluguel/rj/rio-de-janeiro/${slug(h)}_bairro/` }],
+  "Buenos Aires":[{ name:"ZonaProp",  url:(h,c)=>`https://www.zonaprop.com.ar/departamentos-alquiler.html?q=${enc(h)}` },
+                  { name:"Argenprop", url:(h,c)=>`https://www.argenprop.com/departamento?operacion=alquiler&localidad=${enc(h)}` }],
+  // Tokyo — Suumo needs Japanese, GaijinPot is best for English speakers
+  "Tokyo":    [{ name:"GaijinPot",    url:(h,c)=>`https://housing.gaijinpot.com/en/rent/?region%5B%5D=13&q=${enc(h)}` },
+               { name:"Suumo",        url:(h,c)=>`https://suumo.jp/chintai/tokyo/sc_${enc(h)}/` }],
+  "Seoul":    [{ name:"Dabang",       url:(h,c)=>`https://www.dabangapp.com/map/seoul?search=${enc(h)}` },
+               { name:"Zigbang",      url:(h,c)=>`https://www.zigbang.com/home/search?q=${enc(h)}` }],
+  "Singapore":[{ name:"PropertyGuru", url:(h,c)=>`https://www.propertyguru.com.sg/property-for-rent?freetext=${enc(h)}&listingType=rent` },
+               { name:"99.co",        url:(h,c)=>`https://www.99.co/singapore/rent?q=${enc(h)}` }],
+  "Dubai":    [{ name:"Property Finder",url:(h,c)=>`https://www.propertyfinder.ae/en/rent/apartments-for-rent.html?q=${enc(h)}` },
+               { name:"Bayut",        url:(h,c)=>`https://www.bayut.com/to-rent/apartments/${slug(h)}/` }],
+  "Sydney":   [{ name:"REA",          url:(h,c)=>`https://www.realestate.com.au/rent/in-${slug(h).replace(/-/g,'+')},+nsw/list-1` },
+               { name:"Domain",       url:(h,c)=>`https://www.domain.com.au/rent/${slug(h)}-nsw/` }],
+  "Melbourne":[{ name:"REA",          url:(h,c)=>`https://www.realestate.com.au/rent/in-${slug(h).replace(/-/g,'+')},+vic/list-1` },
+               { name:"Domain",       url:(h,c)=>`https://www.domain.com.au/rent/${slug(h)}-vic/` }],
+  "Bangkok":  [{ name:"DDProperty",   url:(h,c)=>`https://www.ddproperty.com/en/property-for-rent/?q=${enc(h)}` },
+               { name:"FazWaz",       url:(h,c)=>`https://www.fazwaz.com/property-for-rent/thailand/bangkok/${slug(h)}` }],
+  "Bali":     [{ name:"FazWaz",       url:(h,c)=>`https://www.fazwaz.com/property-for-rent/indonesia/bali/${slug(h)}` },
+               { name:"Dot Property", url:(h,c)=>`https://www.dotproperty.id/properties-for-rent/bali/${slug(h)}` }],
+  "Beijing":  [{ name:"Lianjia",      url:(h,c)=>`https://bj.lianjia.com/zufang/?q=${enc(h)}` },
+               { name:"Anjuke",       url:(h,c)=>`https://beijing.anjuke.com/rent/?kw=${enc(h)}` }],
+  "Shanghai": [{ name:"Lianjia",      url:(h,c)=>`https://sh.lianjia.com/zufang/?q=${enc(h)}` },
+               { name:"Anjuke",       url:(h,c)=>`https://shanghai.anjuke.com/rent/?kw=${enc(h)}` }],
+  "Cape Town":[{ name:"Property24",   url:(h,c)=>`https://www.property24.com/property-to-rent/cape-town/western-cape/9?q=${enc(h)}` },
+               { name:"Private Property",url:(h,c)=>`https://www.privateproperty.co.za/to-rent/western-cape/cape-town/${slug(h)}/` }],
+  "Marrakech":[{ name:"Mubawab",      url:(h,c)=>`https://www.mubawab.ma/fr/sc/marrakech:location-appartement?q=${enc(h)}` },
+               { name:"Avito.ma",     url:(h,c)=>`https://www.avito.ma/fr/marrakech/appartements/%C3%A0_louer?q=${enc(h)}` }],
 };
 
 // Track active vibes
@@ -2788,7 +2793,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
     const propertySites = PROPERTY_SITES[destCity] || [];
     const propertyLinksHtml = isLive && propertySites.length ? `
       <div style="margin-top:12px;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.4);margin-bottom:8px;">🏠 Find a place to rent</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.4);margin-bottom:8px;">🏠 Find a place to rent in <span style="color:var(--terracotta-light)">${m.name}</span></div>
         <div class="booking-btns">
           ${propertySites.map((s, idx) => `
             <a href="${s.url(m.name, destCity)}" target="_blank" class="${idx === 0 ? 'booking-btn-hotel' : 'booking-btn-airbnb'}">
@@ -2796,6 +2801,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
             </a>`).join('')}
           <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">🏠 Airbnb →</a>
         </div>
+        <div style="font-size:10px;color:rgba(248,241,231,0.3);margin-top:6px;">Links pre-filtered for ${m.name} · Refine on-site for best results</div>
       </div>` : `
       <div class="booking-btns">
         <a href="${bookingUrl}" target="_blank" class="booking-btn-hotel">🏨 Hotels in ${m.name} →</a>
@@ -2939,10 +2945,12 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
 
               map.on('load', () => {
                 // ── NEIGHBOURHOOD BOUNDARY ──────────────────────────────
-                // Stagger Nominatim requests to avoid rate limiting
+                // Nominatim requires stagger + User-Agent, rate limit 1 req/sec
                 setTimeout(() => {
                 const hoodQuery = encodeURIComponent(m.name + ', ' + m.city);
-                fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`)
+                fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`, {
+                  headers: { 'User-Agent': 'MatchMyHood/1.0 (matchmyhood.com)' }
+                })
                   .then(r => r.json())
                   .then(data => {
                     const feature = data.features?.[0];
@@ -2964,7 +2972,7 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
                       }
                     }
                   }).catch(() => {});
-                }, i * 1500); // 1.5s stagger per hood
+                }, i * 2000); // 2s stagger — Nominatim rate limit is 1 req/sec
 
                 // ── NEIGHBOURHOOD LABEL MARKER ──────────────────────────
                 const el = document.createElement('div');
