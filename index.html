@@ -2542,11 +2542,12 @@ async function runMatch() {
   mapInstances = {};
 
   try {
+    // STEP 1 — Fast call: Claude + Foursquare (~15s)
     const result = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "https://api.matchmyhood.com/api/match");
       xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.timeout = 120000;
+      xhr.timeout = 60000; // 60s — should be plenty for fast call
       xhr.onload = () => {
         try {
           const data = JSON.parse(xhr.responseText);
@@ -2567,7 +2568,47 @@ async function runMatch() {
       throw new Error('Could not parse match results. Please try again.');
     }
 
+    // Show results immediately
     await renderResults(matches, homeHood, homeCity, destCity);
+
+    // STEP 2 — Background call: Overpass amenities + transit (~30s, silent)
+    if (currentIntent === 'move') {
+      loadingMsg.style.display = 'none';
+      const amenityNote = document.createElement('div');
+      amenityNote.id = 'amenity-loading';
+      amenityNote.style.cssText = 'text-align:center;font-size:12px;color:rgba(248,241,231,0.4);padding:8px;';
+      amenityNote.textContent = '⏳ Loading amenity data…';
+      document.getElementById('resultsArea').prepend(amenityNote);
+
+      fetch('https://api.matchmyhood.com/api/amenities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ matches, destCity })
+      })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('amenity-loading')?.remove();
+        if (!data.matches) return;
+        // Update amenity counts and transit in existing cards
+        data.matches.forEach((m, i) => {
+          // Update transit
+          if (m.nearestMetro?.length) {
+            const transitEl = document.getElementById(`transit-${i}`);
+            if (transitEl) transitEl.textContent = m.nearestMetro.join(' · ');
+            const transitWrap = document.getElementById(`transit-wrap-${i}`);
+            if (transitWrap) transitWrap.style.display = 'block';
+          }
+          // Update amenity counts
+          if (m.amenities) {
+            ['pharmacies','supermarkets','parks','gyms','intlSchools'].forEach(key => {
+              const el = document.getElementById(`amenity-${i}-${key}`);
+              if (el) el.textContent = m.amenities[key] || '0';
+            });
+          }
+        });
+      })
+      .catch(() => { document.getElementById('amenity-loading')?.remove(); });
+    }
 
   } catch (err) {
     showError(err.message || 'Something went wrong finding your match. Please try again in a moment.');
@@ -2655,41 +2696,41 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
       </div>` : '';
 
     // Transport
-    const transportHtml = m.nearestMetro?.length ? `
-      <div style="margin:14px 0;padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06);">
+    const transportHtml = `
+      <div id="transit-wrap-${i}" style="margin:14px 0;padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06);${m.nearestMetro?.length ? '' : 'display:none'}">
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.4);margin-bottom:8px;">🚇 Nearest Metro / Transit</div>
-        <div style="font-size:13px;color:rgba(248,241,231,0.8);">${m.nearestMetro.join(' · ')}</div>
-      </div>` : '';
+        <div id="transit-${i}" style="font-size:13px;color:rgba(248,241,231,0.8);">${m.nearestMetro?.join(' · ') || ''}</div>
+      </div>`;
 
     // LIVE amenities
-    const amenitiesHtml = m.amenities ? `
+    const amenitiesHtml = `
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">💊</div>
-          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.pharmacies || '—'}</div>
+          <div id="amenity-${i}-pharmacies" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.pharmacies ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Pharmacies</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🛒</div>
-          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.supermarkets || '—'}</div>
+          <div id="amenity-${i}-supermarkets" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.supermarkets ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Supermarkets</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🌳</div>
-          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.parks || '—'}</div>
+          <div id="amenity-${i}-parks" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.parks ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Parks</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🏋️</div>
-          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.gyms || '—'}</div>
+          <div id="amenity-${i}-gyms" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.gyms ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Gyms</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🎓</div>
-          <div style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities.intlSchools || '—'}</div>
+          <div id="amenity-${i}-intlSchools" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.intlSchools ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Schools</div>
         </div>
-      </div>` : '';
+      </div>`;
 
     // Rent info (LIVE only)
     const rentHtml = m.averageRent1bed ? `
