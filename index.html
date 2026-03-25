@@ -2750,17 +2750,25 @@ async function runMatch(isAlternative = false) {
             if (el) el.textContent = m.amenities?.[key] ?? '0';
           });
 
-          // Populate supermarket + gym map pins from server coords
-          const fillMapSource = (sourceId, coords, label) => {
+          // Helper: populate a map source when the map is ready, then clear loading indicator
+          const fillMapSource = (sourceId, coords, label, pillId) => {
             const map = mapInstances[i];
             if (!map || !coords?.length) return;
             const feats = coords.map(c => ({ type:'Feature', geometry:{ type:'Point', coordinates:[c.lon,c.lat] }, properties:{ name:c.name||label } }));
-            const go = () => { const src = map.getSource(sourceId); if (src) src.setData({ type:'FeatureCollection', features:feats }); else setTimeout(go, 500); };
+            const go = () => {
+              const src = map.getSource(sourceId);
+              if (src) {
+                src.setData({ type:'FeatureCollection', features:feats });
+                if (pillId) { const pill = document.getElementById(pillId); if (pill) pill.textContent = pill.textContent.replace(' ⏳',''); }
+              } else setTimeout(go, 500);
+            };
             go();
           };
-          fillMapSource('transport',    m.transitCoords,     'Station');
-          fillMapSource('supermarkets', m.supermarketCoords, 'Supermarket');
-          fillMapSource('gyms',         m.gymCoords,         'Gym');
+          fillMapSource('transport',    m.transitCoords,     'Station',     `pill-transport-${i}`);
+          fillMapSource('supermarkets', m.supermarketCoords, 'Supermarket', null);
+          fillMapSource('gyms',         m.gymCoords,         'Gym',         null);
+          fillMapSource('museums',      m.museumCoords,      'Museum',      null);
+          fillMapSource('coffee',       m.cafeCoords,        'Café',        null);
         });
       })
       .catch(err => {
@@ -2919,9 +2927,9 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       </div>
       ${stationNamesHtml}`;
 
-    // LIVE amenities grid
+    // LIVE amenities grid (Museums removed — shown on map instead)
     const amenitiesHtml = `
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 0;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">💊</div>
           <div id="amenity-${i}-pharmacies" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.pharmacies ?? '…'}</div>
@@ -2946,11 +2954,6 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div style="font-size:20px;margin-bottom:4px;">🎓</div>
           <div id="amenity-${i}-intlSchools" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.intlSchools ?? '…'}</div>
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Schools</div>
-        </div>
-        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
-          <div style="font-size:20px;margin-bottom:4px;">🏛️</div>
-          <div id="amenity-${i}-museums" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.museums ?? '…'}</div>
-          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Museums</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🚇</div>
@@ -3035,10 +3038,14 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       <div class="map-layer-pills" id="map-pills-${i}">
         <span class="map-layer-pill active" data-layer="neighbourhood" onclick="toggleMapLayer(${i},'neighbourhood',this)">🏘️ Neighbourhood</span>
         ${isLive
-          ? `<span class="map-layer-pill" data-layer="supermarkets" onclick="toggleMapLayer(${i},'supermarkets',this)">🛒 Supermarkets</span><span class="map-layer-pill" data-layer="gyms" onclick="toggleMapLayer(${i},'gyms',this)">🏋️ Gyms</span>`
-          : `<span class="map-layer-pill" data-layer="restaurants" onclick="toggleMapLayer(${i},'restaurants',this)">🍽️ Restaurants</span><span class="map-layer-pill" data-layer="bars" onclick="toggleMapLayer(${i},'bars',this)">🍷 Wine Bars</span>`}
-        <span class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport</span>
-        <span class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks</span>
+          ? `<span class="map-layer-pill" data-layer="supermarkets" onclick="toggleMapLayer(${i},'supermarkets',this)">🛒 Supermarkets</span>
+             <span class="map-layer-pill" data-layer="gyms" onclick="toggleMapLayer(${i},'gyms',this)">🏋️ Gyms</span>`
+          : `<span class="map-layer-pill" data-layer="restaurants" onclick="toggleMapLayer(${i},'restaurants',this)">🍽️ Restaurants</span>
+             <span class="map-layer-pill" data-layer="bars" onclick="toggleMapLayer(${i},'bars',this)">🍷 Wine Bars</span>
+             <span class="map-layer-pill" data-layer="museums" onclick="toggleMapLayer(${i},'museums',this)">🏛️ Museums</span>`}
+        <span class="map-layer-pill" data-layer="coffee" onclick="toggleMapLayer(${i},'coffee',this)">☕ Coffee</span>
+        <span id="pill-transport-${i}" class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport ⏳</span>
+        <span id="pill-parks-${i}" class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks ⏳</span>
       </div>
       <div class="result-map" id="map-${i}">
         <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
@@ -3225,24 +3232,21 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                   paint: { 'circle-radius': 8, 'circle-color': '#7A3030', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }
                 });
 
-                // ── SUPERMARKETS + GYMS — empty sources, filled by amenity callback ──
+                // ── EXTRA LAYERS — empty sources, filled by amenity callback ──
                 map.addSource('supermarkets', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'supermarkets-layer', type: 'circle', source: 'supermarkets', layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': '#2E7D32', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
                 map.addSource('gyms', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'gyms-layer', type: 'circle', source: 'gyms', layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': '#6A1B9A', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+                map.addSource('museums', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
+                map.addLayer({ id: 'museums-layer', type: 'circle', source: 'museums', layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': '#B8860B', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+                map.addSource('coffee', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
+                map.addLayer({ id: 'coffee-layer', type: 'circle', source: 'coffee', layout: { visibility: 'none' }, paint: { 'circle-radius': 7, 'circle-color': '#795548', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
 
-                // ── TRANSPORT PINS — empty source, filled from server transitCoords in amenity callback ──
+                // ── TRANSPORT — empty source, filled by amenity callback ──
                 map.addSource('transport', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({
-                  id: 'transport-layer',
-                  type: 'circle',
-                  source: 'transport',
-                  layout: { visibility: 'none' },
-                  paint: { 'circle-radius': 9, 'circle-color': '#185FA5', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }
-                });
+                map.addLayer({ id: 'transport-layer', type: 'circle', source: 'transport', layout: { visibility: 'none' }, paint: { 'circle-radius': 9, 'circle-color': '#185FA5', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
 
-                // ── PARKS — empty source now, browser fetches geometry after 45s delay
-                // (server Overpass throttle means server call is done by then)
+                // ── PARKS — empty source, browser fetches polygons after 45s ──
                 map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: 'none' }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }});
                 setTimeout(() => {
@@ -3250,20 +3254,18 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                   fetch(`https://overpass-api.de/api/interpreter?data=${parksQuery}`)
                     .then(r => r.text())
                     .then(raw => {
-                      if (raw.trimStart().startsWith('<')) return; // still rate-limited, skip
+                      if (raw.trimStart().startsWith('<')) return;
                       const pd = JSON.parse(raw);
-                      const parkFeatures = (pd.elements || [])
-                        .filter(e => e.geometry?.length > 2).slice(0, 5)
-                        .map(e => ({ type:'Feature', geometry:{ type:'Polygon', coordinates:[e.geometry.map(p=>[p.lon,p.lat])] }, properties:{ name:e.tags?.name||'Park' } }));
-                      if (parkFeatures.length) {
-                        const src = map.getSource('parks');
-                        if (src) src.setData({ type:'FeatureCollection', features:parkFeatures });
-                      }
+                      const pf = (pd.elements||[]).filter(e=>e.geometry?.length>2).slice(0,5)
+                        .map(e=>({ type:'Feature', geometry:{ type:'Polygon', coordinates:[e.geometry.map(p=>[p.lon,p.lat])] }, properties:{ name:e.tags?.name||'Park' } }));
+                      if (pf.length) { const src = map.getSource('parks'); if(src) src.setData({ type:'FeatureCollection', features:pf }); }
+                      const pill = document.getElementById(`pill-parks-${i}`);
+                      if (pill) pill.textContent = pill.textContent.replace(' ⏳','');
                     }).catch(()=>{});
                 }, 45000);
 
                 // Popup on pin click with Google Maps link
-                ['restaurants-layer', 'bars-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer'].forEach(layerId => {
+                ['restaurants-layer', 'bars-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer', 'coffee-layer'].forEach(layerId => {
                   map.on('click', layerId, e => {
                     const props = e.features[0].properties;
                     const mapsUrl = props.mapsUrl || `https://www.google.com/maps/search/${encodeURIComponent(props.name)}`;
@@ -3321,6 +3323,8 @@ function toggleMapLayer(mapIndex, layer, pillEl) {
     'parks': ['parks-layer'],
     'supermarkets': ['supermarkets-layer'],
     'gyms': ['gyms-layer'],
+    'museums': ['museums-layer'],
+    'coffee': ['coffee-layer'],
   };
 
   const layers = layerMap[layer] || [];
