@@ -2331,6 +2331,47 @@
 <script>
 const UNSPLASH_KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidGlhZ283MDEiLCJhIjoiY21uNjBkbHIxMDBzcDJyc2I1czFrdWt1biJ9.v1XnI4B7BwOQDV17LE-nIg';
+
+const METRO_LINKS = {
+  "Lisbon":        { name: "Metro de Lisboa", url: "https://www.metrolisboa.pt/en/travel/diagrams-and-maps/" },
+  "Porto":         { name: "Metro do Porto", url: "https://en.metrodoporto.pt/pages/364" },
+  "London":        { name: "London Underground", url: "https://tfl.gov.uk/maps/track/tube" },
+  "Paris":         { name: "RATP Paris Métro", url: "https://www.ratp.fr/en/plans-lignes/plans-metro" },
+  "Barcelona":     { name: "Metro Barcelona", url: "https://www.tmb.cat/en/barcelona-metro/map" },
+  "Madrid":        { name: "Metro Madrid", url: "https://www.metromadrid.es/en/travel-on-metro/metro-map" },
+  "Amsterdam":     { name: "GVB Metro Map", url: "https://en.gvb.nl/en/travel-information/journey-planner/route-maps" },
+  "Rome":          { name: "Roma Metropolitana", url: "https://www.atac.roma.it/en/page/metro-rail-connections-and-night-buses" },
+  "Milan":         { name: "ATM Milano Metro", url: "https://www.atm.it/en/ViaggiaConNoi/Pagine/mappa_rete.aspx" },
+  "Berlin":        { name: "BVG Berlin U-Bahn", url: "https://www.bvg.de/en/connections/bvg-maps/tube-map" },
+  "Munich":        { name: "MVV München U-Bahn", url: "https://www.mvv-muenchen.de/en/maps-stations/maps/index.html" },
+  "Vienna":        { name: "Wiener Linien U-Bahn", url: "https://www.wienerlinien.at/en/netzplan.html" },
+  "Copenhagen":    { name: "Copenhagen Metro", url: "https://www.m.dk/en/find-your-route/metro-map/" },
+  "Stockholm":     { name: "SL Tunnelbana", url: "https://sl.se/en/in-english/maps--timetables/" },
+  "Prague":        { name: "Prague Metro", url: "https://www.dpp.cz/en/travelling/network-maps" },
+  "Budapest":      { name: "BKK Budapest Metro", url: "https://bkk.hu/en/maps-and-timetables/maps/" },
+  "Brussels":      { name: "STIB Metro Brussels", url: "https://www.stib-mivb.be/article.html?l=en&_guid=9bc60d5c-6a3d-35a0-3e40-27c2d7dde2b4" },
+  "Istanbul":      { name: "İstanbul Metro", url: "https://www.metro.istanbul/en/haritalar" },
+  "New York":      { name: "MTA NYC Subway", url: "https://new.mta.info/maps" },
+  "Los Angeles":   { name: "LA Metro Rail", url: "https://www.metro.net/riding/maps/" },
+  "San Francisco": { name: "BART Map", url: "https://www.bart.gov/sites/default/files/docs/system-map.pdf" },
+  "Chicago":       { name: "CTA L Map", url: "https://www.transitchicago.com/maps/" },
+  "Washington DC": { name: "WMATA Metro Map", url: "https://www.wmata.com/schedules/maps/" },
+  "Boston":        { name: "MBTA T Map", url: "https://www.mbta.com/maps" },
+  "Toronto":       { name: "TTC Subway Map", url: "https://www.ttc.ca/routes-and-schedules/subway-map" },
+  "Montreal":      { name: "STM Métro", url: "https://www.stm.info/en/info/networks/metro/map" },
+  "Mexico City":   { name: "Metro CDMX", url: "https://metro.cdmx.gob.mx/red-del-metro" },
+  "São Paulo":     { name: "Metrô SP", url: "https://www.metro.sp.gov.br/sua-viagem/mapa-da-rede-metro-cptm.aspx" },
+  "Buenos Aires":  { name: "Subte Buenos Aires", url: "https://www.buenosaires.gob.ar/subte/mapa-de-la-red" },
+  "Tokyo":         { name: "Tokyo Metro Map", url: "https://www.tokyometro.jp/en/subwaymap/" },
+  "Seoul":         { name: "Seoul Metro Map", url: "https://www.seoulmetro.co.kr/en/cyberStation.do" },
+  "Singapore":     { name: "MRT Network Map", url: "https://www.lta.gov.sg/content/ltagov/en/getting_around/public_transport/mrt_and_lrt_trains/system_map.html" },
+  "Dubai":         { name: "Dubai Metro Map", url: "https://dubai.ae/en/information-and-services/transport/dubai-metro" },
+  "Sydney":        { name: "Sydney Metro Map", url: "https://transportnsw.info/routes/maps" },
+  "Melbourne":     { name: "Melbourne Metro", url: "https://www.ptv.vic.gov.au/more/travelling-on-the-network/maps/" },
+  "Bangkok":       { name: "BTS/MRT Bangkok", url: "https://www.bangkokmasstransit.com/" },
+  "Beijing":       { name: "Beijing Subway Map", url: "https://www.bjsubway.com/en/" },
+  "Shanghai":      { name: "Shanghai Metro Map", url: "https://www.shmetro.com/node135/201304/con130892.htm" },
+};
 const FOURSQUARE_KEY = '244GKZ3SYN0QA4CMYR4VXURO3PLM00MUWHAXLJUV04UE05T1';
 const BOOKING_AFF = '7909431';
 const GYG_AFF = 'MLFUF2A';
@@ -2573,41 +2614,40 @@ async function runMatch() {
 
     // STEP 2 — Background call: Overpass amenities + transit (~30s, silent)
     if (currentIntent === 'move') {
-      loadingMsg.style.display = 'none';
       const amenityNote = document.createElement('div');
       amenityNote.id = 'amenity-loading';
       amenityNote.style.cssText = 'text-align:center;font-size:12px;color:rgba(248,241,231,0.4);padding:8px;';
-      amenityNote.textContent = '⏳ Loading amenity data…';
+      amenityNote.textContent = '⏳ Loading local data…';
       document.getElementById('resultsArea').prepend(amenityNote);
 
       fetch('https://api.matchmyhood.com/api/amenities', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matches, destCity })
+        body: JSON.stringify({ matches, destCity, intent: 'move' })
       })
       .then(r => r.json())
       .then(data => {
         document.getElementById('amenity-loading')?.remove();
         if (!data.matches) return;
-        // Update amenity counts and transit in existing cards
         data.matches.forEach((m, i) => {
-          // Update transit
           if (m.nearestMetro?.length) {
             const transitEl = document.getElementById(`transit-${i}`);
             if (transitEl) transitEl.textContent = m.nearestMetro.join(' · ');
             const transitWrap = document.getElementById(`transit-wrap-${i}`);
             if (transitWrap) transitWrap.style.display = 'block';
           }
-          // Update amenity counts
           if (m.amenities) {
             ['pharmacies','supermarkets','parks','gyms','intlSchools'].forEach(key => {
               const el = document.getElementById(`amenity-${i}-${key}`);
-              if (el) el.textContent = m.amenities[key] || '0';
+              if (el) el.textContent = m.amenities[key] ?? '0';
             });
           }
         });
       })
-      .catch(() => { document.getElementById('amenity-loading')?.remove(); });
+      .catch(err => {
+        console.error('Amenities error:', err);
+        document.getElementById('amenity-loading')?.remove();
+      });
     }
 
   } catch (err) {
@@ -2696,9 +2736,13 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
       </div>` : '';
 
     // Transport
+    const metroLink = METRO_LINKS[destCity];
     const transportHtml = `
       <div id="transit-wrap-${i}" style="margin:14px 0;padding:12px 14px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.06);${m.nearestMetro?.length ? '' : 'display:none'}">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.4);margin-bottom:8px;">🚇 Nearest Metro / Transit</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.4);">🚇 Nearest Metro / Transit</div>
+          ${metroLink ? `<a href="${metroLink.url}" target="_blank" style="font-size:11px;color:var(--terracotta-light);text-decoration:none;font-weight:600;">${metroLink.name} map →</a>` : ''}
+        </div>
         <div id="transit-${i}" style="font-size:13px;color:rgba(248,241,231,0.8);">${m.nearestMetro?.join(' · ') || ''}</div>
       </div>`;
 
@@ -2895,28 +2939,32 @@ async function renderResults(matches, homeHood, homeCity, destCity) {
 
               map.on('load', () => {
                 // ── NEIGHBOURHOOD BOUNDARY ──────────────────────────────
-                // Query Nominatim for boundary polygon
+                // Stagger Nominatim requests to avoid rate limiting
+                setTimeout(() => {
                 const hoodQuery = encodeURIComponent(m.name + ', ' + m.city);
                 fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`)
                   .then(r => r.json())
                   .then(data => {
                     const feature = data.features?.[0];
                     if (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') {
-                      map.addSource('neighbourhood', { type: 'geojson', data: feature });
-                      map.addLayer({
-                        id: 'neighbourhood-fill',
-                        type: 'fill',
-                        source: 'neighbourhood',
-                        paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 }
-                      });
-                      map.addLayer({
-                        id: 'neighbourhood-border',
-                        type: 'line',
-                        source: 'neighbourhood',
-                        paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 }
-                      });
+                      if (!map.getSource('neighbourhood')) {
+                        map.addSource('neighbourhood', { type: 'geojson', data: feature });
+                        map.addLayer({
+                          id: 'neighbourhood-fill',
+                          type: 'fill',
+                          source: 'neighbourhood',
+                          paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 }
+                        });
+                        map.addLayer({
+                          id: 'neighbourhood-border',
+                          type: 'line',
+                          source: 'neighbourhood',
+                          paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 }
+                        });
+                      }
                     }
                   }).catch(() => {});
+                }, i * 1500); // 1.5s stagger per hood
 
                 // ── NEIGHBOURHOOD LABEL MARKER ──────────────────────────
                 const el = document.createElement('div');
