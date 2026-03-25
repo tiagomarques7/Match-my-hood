@@ -991,9 +991,9 @@
   }
   .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    max-width: 1100px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1200px;
     align-items: start;
   }
   .price-card {
@@ -1188,13 +1188,16 @@
 
   /* ── RESPONSIVE ADDITIONS ── */
   @media (max-width: 900px) {
-    .pricing-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
     .price-card-featured { transform: none; }
     .price-card-featured:hover { transform: translateY(-4px); }
     .roadmap-grid { grid-template-columns: 1fr; }
     .roadmap-col:first-child, .roadmap-col:last-child { border-radius: 20px; }
     .roadmap-col { border-radius: 20px; }
     .pricing-section, .roadmap-section { padding: 60px 24px; }
+  }
+  @media (max-width: 600px) {
+    .pricing-grid { grid-template-columns: 1fr; }
   }
 
   .why-section {
@@ -2098,6 +2101,22 @@
       <a href="#newsletter" onclick="selectPlan('free')" class="price-btn price-btn-outline">Get started free</a>
     </div>
 
+    <div class="price-card">
+      <div class="price-tier">Pay as you go</div>
+      <div class="price-amount">€0.90<span>/search</span></div>
+      <div class="price-desc">No subscription. Pay only when you need a match.</div>
+      <ul class="price-features">
+        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Full neighbourhood profile</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Booking & Airbnb links</li>
+        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> No subscription required</li>
+        <li class="disabled"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#D9C9B0" stroke-width="1.3" fill="none"/><path d="M5.5 10.5 L10.5 5.5 M10.5 10.5 L5.5 5.5" stroke="#D9C9B0" stroke-width="1.3" stroke-linecap="round"/></svg> Food crawl builder</li>
+        <li class="disabled"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#D9C9B0" stroke-width="1.3" fill="none"/><path d="M5.5 10.5 L10.5 5.5 M10.5 10.5 L5.5 5.5" stroke="#D9C9B0" stroke-width="1.3" stroke-linecap="round"/></svg> Weekly newsletter</li>
+      </ul>
+      <button onclick="handleStripeCheckout('payg')" class="price-btn price-btn-outline" style="width:100%;cursor:pointer;">
+        💳 Buy a search — €0.90
+      </button>
+    </div>
+
     <div class="price-card price-card-featured">
       <div class="price-badge">Most popular</div>
       <div class="price-tier">Explorer</div>
@@ -2491,6 +2510,8 @@ let activeVibes = [];
 let currentIntent = 'visit';
 // Track last shown neighbourhoods — passed as excludeHood to avoid repetition
 let lastShownHoods = [];
+// Prevent concurrent searches (double-clicks on "Search for an alternative match")
+let isSearching = false;
 // ── NOMINATIM SERIAL QUEUE ──────────────────────────────────────────────────
 // Nominatim rate limit: 1 req/sec. We must process sequentially, not with
 // setTimeout offsets — response times vary and can cause concurrent requests.
@@ -2594,6 +2615,8 @@ async function fetchUnsplashPhoto(query) {
 }
 
 async function runMatch(isAlternative = false) {
+  if (isSearching) return; // prevent concurrent searches
+  isSearching = true;
   const homeCity = document.getElementById('homeCity').value;
   const homeHood = document.getElementById('homeHood').value.trim();
   const destCity = document.getElementById('destCity').value;
@@ -2617,6 +2640,14 @@ async function runMatch(isAlternative = false) {
   btnText.textContent = 'Matching…';
   loading.classList.add('visible');
   errorEl.classList.remove('visible');
+
+  // Disable + update all alternative match buttons so user gets feedback
+  document.querySelectorAll('.alt-search-btn').forEach(b => {
+    b.disabled = true;
+    b.textContent = 'Searching…';
+    b.style.opacity = '0.5';
+    b.style.cursor = 'not-allowed';
+  });
 
   // For a fresh search, wipe old results and reset state
   if (!isAlternative) {
@@ -2666,32 +2697,46 @@ async function runMatch(isAlternative = false) {
     await renderResults(matches, homeHood, homeCity, destCity, isAlternative);
 
     // STEP 2 — Background call: Overpass amenities + transit (~30s, silent)
-    if (currentIntent === 'move') {
+    // Runs for BOTH modes — LIVE uses the full 6-tile grid, VISIT uses the 4-tile grid
+    {
+      const callId = `amenity-loading-${Date.now()}`;
       const amenityNote = document.createElement('div');
-      amenityNote.id = 'amenity-loading';
+      amenityNote.id = callId;
       amenityNote.style.cssText = 'text-align:center;font-size:12px;color:rgba(248,241,231,0.4);padding:8px;';
       amenityNote.textContent = '⏳ Loading local data…';
       document.getElementById('resultsArea').prepend(amenityNote);
 
+      // Capture domOffset into a local const for the closure — prevents race with concurrent calls
+      const amenityDomOffset = domOffset;
+
       fetch('https://api.matchmyhood.com/api/amenities', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matches, destCity, intent: 'move' })
+        body: JSON.stringify({ matches, destCity, intent: currentIntent })
       })
       .then(r => r.json())
       .then(data => {
-        document.getElementById('amenity-loading')?.remove();
+        document.getElementById(callId)?.remove();
         if (!data.matches) return;
         data.matches.forEach((m, idx) => {
-          const i = idx + domOffset; // matches DOM IDs which include offset
+          const i = idx + amenityDomOffset;
           if (m.nearestMetro?.length) {
             const transitEl = document.getElementById(`transit-${i}`);
             if (transitEl) transitEl.textContent = m.nearestMetro.join(' · ');
             const transitWrap = document.getElementById(`transit-wrap-${i}`);
             if (transitWrap) transitWrap.style.display = 'block';
+            // VISIT stations tile
+            const stationsEl = document.getElementById(`amenity-${i}-stations`);
+            if (stationsEl) stationsEl.textContent = m.nearestMetro.length;
           }
           if (m.amenities) {
+            // LIVE tiles
             ['pharmacies','supermarkets','parks','gyms','intlSchools','museums'].forEach(key => {
+              const el = document.getElementById(`amenity-${i}-${key}`);
+              if (el) el.textContent = m.amenities[key] ?? '0';
+            });
+            // VISIT tiles
+            ['restaurants','bars','museums'].forEach(key => {
               const el = document.getElementById(`amenity-${i}-${key}`);
               if (el) el.textContent = m.amenities[key] ?? '0';
             });
@@ -2700,7 +2745,7 @@ async function runMatch(isAlternative = false) {
       })
       .catch(err => {
         console.error('Amenities error:', err);
-        document.getElementById('amenity-loading')?.remove();
+        document.getElementById(callId)?.remove();
       });
     }
 
@@ -2711,6 +2756,14 @@ async function runMatch(isAlternative = false) {
     btn.disabled = false;
     btnText.textContent = '✦ Match it';
     loading.classList.remove('visible');
+    isSearching = false;
+    // Restore all alternative buttons
+    document.querySelectorAll('.alt-search-btn').forEach(b => {
+      b.disabled = false;
+      b.textContent = 'Search for an alternative match →';
+      b.style.opacity = '1';
+      b.style.cursor = 'pointer';
+    });
   }
 }
 
@@ -2814,7 +2867,32 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <div id="transit-${i}" style="font-size:13px;color:rgba(248,241,231,0.8);">${m.nearestMetro?.join(' · ') || ''}</div>
       </div>`;
 
-    // LIVE amenities
+    // VISIT amenity grid — restaurants, bars, museums, stations
+    const visitAmenitiesHtml = `
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0;">
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🍽️</div>
+          <div id="amenity-${i}-restaurants" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.restaurants ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Restaurants</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🍷</div>
+          <div id="amenity-${i}-bars" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.bars ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Bars & Pubs</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🏛️</div>
+          <div id="amenity-${i}-museums" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.museums ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Museums</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🚇</div>
+          <div id="amenity-${i}-stations" style="font-size:18px;font-weight:700;color:var(--cream);">${m.nearestMetro?.length ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Stations</div>
+        </div>
+      </div>`;
+
+    // LIVE amenities grid
     const amenitiesHtml = `
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
@@ -2893,7 +2971,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
       ${prosConsHtml}
       ${transportHtml}
-      ${isLive ? amenitiesHtml : ''}
+      ${isLive ? amenitiesHtml : visitAmenitiesHtml}
       ${isLive ? rentHtml : ''}
 
       ${m.mustTry ? `<div class="must-try">⭐ <strong>Must try:</strong> ${m.mustTry}</div>` : ''}
@@ -2936,7 +3014,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
     </div>
     </div>
     <div style="text-align:center;margin:20px 0 8px;">
-      <button onclick="runMatch(true)" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid rgba(196,98,45,0.5);color:var(--terracotta-light);padding:13px 26px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.2px;" onmouseover="this.style.borderColor='var(--terracotta-light)';this.style.background='rgba(196,98,45,0.08)'" onmouseout="this.style.borderColor='rgba(196,98,45,0.5)';this.style.background='transparent'">
+      <button onclick="runMatch(true)" class="alt-search-btn" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid rgba(196,98,45,0.5);color:var(--terracotta-light);padding:13px 26px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.2px;" onmouseover="if(!isSearching){this.style.borderColor='var(--terracotta-light)';this.style.background='rgba(196,98,45,0.08)'}" onmouseout="this.style.borderColor='rgba(196,98,45,0.5)';this.style.background='transparent'">
         Search for an alternative match →
       </button>
     </div>`;
@@ -3034,37 +3112,36 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
               map.on('load', () => {
                 // ── NEIGHBOURHOOD BOUNDARY ──────────────────────────────
-                // Uses serial queue — guarantees 1.6s between Nominatim requests
+                // Step 1: Draw circle IMMEDIATELY — guaranteed to always show.
+                // This is the reliable baseline regardless of Nominatim result.
+                try {
+                  const circle = turf_circle([m.lng, m.lat], 0.6);
+                  map.addSource('neighbourhood', { type: 'geojson', data: circle });
+                  map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.10 } });
+                  map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.7, 'line-dasharray': [4, 2] } });
+                } catch(e) { console.error('Circle boundary error:', e.message); }
+
+                // Step 2: Try Nominatim to upgrade circle to a real polygon.
+                // Serial queue ensures max 1 req/sec across all map instances.
                 queueNominatim(() => new Promise(resolve => {
                   const hoodQuery = encodeURIComponent(m.name + ', ' + m.city);
                   fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`)
                     .then(r => r.json())
                     .then(data => {
                       const feature = data.features?.[0];
-                      if (!feature) { resolve(); return; }
-                      // We are inside map.on('load') — style is guaranteed loaded.
-                      // Do NOT use isStyleLoaded() here: if it somehow returned false,
-                      // map.once('load') would never fire again, hanging the Nominatim queue.
-                      const applyBoundary = () => {
-                        if (map.getSource('neighbourhood')) { resolve(); return; }
+                      const isPolygon = feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon';
+                      if (isPolygon) {
                         try {
-                          if (feature.geometry?.type === 'Polygon' || feature.geometry?.type === 'MultiPolygon') {
-                            map.addSource('neighbourhood', { type: 'geojson', data: feature });
-                            map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 } });
-                            map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.8 } });
-                          } else {
-                            // Point result — draw a dashed circle ~600m radius
-                            const circle = turf_circle([m.lng, m.lat], 0.6);
-                            map.addSource('neighbourhood', { type: 'geojson', data: circle });
-                            map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.10 } });
-                            map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.6, 'line-dasharray': [3, 2] } });
-                          }
-                        } catch(e) {
-                          console.error('Boundary error:', e.message);
-                        }
-                        resolve();
-                      };
-                      applyBoundary();
+                          // Replace circle data with the real polygon geometry
+                          map.getSource('neighbourhood').setData(feature);
+                          // Upgrade to solid border
+                          map.setPaintProperty('neighbourhood-fill', 'fill-opacity', 0.12);
+                          map.setPaintProperty('neighbourhood-border', 'line-width', 2.5);
+                          map.setPaintProperty('neighbourhood-border', 'line-opacity', 0.85);
+                        } catch(e) { console.error('Polygon upgrade error:', e.message); }
+                      }
+                      // If no polygon found, the circle stays — no need to do anything
+                      resolve();
                     })
                     .catch(() => resolve());
                 }));
@@ -3117,21 +3194,28 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 // ── TRANSPORT PINS from Overpass (metro + tram + rail) ──────────────
                 const transitQuery = encodeURIComponent(`[out:json][timeout:15];
 (
-  node["railway"~"station|subway_entrance|tram_stop|halt"](around:800,${m.lat},${m.lng});
-  node["station"="subway"](around:800,${m.lat},${m.lng});
+  nwr["railway"~"station"](around:800,${m.lat},${m.lng});
+  nwr["station"="subway"](around:800,${m.lat},${m.lng});
+  node["railway"~"subway_entrance|tram_stop|halt"](around:800,${m.lat},${m.lng});
   node["public_transport"="stop_position"]["tram"="yes"](around:800,${m.lat},${m.lng});
   node["public_transport"="stop_position"]["subway"="yes"](around:800,${m.lat},${m.lng});
 );
-out 10;`);
+out center 15;`);
                 fetch(`https://overpass-api.de/api/interpreter?data=${transitQuery}`)
                   .then(r => r.json())
                   .then(data => {
                     const transitFeatures = (data.elements || [])
+                      .map(e => {
+                        // nodes have lat/lon directly; ways/relations have center.lat/center.lon
+                        const lat = e.lat ?? e.center?.lat;
+                        const lon = e.lon ?? e.center?.lon;
+                        return { lat, lon, name: e.tags?.name };
+                      })
                       .filter(e => e.lat && e.lon)
                       .map(e => ({
                         type: 'Feature',
                         geometry: { type: 'Point', coordinates: [e.lon, e.lat] },
-                        properties: { name: e.tags?.name || 'Station' }
+                        properties: { name: e.name || 'Station' }
                       }));
                     map.addSource('transport', { type: 'geojson', data: { type: 'FeatureCollection', features: transitFeatures }});
                     map.addLayer({
@@ -3308,6 +3392,7 @@ function handleSuggestion(e, type) {
 // Pre-select plan in waitlist from pricing card clicks
 // Stripe checkout handler — replace with real Stripe links when ready
 const STRIPE_LINKS = {
+  payg: 'https://buy.stripe.com/YOUR_PAYG_LINK',
   explorer_monthly: 'https://buy.stripe.com/YOUR_EXPLORER_MONTHLY_LINK',
   explorer_annual: 'https://buy.stripe.com/YOUR_EXPLORER_ANNUAL_LINK',
   founding_member: 'https://buy.stripe.com/YOUR_FOUNDING_MEMBER_LINK'
@@ -3315,13 +3400,14 @@ const STRIPE_LINKS = {
 
 function handleStripeCheckout(plan) {
   const link = STRIPE_LINKS[plan];
-  if (link.includes('YOUR_')) {
+  if (!link || link.includes('YOUR_')) {
     // Stripe not yet set up — redirect to waitlist
     document.querySelector('#newsletter').scrollIntoView({ behavior: 'smooth' });
     const sel = document.getElementById('waitlistPlan');
     if (sel) {
       if (plan === 'founding_member') sel.value = 'founding';
       else if (plan.startsWith('explorer')) sel.value = 'explorer';
+      else sel.value = 'free';
     }
     return;
   }
