@@ -2507,6 +2507,9 @@ async function _drainNomQ() {
   }
   _nomRunning = false;
 }
+
+// Lightweight circle GeoJSON (no turf.js needed)
+function turf_circle(center, radiusKm, steps = 64) {
   const [lng, lat] = center;
   const coords = [];
   for (let i = 0; i <= steps; i++) {
