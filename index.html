@@ -3124,7 +3124,9 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
       // Load Unsplash photo with fallback queries
       if (m.unsplashQuery) {
-        const queries = [m.unsplashQuery, `${m.name} ${m.city} street photography`, `${m.name} neighbourhood street`];
+        // Truncate Claude's query to first 4 words max — long queries 404 on Unsplash
+        const shortQuery = m.unsplashQuery.split(' ').slice(0, 4).join(' ');
+        const queries = [shortQuery, `${m.name} ${m.city}`, m.city + ' street', 'city neighbourhood street'];
         let photoUrl = null;
         for (const q of queries) {
           photoUrl = await fetchUnsplashPhoto(q);
@@ -3178,7 +3180,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 // Serial queue ensures max 1 req/sec across all map instances.
                 queueNominatim(() => new Promise(resolve => {
                   const hoodQuery = encodeURIComponent(m.name + ', ' + m.city);
-                  fetch(`https://nominatim.openstreetmap.org/search?q=${hoodQuery}&format=geojson&polygon_geojson=1&limit=1`)
+                  fetch(`https://api.matchmyhood.com/api/nominatim?q=${hoodQuery}`)
                     .then(r => r.json())
                     .then(data => {
                       const feature = data.features?.[0];
