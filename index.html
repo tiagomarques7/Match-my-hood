@@ -3124,7 +3124,8 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
       // Load Unsplash photo with fallback queries
       if (m.unsplashQuery) {
-        const shortQuery = m.unsplashQuery.split(' ').slice(0,4).join(' '); const queries = [shortQuery, `${m.name} ${m.city}`, m.city + ' street', 'city neighbourhood street'];
+        const shortQuery = m.unsplashQuery.split(' ').slice(0,3).join(' ');
+        const queries = [shortQuery, m.city, `${m.city} street`, 'lisbon barcelona london street'];
         let photoUrl = null;
         for (const q of queries) {
           photoUrl = await fetchUnsplashPhoto(q);
