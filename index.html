@@ -3202,7 +3202,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
                 // ── NEIGHBOURHOOD LABEL — small HTML overlay, top-left corner ──────
                 const labelEl = document.createElement('div');
-                labelEl.style.cssText = 'position:absolute;top:10px;left:10px;z-index:10;background:rgba(61,43,31,0.72);color:rgba(248,241,231,0.9);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:0.3px;backdrop-filter:blur(6px);font-family:DM Sans,sans-serif;pointer-events:none;';
+                labelEl.style.cssText = 'position:absolute;bottom:10px;left:10px;z-index:10;background:rgba(61,43,31,0.72);color:rgba(248,241,231,0.9);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:0.3px;backdrop-filter:blur(6px);font-family:DM Sans,sans-serif;pointer-events:none;';
                 labelEl.textContent = m.name;
                 document.getElementById('map-' + i).appendChild(labelEl);
 
@@ -3282,9 +3282,9 @@ function toggleMapFullscreen(mapId, btn) {
     const closeBtn = document.createElement('button');
     closeBtn.id = closeId;
     closeBtn.textContent = '✕ Close map';
-    closeBtn.style.cssText = 'position:fixed;top:20px;right:20px;z-index:10000;background:#C4622D;color:white;border:none;padding:12px 20px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,0.3);';
+    closeBtn.style.cssText = 'position:absolute;top:10px;right:10px;z-index:10000;background:rgba(61,43,31,0.75);color:rgba(248,241,231,0.9);border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;backdrop-filter:blur(6px);letter-spacing:0.3px;';
     closeBtn.onclick = () => toggleMapFullscreen(mapId, btn);
-    document.body.appendChild(closeBtn);
+    mapEl.appendChild(closeBtn);
   } else {
     const existing = document.getElementById(closeId);
     if (existing) existing.remove();
