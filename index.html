@@ -2754,7 +2754,7 @@ async function runMatch(isAlternative = false) {
           const fillMapSource = (sourceId, coords, label, pillId) => {
             const map = mapInstances[i];
             if (!map || !coords?.length) return;
-            const feats = coords.map(c => ({ type:'Feature', geometry:{ type:'Point', coordinates:[c.lon,c.lat] }, properties:{ name:c.name||label } }));
+            const feats = coords.map(c => ({ type:'Feature', geometry:{ type:'Point', coordinates:[c.lon,c.lat] }, properties:{ name:c.name||label, city: m.city||destCity, hood: m.name } }));
             const go = () => {
               const src = map.getSource(sourceId);
               if (src) {
@@ -3249,7 +3249,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 ['restaurants-layer', 'bars-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer', 'coffee-layer'].forEach(layerId => {
                   map.on('click', layerId, e => {
                     const props = e.features[0].properties;
-                    const mapsUrl = props.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(props.name)}`;
+                    const cityCtx = [props.hood, props.city].filter(Boolean).join(', '); const mapsUrl = props.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(props.name + (cityCtx ? ", " + cityCtx : ""))}`;
                     new mapboxgl.Popup({ closeButton: true, maxWidth: '220px' })
                       .setLngLat(e.lngLat)
                       .setHTML(`
