@@ -2827,7 +2827,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
     const airbnbUrl = `https://www.airbnb.com/s/${encodeURIComponent(destCity + '--' + m.name)}/homes`;
 
     const restaurants = (m.top3Restaurants || []).map((r, j) => {
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
+      const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         <div class="pick-info">
@@ -2839,7 +2839,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
     }).join('');
 
     const wineBars = (m.top3WineBars || []).map((r, j) => {
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
+      const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         <div class="pick-info">
@@ -3124,9 +3124,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
       // Load Unsplash photo with fallback queries
       if (m.unsplashQuery) {
-        // Truncate Claude's query to first 4 words max — long queries 404 on Unsplash
-        const shortQuery = m.unsplashQuery.split(' ').slice(0, 4).join(' ');
-        const queries = [shortQuery, `${m.name} ${m.city}`, m.city + ' street', 'city neighbourhood street'];
+        const shortQuery = m.unsplashQuery.split(' ').slice(0,4).join(' '); const queries = [shortQuery, `${m.name} ${m.city}`, m.city + ' street', 'city neighbourhood street'];
         let photoUrl = null;
         for (const q of queries) {
           photoUrl = await fetchUnsplashPhoto(q);
@@ -3250,7 +3248,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 ['restaurants-layer', 'bars-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer', 'coffee-layer'].forEach(layerId => {
                   map.on('click', layerId, e => {
                     const props = e.features[0].properties;
-                    const mapsUrl = props.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(props.name)}`;
+                    const mapsUrl = props.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(props.name)}`;
                     new mapboxgl.Popup({ closeButton: true, maxWidth: '220px' })
                       .setLngLat(e.lngLat)
                       .setHTML(`
