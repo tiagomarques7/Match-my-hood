@@ -2840,7 +2840,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
   // Build cards HTML
   const cards = matches.map((m, idx) => {
     const i = idx + indexOffset; // unique index across all appended cards
-    const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(m.name + ' ' + destCity)}&aid=${BOOKING_AFF}`;
+    const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(m.name + ' ' + destCity)}`;
     const airbnbUrl = `https://www.airbnb.com/s/${encodeURIComponent(destCity + '--' + m.name)}/homes`;
 
     const restaurants = (m.top3Restaurants || []).map((r, j) => {
