@@ -2831,7 +2831,9 @@ async function runMatch(isAlternative = false) {
             }
 
             if (!data.lines?.length) return;
+            // Stagger additions — adding 150+ sources/layers simultaneously overwhelms Mapbox
             data.lines.forEach((line, idx) => {
+              setTimeout(() => {
               const sourceId = `transit-line-${i}-${idx}`;
               const layerId  = `transit-line-layer-${i}-${idx}`;
               // Add each line as a MultiLineString
@@ -2881,9 +2883,10 @@ async function runMatch(isAlternative = false) {
                       document.querySelectorAll('.mapboxgl-popup').forEach(p => p.remove());
                     });
                   }
-                } catch(e) { setTimeout(addLine, 500); }
+                } catch(e) { console.error('addLine error:', e.message); }
               };
-              if (map.loaded()) addLine(); else map.on('load', addLine);
+              addLine();
+              }, idx * 30); // 30ms stagger per line
             });
           })
           .catch(e => console.error('Transit lines error:', e));
