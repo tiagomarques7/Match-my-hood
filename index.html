@@ -2744,7 +2744,15 @@ async function runMatch(isAlternative = false) {
           const stationNamesText = document.getElementById(`station-names-text-${i}`);
           if (stationNamesWrap && stationNamesText) {
             if (busOnly && busArr.length) {
-              stationNamesText.innerHTML = '🚌 ' + busArr.join(' · ') + '<span style="margin-left:8px;font-size:10px;color:rgba(248,241,231,0.3);">No metro/train/tram within 800m</span>';
+              stationNamesText.textContent = '🚌 ' + busArr.join(' · ');
+              // add note as separate block if not already there
+              if (!stationNamesWrap.querySelector('.bus-note')) {
+                const note = document.createElement('div');
+                note.className = 'bus-note';
+                note.style.cssText = 'font-size:10px;color:rgba(248,241,231,0.3);margin-top:4px;';
+                note.textContent = 'No metro/train/tram within 800m';
+                stationNamesWrap.appendChild(note);
+              }
               stationNamesWrap.style.display = 'block';
             } else if (metroArr.length) {
               stationNamesText.textContent = '🚇 ' + metroArr.join(' · ');
@@ -2918,9 +2926,8 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
     // Station names row — shown below amenity grids in both modes
     const stationNamesHtml = `
       <div id="station-names-${i}" style="margin:-6px 0 14px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.05);font-size:12px;color:rgba(248,241,231,0.5);display:${(m.nearestMetro?.length || m.busOnly) ? 'block' : 'none'};">
-        ${m.busOnly
-          ? `<span id="station-names-text-${i}">🚌 ${m.nearestBus?.join(' · ') || ''}</span><br><span style="font-size:10px;color:rgba(248,241,231,0.3);">No metro/train/tram within 800m</span>`
-          : `<span id="station-names-text-${i}">🚇 ${m.nearestMetro?.join(' · ') || ''}</span>`}
+        <span id="station-names-text-${i}">${m.busOnly ? '🚌 ' + (m.nearestBus?.join(' · ') || '') : '🚇 ' + (m.nearestMetro?.join(' · ') || '')}</span>
+        ${m.busOnly ? '<div style="font-size:10px;color:rgba(248,241,231,0.3);margin-top:4px;">No metro/train/tram within 800m</div>' : ''}
       </div>`;
 
     // VISIT amenity grid — restaurants, bars, coffees, parks, attractions, stations
