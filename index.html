@@ -2741,21 +2741,12 @@ async function runMatch(isAlternative = false) {
           }
 
           const stationNamesWrap = document.getElementById(`station-names-${i}`);
-          const stationNamesText = document.getElementById(`station-names-text-${i}`);
-          if (stationNamesWrap && stationNamesText) {
+          if (stationNamesWrap) {
             if (busOnly && busArr.length) {
-              stationNamesText.textContent = '🚌 ' + busArr.join(' · ');
-              // add note as separate block if not already there
-              if (!stationNamesWrap.querySelector('.bus-note')) {
-                const note = document.createElement('div');
-                note.className = 'bus-note';
-                note.style.cssText = 'font-size:10px;color:rgba(248,241,231,0.3);margin-top:4px;';
-                note.textContent = 'No metro/train/tram within 800m';
-                stationNamesWrap.appendChild(note);
-              }
+              stationNamesWrap.innerHTML = `<div>🚌 ${busArr.join(' · ')}</div><div style="font-size:10px;color:rgba(248,241,231,0.3);margin-top:4px;">No metro/train/tram within 800m</div>`;
               stationNamesWrap.style.display = 'block';
             } else if (metroArr.length) {
-              stationNamesText.textContent = '🚇 ' + metroArr.join(' · ');
+              stationNamesWrap.innerHTML = `<div>🚇 ${metroArr.join(' · ')}</div>`;
               stationNamesWrap.style.display = 'block';
             } else {
               stationNamesWrap.style.display = 'none';
