@@ -2883,6 +2883,14 @@ async function runMatch(isAlternative = false) {
             if (nearbyStops.size > 0) {
               const stationsEl = document.getElementById(`amenity-${i}-stations`);
               if (stationsEl && !m.busOnly) stationsEl.textContent = nearbyStops.size;
+            } else if (m.transitCoords?.length) {
+              // All transit line stops are outside the polygon boundary —
+              // fall back to showing the Overpass station pins (already loaded into
+              // the transport source by fillMapSource above) via the transport pill
+              if (transportPill) {
+                transportPill.style.display = '';
+                transportPill.innerHTML = '🚇 Stations';
+              }
             }
           })
           .catch(e => console.error('Transit lines error:', e));
@@ -2943,10 +2951,10 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
     const restaurants = (m.top3Restaurants || []).map((r, j) => {
       const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
-      const theforkUrl = `https://www.thefork.com/search?cityName=${encodeURIComponent(destCity)}&query=${encodeURIComponent(r.name)}`;
       const openBadge = r.openStatus ? `<span class="pick-open ${r.openStatus === 'Open now' ? 'open' : 'closed'}">${r.openStatus}</span>` : '';
-      const websiteLink = r.website ? `<a href="${r.website}" target="_blank" class="pick-link" style="margin-right:8px;">🌐 Website →</a>` : '';
-      const bookLink = `<a href="${theforkUrl}" target="_blank" class="pick-link" style="margin-right:8px;">🍽️ Reserve →</a>`;
+      const bookUrl = r.website || `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
+      const bookLabel = r.website ? '🌐 Website & Book →' : '📍 Find & Book →';
+      const bookLink = `<a href="${bookUrl}" target="_blank" class="pick-link" style="margin-right:8px;">${bookLabel}</a>`;
       const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
@@ -2955,17 +2963,17 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
           ${openBadge}
-          <div style="margin-top:5px;">${bookLink}${websiteLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
+          <div style="margin-top:5px;">${bookLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
         </div>
       </div>`;
     }).join('');
 
     const wineBars = (m.top3WineBars || []).map((r, j) => {
       const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
-      const theforkUrl = `https://www.thefork.com/search?cityName=${encodeURIComponent(destCity)}&query=${encodeURIComponent(r.name)}`;
       const openBadge = r.openStatus ? `<span class="pick-open ${r.openStatus === 'Open now' ? 'open' : 'closed'}">${r.openStatus}</span>` : '';
-      const websiteLink = r.website ? `<a href="${r.website}" target="_blank" class="pick-link" style="margin-right:8px;">🌐 Website →</a>` : '';
-      const bookLink = `<a href="${theforkUrl}" target="_blank" class="pick-link" style="margin-right:8px;">🍽️ Reserve →</a>`;
+      const bookUrl = r.website || `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
+      const bookLabel = r.website ? '🌐 Website & Book →' : '📍 Find & Book →';
+      const bookLink = `<a href="${bookUrl}" target="_blank" class="pick-link" style="margin-right:8px;">${bookLabel}</a>`;
       const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
@@ -2974,7 +2982,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
           ${openBadge}
-          <div style="margin-top:5px;">${bookLink}${websiteLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
+          <div style="margin-top:5px;">${bookLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
         </div>
       </div>`;
     }).join('');
@@ -3242,6 +3250,9 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       </div>
       <div class="result-map" id="map-${i}">
         <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
+      </div>
+      <div style="margin-top:8px;text-align:right;">
+        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}" target="_blank" style="font-size:12px;color:rgba(248,241,231,0.45);text-decoration:none;font-weight:500;letter-spacing:0.2px;transition:color 0.2s;" onmouseover="this.style.color='rgba(248,241,231,0.8)'" onmouseout="this.style.color='rgba(248,241,231,0.45)'">📍 Street View →</a>
       </div>` : ''}
 
       ${propertyLinksHtml}
