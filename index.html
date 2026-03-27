@@ -2789,20 +2789,54 @@ async function runMatch(isAlternative = false) {
           fillMapSource('museums',      m.museumCoords,      'Attraction',  null);
           fillMapSource('coffee',       m.cafeCoords,        'Café',        null);
 
-          // Draw faded transit line connecting station points
-          if (m.transitCoords?.length >= 2) {
+          // Fetch and draw real transit lines
+          fetch('https://api.matchmyhood.com/api/transitlines', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lat: m.lat, lng: m.lng })
+          })
+          .then(r => r.json())
+          .then(data => {
             const map = mapInstances[i];
-            const go = () => {
-              const src = map?.getSource('transit-lines');
-              if (src) {
-                src.setData({ type: 'FeatureCollection', features: [{
-                  type: 'Feature',
-                  geometry: { type: 'LineString', coordinates: m.transitCoords.map(c => [c.lon, c.lat]) }
-                }]});
-              } else setTimeout(go, 500);
-            };
-            go();
-          }
+            if (!map || !data.lines?.length) return;
+            data.lines.forEach((line, idx) => {
+              const sourceId = `transit-line-${i}-${idx}`;
+              const layerId  = `transit-line-layer-${i}-${idx}`;
+              // Add each line as a MultiLineString
+              const geojson = {
+                type: 'Feature',
+                properties: { name: line.name, ref: line.ref, colour: line.colour },
+                geometry: { type: 'MultiLineString', coordinates: line.coords }
+              };
+              const addLine = () => {
+                try {
+                  if (!map.getSource(sourceId)) {
+                    map.addSource(sourceId, { type: 'geojson', data: geojson });
+                    map.addLayer({
+                      id: layerId, type: 'line', source: sourceId,
+                      layout: { visibility: 'visible' },
+                      paint: { 'line-color': line.colour, 'line-width': 2.5, 'line-opacity': 0.5 }
+                    });
+                    // Hover popup showing line name + ref
+                    map.on('mouseenter', layerId, (e) => {
+                      map.getCanvas().style.cursor = 'pointer';
+                      const label = line.ref ? `${line.ref} — ${line.name}` : line.name;
+                      new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 10 })
+                        .setLngLat(e.lngLat)
+                        .setHTML(`<div style="font-size:12px;font-weight:700;color:var(--cream);padding:2px 4px;">${label}</div>`)
+                        .addTo(map);
+                    });
+                    map.on('mouseleave', layerId, () => {
+                      map.getCanvas().style.cursor = '';
+                      document.querySelectorAll('.mapboxgl-popup').forEach(p => p.remove());
+                    });
+                  }
+                } catch(e) { setTimeout(addLine, 500); }
+              };
+              if (map.loaded()) addLine(); else map.on('load', addLine);
+            });
+          })
+          .catch(e => console.error('Transit lines error:', e));
         });
       })
       .catch(err => {
@@ -3314,10 +3348,6 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: 'none' }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }});
 
-                // ── METRO / TRANSIT LINES — drawn from our own transitCoords data ──
-                // Always visible at low opacity as ambient context. Populated by amenity callback.
-                map.addSource('transit-lines', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'transit-lines-layer', type: 'line', source: 'transit-lines', layout: { visibility: 'visible' }, paint: { 'line-color': '#185FA5', 'line-width': 2, 'line-opacity': 0.25, 'line-dasharray': [2, 3] }});
                 setTimeout(() => {
                   const pq = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"]["name"](around:700,${m.lat},${m.lng});out geom 5;`);
                   fetch(`https://api.matchmyhood.com/api/overpass?data=${pq}`)
