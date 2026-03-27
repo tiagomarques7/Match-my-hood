@@ -2916,8 +2916,8 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
     // Station names row — shown below amenity grids in both modes
     const stationNamesHtml = `
-      <div id="station-names-${i}" style="margin:-6px 0 14px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.05);font-size:12px;color:rgba(248,241,231,0.5);display:${(m.nearestMetro?.length || m.busOnly) ? 'block' : 'none'};">
-        <span id="station-names-text-${i}">${m.busOnly ? '🚌 ' + (m.nearestBus?.join(' · ') || '') : '🚇 ' + (m.nearestMetro?.join(' · ') || '')}</span>
+      <div id="station-names-${i}" style="margin:8px 0 14px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.05);font-size:12px;color:rgba(248,241,231,0.5);display:${(m.nearestMetro?.length || m.busOnly) ? 'block' : 'none'};">
+        <div id="station-names-text-${i}">${m.busOnly ? '🚌 ' + (m.nearestBus?.join(' · ') || '') : '🚇 ' + (m.nearestMetro?.join(' · ') || '')}</div>
         ${m.busOnly ? '<div style="font-size:10px;color:rgba(248,241,231,0.3);margin-top:4px;">No metro/train/tram within 800m</div>' : ''}
       </div>`;
 
