@@ -2762,7 +2762,7 @@ async function runMatch(isAlternative = false) {
           }
 
           // Update all tiles — both modes, always
-          ['pharmacies','supermarkets','parks','gyms','intlSchools','museums','restaurants','cafes','bars'].forEach(key => {
+          ['pharmacies','supermarkets','parks','gyms','intlSchools','museums','restaurants','cafes','bars','musicVenues','cinemas','theatres','markets','hospitals'].forEach(key => {
             const el = document.getElementById(`amenity-${i}-${key}`);
             if (el) el.textContent = m.amenities?.[key] ?? '0';
           });
@@ -2955,7 +2955,30 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">${m.busOnly ? 'Bus stops' : 'Stations'}</div>
         </div>
       </div>
-      ${stationNamesHtml}`;
+      ${stationNamesHtml}
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.35);margin:16px 0 8px;">🎭 Entertainment & Culture</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:0;">
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🎵</div>
+          <div id="amenity-${i}-musicVenues" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.musicVenues ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Music Venues</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🎬</div>
+          <div id="amenity-${i}-cinemas" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.cinemas ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Cinemas</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🎭</div>
+          <div id="amenity-${i}-theatres" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.theatres ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Theatres</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🛒</div>
+          <div id="amenity-${i}-markets" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.markets ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Markets</div>
+        </div>
+      </div>`;
 
     // LIVE amenities grid (Museums shown on map as Attractions)
     const amenitiesHtml = `
@@ -2991,7 +3014,35 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">${m.busOnly ? 'Bus stops' : 'Stations'}</div>
         </div>
       </div>
-      ${stationNamesHtml}`;
+      ${stationNamesHtml}
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.35);margin:16px 0 8px;">🎭 Entertainment & Culture</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:0;">
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🎵</div>
+          <div id="amenity-${i}-musicVenues" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.musicVenues ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Music Venues</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🎬</div>
+          <div id="amenity-${i}-cinemas" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.cinemas ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Cinemas</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🎭</div>
+          <div id="amenity-${i}-theatres" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.theatres ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Theatres</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🛒</div>
+          <div id="amenity-${i}-markets" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.markets ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Markets</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
+          <div style="font-size:20px;margin-bottom:4px;">🏥</div>
+          <div id="amenity-${i}-hospitals" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.hospitals ?? '…'}</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Hospitals</div>
+        </div>
+      </div>`;
 
     // Rent info (LIVE only)
     const rentHtml = m.averageRent1bed ? `
@@ -3076,6 +3127,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <span class="map-layer-pill" data-layer="coffee" onclick="toggleMapLayer(${i},'coffee',this)">☕ Coffee</span>
         <span id="pill-transport-${i}" class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport ⏳</span>
         <span id="pill-parks-${i}" class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks ⏳</span>
+        <span class="map-layer-pill" data-layer="metrolines" onclick="toggleMapLayer(${i},'metrolines',this)">🗺️ Metro Lines</span>
       </div>
       <div class="result-map" id="map-${i}">
         <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
@@ -3247,6 +3299,14 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 // ── PARKS — empty source, browser fetches named park polygons after 45s ──
                 map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: 'none' }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }});
+
+                // ── METRO LINES — use Mapbox built-in vector tile layers ──
+                // light-v11 contains transit data but hides it by default
+                ['transit-label', 'road-rail', 'road-rail-tracks'].forEach(layerId => {
+                  if (map.getLayer(layerId)) {
+                    map.setLayoutProperty(layerId, 'visibility', 'none');
+                  }
+                });
                 setTimeout(() => {
                   const pq = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"]["name"](around:700,${m.lat},${m.lng});out geom 5;`);
                   fetch(`https://api.matchmyhood.com/api/overpass?data=${pq}`)
@@ -3337,6 +3397,7 @@ function toggleMapLayer(mapIndex, layer, pillEl) {
     'gyms': ['gyms-layer'],
     'museums': ['museums-layer'],
     'coffee': ['coffee-layer'],
+    'metrolines': ['transit-label', 'road-rail', 'road-rail-tracks'],
   };
 
   const layers = layerMap[layer] || [];
