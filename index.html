@@ -1474,7 +1474,7 @@
   .map-3d-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 100px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(20,20,20,0.75); color: rgba(248,241,231,0.6); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; backdrop-filter: blur(4px); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
   .map-3d-toggle:hover { border-color: var(--terracotta-light); color: var(--cream); }
   .map-3d-toggle.active { background: var(--terracotta); border-color: var(--terracotta); color: white; font-weight: 600; }
-  .mapboxgl-ctrl.mapboxgl-ctrl-3d { background: none; box-shadow: none; margin: 0; }
+  .mapboxgl-ctrl.mapboxgl-ctrl-3d { background: none; box-shadow: none; margin: 0; margin-top: 8px; }
   .mapboxgl-popup-content { background: var(--earth) !important; color: var(--cream) !important; border-radius: 8px !important; padding: 4px !important; box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important; }
   .mapboxgl-popup-tip { border-top-color: var(--earth) !important; }
   .mapboxgl-ctrl-group { background: var(--earth) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
@@ -3531,7 +3531,7 @@ function toggleMapFullscreen(mapId, btn) {
     // Add zoom controls for fullscreen
     const zoomWrap = document.createElement('div');
     zoomWrap.id = 'fs-zoom-' + mapId;
-    zoomWrap.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:4px;';
+    zoomWrap.style.cssText = 'position:fixed;bottom:80px;left:20px;z-index:99999;display:flex;flex-direction:column;gap:4px;';
     const mapIdx = parseInt(mapId.replace('map-', ''));
     const mapInst = mapInstances[mapIdx];
     [['＋', () => mapInst?.zoomIn()], ['－', () => mapInst?.zoomOut()]].forEach(([label, action]) => {
