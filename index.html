@@ -2841,17 +2841,37 @@ async function runMatch(isAlternative = false) {
             map._transitLines = data.lines;
             drawTransitLines(map, data.lines, i);
 
-            // Update stations tile — count unique stops near the neighbourhood centre only
-            // Use a tight radius (~1km) to avoid counting the entire city's stops
+            // Update stations tile — count unique stops inside the neighbourhood boundary
             const hoodLat = m.lat, hoodLng = m.lng;
+            const boundary = map._boundaryData;
             const nearbyStops = new Set();
+
+            // Simple point-in-bbox pre-filter using boundary extent, then polygon test
+            const ptInPolygon = (lng, lat, geojson) => {
+              try {
+                const rings = geojson.type === 'Feature'
+                  ? (geojson.geometry.type === 'Polygon' ? [geojson.geometry.coordinates[0]] : geojson.geometry.coordinates.map(p => p[0]))
+                  : geojson.type === 'Polygon' ? [geojson.coordinates[0]] : geojson.coordinates.map(p => p[0]);
+                for (const ring of rings) {
+                  let inside = false;
+                  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                    const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+                    if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+                  }
+                  if (inside) return true;
+                }
+              } catch(e) {}
+              return false;
+            };
+
             data.lines.forEach(line => {
               (line.stops || []).forEach(c => {
-                const dlat = c[1] - hoodLat, dlng = c[0] - hoodLng;
-                const distKm = Math.sqrt(dlat*dlat + dlng*dlng) * 111;
-                if (distKm <= 1.2) {
-                  const key = `${Math.round(c[1]*1000)},${Math.round(c[0]*1000)}`;
-                  nearbyStops.add(key);
+                const lng = c[0], lat = c[1];
+                const inArea = boundary
+                  ? ptInPolygon(lng, lat, boundary)
+                  : (Math.sqrt((lat-hoodLat)**2 + (lng-hoodLng)**2) * 111) <= 1.5;
+                if (inArea) {
+                  nearbyStops.add(`${Math.round(lat*1000)},${Math.round(lng*1000)}`);
                 }
               });
             });
