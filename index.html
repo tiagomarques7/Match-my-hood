@@ -2840,6 +2840,23 @@ async function runMatch(isAlternative = false) {
             // Store lines on map instance so they can be restored after 3D → flat revert
             map._transitLines = data.lines;
             drawTransitLines(map, data.lines, i);
+
+            // Update stations tile to match what's visible on the map
+            // Count unique stop names across all lines
+            const allStopNames = new Set();
+            data.lines.forEach(line => {
+              if (line.stops?.length) {
+                // stops are coords [lng,lat] — count unique positions deduplicated to ~50m
+                line.stops.forEach(c => {
+                  const key = `${Math.round(c[1]*1000)},${Math.round(c[0]*1000)}`;
+                  allStopNames.add(key);
+                });
+              }
+            });
+            if (allStopNames.size > 0) {
+              const stationsEl = document.getElementById(`amenity-${i}-stations`);
+              if (stationsEl && !m.busOnly) stationsEl.textContent = allStopNames.size;
+            }
           })
           .catch(e => console.error('Transit lines error:', e));
         });
