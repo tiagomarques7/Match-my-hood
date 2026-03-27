@@ -2841,21 +2841,23 @@ async function runMatch(isAlternative = false) {
             map._transitLines = data.lines;
             drawTransitLines(map, data.lines, i);
 
-            // Update stations tile to match what's visible on the map
-            // Count unique stop names across all lines
-            const allStopNames = new Set();
+            // Update stations tile — count unique stops near the neighbourhood centre only
+            // Use a tight radius (~1km) to avoid counting the entire city's stops
+            const hoodLat = m.lat, hoodLng = m.lng;
+            const nearbyStops = new Set();
             data.lines.forEach(line => {
-              if (line.stops?.length) {
-                // stops are coords [lng,lat] — count unique positions deduplicated to ~50m
-                line.stops.forEach(c => {
+              (line.stops || []).forEach(c => {
+                const dlat = c[1] - hoodLat, dlng = c[0] - hoodLng;
+                const distKm = Math.sqrt(dlat*dlat + dlng*dlng) * 111;
+                if (distKm <= 1.2) {
                   const key = `${Math.round(c[1]*1000)},${Math.round(c[0]*1000)}`;
-                  allStopNames.add(key);
-                });
-              }
+                  nearbyStops.add(key);
+                }
+              });
             });
-            if (allStopNames.size > 0) {
+            if (nearbyStops.size > 0) {
               const stationsEl = document.getElementById(`amenity-${i}-stations`);
-              if (stationsEl && !m.busOnly) stationsEl.textContent = allStopNames.size;
+              if (stationsEl && !m.busOnly) stationsEl.textContent = nearbyStops.size;
             }
           })
           .catch(e => console.error('Transit lines error:', e));
