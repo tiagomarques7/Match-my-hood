@@ -2723,13 +2723,30 @@ async function runMatch(isAlternative = false) {
 
           // Always update stations count + names (even if 0 / empty)
           const metroArr = m.nearestMetro || [];
+          const busArr   = m.nearestBus || [];
+          const busOnly  = m.busOnly || false;
           const stationsEl = document.getElementById(`amenity-${i}-stations`);
-          if (stationsEl) stationsEl.textContent = metroArr.length;
+          if (stationsEl) stationsEl.textContent = busOnly ? busArr.length : metroArr.length;
+
+          // Update station tile icon + label for bus-only
+          if (busOnly) {
+            const tileEl = stationsEl?.closest('div[style*="text-align:center"]');
+            if (tileEl) {
+              const iconEl = tileEl.querySelector('div:first-child');
+              const labelEl = tileEl.querySelector('div:last-child');
+              if (iconEl) iconEl.textContent = '🚌';
+              if (labelEl) labelEl.textContent = 'Bus stops';
+            }
+          }
+
           const stationNamesWrap = document.getElementById(`station-names-${i}`);
           const stationNamesText = document.getElementById(`station-names-text-${i}`);
           if (stationNamesWrap && stationNamesText) {
-            if (metroArr.length) {
-              stationNamesText.textContent = metroArr.join(' · ');
+            if (busOnly && busArr.length) {
+              stationNamesText.innerHTML = '🚌 ' + busArr.join(' · ') + '<span style="margin-left:8px;font-size:10px;color:rgba(248,241,231,0.3);">No metro/train/tram within 800m</span>';
+              stationNamesWrap.style.display = 'block';
+            } else if (metroArr.length) {
+              stationNamesText.textContent = '🚇 ' + metroArr.join(' · ');
               stationNamesWrap.style.display = 'block';
             } else {
               stationNamesWrap.style.display = 'none';
@@ -2899,8 +2916,8 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
     // Station names row — shown below amenity grids in both modes
     const stationNamesHtml = `
-      <div id="station-names-${i}" style="margin:-6px 0 14px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.05);font-size:12px;color:rgba(248,241,231,0.5);display:${m.nearestMetro?.length ? 'block' : 'none'};">
-        🚇 <span id="station-names-text-${i}">${m.nearestMetro?.join(' · ') || ''}</span>
+      <div id="station-names-${i}" style="margin:-6px 0 14px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.05);font-size:12px;color:rgba(248,241,231,0.5);display:${(m.nearestMetro?.length || m.busOnly) ? 'block' : 'none'};">
+        <span id="station-names-text-${i}">${m.busOnly ? '🚌 ' + (m.nearestBus?.join(' · ') || '') + '<span style="margin-left:8px;font-size:10px;color:rgba(248,241,231,0.3);">No metro/train/tram within 800m</span>' : '🚇 ' + (m.nearestMetro?.join(' · ') || '')}</span>
       </div>`;
 
     // VISIT amenity grid — restaurants, bars, coffees, parks, attractions, stations
@@ -2932,14 +2949,12 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Attractions</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
-          <div style="font-size:20px;margin-bottom:4px;">🚇</div>
+          <div style="font-size:20px;margin-bottom:4px;">${m.busOnly ? '🚌' : '🚇'}</div>
           <div id="amenity-${i}-stations" style="font-size:18px;font-weight:700;color:var(--cream);">${m.nearestMetro?.length ?? '…'}</div>
-          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Stations</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">${m.busOnly ? 'Bus stops' : 'Stations'}</div>
         </div>
       </div>
-      ${stationNamesHtml}`;
-
-    // LIVE amenities grid (Museums shown on map as Attractions)
+      ${stationNamesHtml}`; (Museums shown on map as Attractions)
     const amenitiesHtml = `
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
@@ -2968,9 +2983,9 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">Schools</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
-          <div style="font-size:20px;margin-bottom:4px;">🚇</div>
+          <div style="font-size:20px;margin-bottom:4px;">${m.busOnly ? '🚌' : '🚇'}</div>
           <div id="amenity-${i}-stations" style="font-size:18px;font-weight:700;color:var(--cream);">${m.nearestMetro?.length ?? '…'}</div>
-          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Stations</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">${m.busOnly ? 'Bus stops' : 'Stations'}</div>
         </div>
       </div>
       ${stationNamesHtml}`;
