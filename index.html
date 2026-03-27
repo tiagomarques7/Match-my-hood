@@ -3188,12 +3188,12 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
       <div class="picks-section">
         <div class="picks-title">🍽️ Top restaurants</div>
-        <div class="picks-list">${restaurants || '<div class="pick-item"><div class="pick-desc">Loading…</div></div>'}</div>
+        <div class="picks-list">${restaurants || '<div class="pick-item"><div class="pick-desc" style="color:rgba(248,241,231,0.4);">No picks found nearby</div></div>'}</div>
       </div>
 
       <div class="picks-section">
         <div class="picks-title">🍷 Top wine bars & drinks</div>
-        <div class="picks-list">${wineBars || '<div class="pick-item"><div class="pick-desc">Loading…</div></div>'}</div>
+        <div class="picks-list">${wineBars || '<div class="pick-item"><div class="pick-desc" style="color:rgba(248,241,231,0.4);">No picks found nearby</div></div>'}</div>
       </div>
 
       <div class="picks-section">
@@ -3524,14 +3524,30 @@ function toggleMapFullscreen(mapId, btn) {
     const closeBtn = document.createElement('button');
     closeBtn.id = closeId;
     closeBtn.textContent = '✕ Close map';
-    // position:fixed on body — nothing can clip it
     closeBtn.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;background:rgba(61,43,31,0.9);color:rgba(248,241,231,0.95);border:none;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);letter-spacing:0.3px;';
     closeBtn.onclick = () => toggleMapFullscreen(mapId, btn);
-    document.body.appendChild(closeBtn); // ← body, not mapEl
+    document.body.appendChild(closeBtn);
+
+    // Add zoom controls for fullscreen
+    const zoomWrap = document.createElement('div');
+    zoomWrap.id = 'fs-zoom-' + mapId;
+    zoomWrap.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:4px;';
+    const mapIdx = parseInt(mapId.replace('map-', ''));
+    const mapInst = mapInstances[mapIdx];
+    [['＋', () => mapInst?.zoomIn()], ['－', () => mapInst?.zoomOut()]].forEach(([label, action]) => {
+      const zBtn = document.createElement('button');
+      zBtn.textContent = label;
+      zBtn.style.cssText = 'width:36px;height:36px;background:rgba(61,43,31,0.9);color:rgba(248,241,231,0.95);border:none;border-radius:6px;font-size:20px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 2px 8px rgba(0,0,0,0.3);line-height:1;';
+      zBtn.onclick = action;
+      zoomWrap.appendChild(zBtn);
+    });
+    document.body.appendChild(zoomWrap);
   } else {
     btn.style.display = ''; // restore expand button
     const existing = document.getElementById(closeId);
     if (existing) existing.remove();
+    const existingZoom = document.getElementById('fs-zoom-' + mapId);
+    if (existingZoom) existingZoom.remove();
   }
   // Resize the Mapbox map after container size changes
   const idx = parseInt(mapId.replace('map-', ''));
