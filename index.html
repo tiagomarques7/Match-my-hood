@@ -2817,6 +2817,24 @@ async function runMatch(isAlternative = false) {
                       layout: { visibility: 'visible' },
                       paint: { 'line-color': line.colour, 'line-width': 2.5, 'line-opacity': 0.5 }
                     });
+
+                    // Draw stop pins exactly on the line
+                    if (line.stops?.length) {
+                      const stopsSourceId = `${sourceId}-stops`;
+                      const stopsLayerId  = `${layerId}-stops`;
+                      map.addSource(stopsSourceId, { type: 'geojson', data: {
+                        type: 'FeatureCollection',
+                        features: line.stops.map(c => ({
+                          type: 'Feature',
+                          geometry: { type: 'Point', coordinates: c },
+                          properties: { name: line.name, ref: line.ref }
+                        }))
+                      }});
+                      map.addLayer({ id: stopsLayerId, type: 'circle', source: stopsSourceId,
+                        layout: { visibility: 'visible' },
+                        paint: { 'circle-radius': 4, 'circle-color': line.colour, 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white', 'circle-opacity': 0.8 }
+                      });
+                    }
                     // Hover popup showing line name + ref
                     map.on('mouseenter', layerId, (e) => {
                       map.getCanvas().style.cursor = 'pointer';
