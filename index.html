@@ -2954,7 +2954,9 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div style="font-size:10px;color:rgba(248,241,231,0.4);">${m.busOnly ? 'Bus stops' : 'Stations'}</div>
         </div>
       </div>
-      ${stationNamesHtml}`; (Museums shown on map as Attractions)
+      ${stationNamesHtml}`;
+
+    // LIVE amenities grid (Museums shown on map as Attractions)
     const amenitiesHtml = `
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 0;">
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
