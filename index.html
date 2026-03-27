@@ -2788,6 +2788,21 @@ async function runMatch(isAlternative = false) {
           fillMapSource('gyms',         m.gymCoords,         'Gym',         null);
           fillMapSource('museums',      m.museumCoords,      'Attraction',  null);
           fillMapSource('coffee',       m.cafeCoords,        'Café',        null);
+
+          // Draw faded transit line connecting station points
+          if (m.transitCoords?.length >= 2) {
+            const map = mapInstances[i];
+            const go = () => {
+              const src = map?.getSource('transit-lines');
+              if (src) {
+                src.setData({ type: 'FeatureCollection', features: [{
+                  type: 'Feature',
+                  geometry: { type: 'LineString', coordinates: m.transitCoords.map(c => [c.lon, c.lat]) }
+                }]});
+              } else setTimeout(go, 500);
+            };
+            go();
+          }
         });
       })
       .catch(err => {
@@ -2976,7 +2991,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🛒</div>
           <div id="amenity-${i}-markets" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.markets ?? '…'}</div>
-          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Markets</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Street Markets</div>
         </div>
       </div>`;
 
@@ -3035,7 +3050,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🛒</div>
           <div id="amenity-${i}-markets" style="font-size:18px;font-weight:700;color:var(--cream);">${m.amenities?.markets ?? '…'}</div>
-          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Markets</div>
+          <div style="font-size:10px;color:rgba(248,241,231,0.4);">Street Markets</div>
         </div>
         <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.04);border-radius:10px;">
           <div style="font-size:20px;margin-bottom:4px;">🏥</div>
@@ -3127,7 +3142,6 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <span class="map-layer-pill" data-layer="coffee" onclick="toggleMapLayer(${i},'coffee',this)">☕ Coffee</span>
         <span id="pill-transport-${i}" class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport ⏳</span>
         <span id="pill-parks-${i}" class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks ⏳</span>
-        <span class="map-layer-pill" data-layer="metrolines" onclick="toggleMapLayer(${i},'metrolines',this)">🗺️ Metro Lines</span>
       </div>
       <div class="result-map" id="map-${i}">
         <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
@@ -3300,13 +3314,10 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: 'none' }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 }});
 
-                // ── METRO LINES — use Mapbox built-in vector tile layers ──
-                // light-v11 contains transit data but hides it by default
-                ['transit-label', 'road-rail', 'road-rail-tracks'].forEach(layerId => {
-                  if (map.getLayer(layerId)) {
-                    map.setLayoutProperty(layerId, 'visibility', 'none');
-                  }
-                });
+                // ── METRO / TRANSIT LINES — drawn from our own transitCoords data ──
+                // Always visible at low opacity as ambient context. Populated by amenity callback.
+                map.addSource('transit-lines', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
+                map.addLayer({ id: 'transit-lines-layer', type: 'line', source: 'transit-lines', layout: { visibility: 'visible' }, paint: { 'line-color': '#185FA5', 'line-width': 2, 'line-opacity': 0.25, 'line-dasharray': [2, 3] }});
                 setTimeout(() => {
                   const pq = encodeURIComponent(`[out:json][timeout:10];way["leisure"="park"]["name"](around:700,${m.lat},${m.lng});out geom 5;`);
                   fetch(`https://api.matchmyhood.com/api/overpass?data=${pq}`)
@@ -3397,7 +3408,6 @@ function toggleMapLayer(mapIndex, layer, pillEl) {
     'gyms': ['gyms-layer'],
     'museums': ['museums-layer'],
     'coffee': ['coffee-layer'],
-    'metrolines': ['transit-label', 'road-rail', 'road-rail-tracks'],
   };
 
   const layers = layerMap[layer] || [];
