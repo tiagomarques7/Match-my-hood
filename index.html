@@ -2748,7 +2748,7 @@ async function runMatch(isAlternative = false) {
           const busOnly  = m.busOnly || false;
           const busCount = m.busCount || busArr.length;
           const stationsEl = document.getElementById(`amenity-${i}-stations`);
-          if (stationsEl) stationsEl.textContent = busOnly ? busCount : metroArr.length;
+          if (stationsEl) stationsEl.textContent = busOnly ? busCount : (m.amenities?.stations ?? metroArr.length);
 
           // Update station tile icon + label for bus-only
           if (busOnly) {
