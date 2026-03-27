@@ -2798,7 +2798,22 @@ async function runMatch(isAlternative = false) {
           .then(r => r.json())
           .then(data => {
             const map = mapInstances[i];
-            if (!map || !data.lines?.length) return;
+            if (!map) return;
+
+            const transportPill = document.getElementById(`pill-transport-${i}`);
+
+            if (data.lines?.length) {
+              // Transit lines exist — hide the transport pins pill entirely
+              if (transportPill) transportPill.style.display = 'none';
+            } else {
+              // No lines — rename pill to Bus Stops so it's clear what it shows
+              if (transportPill) {
+                transportPill.textContent = transportPill.textContent.replace('⏳','').trim();
+                transportPill.innerHTML = '🚌 Bus Stops';
+              }
+            }
+
+            if (!data.lines?.length) return;
             data.lines.forEach((line, idx) => {
               const sourceId = `transit-line-${i}-${idx}`;
               const layerId  = `transit-line-layer-${i}-${idx}`;
