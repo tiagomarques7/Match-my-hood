@@ -1471,6 +1471,10 @@
   .map-layer-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
   .map-layer-pill { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 100px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: rgba(248,241,231,0.6); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; }
   .map-layer-pill:hover { border-color: var(--terracotta-light); color: var(--cream); }
+  .map-3d-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 100px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(20,20,20,0.75); color: rgba(248,241,231,0.6); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; backdrop-filter: blur(4px); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+  .map-3d-toggle:hover { border-color: var(--terracotta-light); color: var(--cream); }
+  .map-3d-toggle.active { background: var(--terracotta); border-color: var(--terracotta); color: white; font-weight: 600; }
+  .mapboxgl-ctrl.mapboxgl-ctrl-3d { background: none; box-shadow: none; margin: 0; }
   .mapboxgl-popup-content { background: var(--earth) !important; color: var(--cream) !important; border-radius: 8px !important; padding: 4px !important; box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important; }
   .mapboxgl-popup-tip { border-top-color: var(--earth) !important; }
   .mapboxgl-ctrl-group { background: var(--earth) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
@@ -2789,10 +2793,12 @@ async function runMatch(isAlternative = false) {
             const map = mapInstances[i];
             if (!map || !coords?.length) return;
             const feats = coords.map(c => ({ type:'Feature', geometry:{ type:'Point', coordinates:[c.lon,c.lat] }, properties:{ name:c.name||label, city: m.city||destCity, hood: m.name } }));
+            const geojson = { type:'FeatureCollection', features:feats };
+            map._sourceData[sourceId] = geojson; // store for 3D revert restore
             const go = () => {
               const src = map.getSource(sourceId);
               if (src) {
-                src.setData({ type:'FeatureCollection', features:feats });
+                src.setData(geojson);
                 if (pillId) { const pill = document.getElementById(pillId); if(pill) pill.textContent = pill.textContent.replace(' ⏳',''); }
               } else setTimeout(go, 500);
             };
@@ -3330,9 +3336,48 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
               map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
               map.addControl(new mapboxgl.AttributionControl({ compact: true }));
 
+              // ── 3D TOGGLE CONTROL ────────────────────────────────────────
+              const Toggle3D = {
+                _btn: null,
+                _active: false,
+                onAdd(map) {
+                  this._map = map;
+                  const container = document.createElement('div');
+                  container.className = 'mapboxgl-ctrl mapboxgl-ctrl-3d';
+                  this._btn = document.createElement('button');
+                  this._btn.className = 'map-3d-toggle';
+                  this._btn.innerHTML = '🏙️ 3D';
+                  this._btn.title = 'Toggle 3D view';
+                  this._btn.onclick = () => {
+                    this._active = !this._active;
+                    if (this._active) {
+                      this._btn.classList.add('active');
+                      map.setStyle('mapbox://styles/mapbox/standard');
+                      map.once('style.load', () => {
+                        map.easeTo({ pitch: 50, bearing: -15, duration: 800 });
+                      });
+                    } else {
+                      this._btn.classList.remove('active');
+                      map.setStyle('mapbox://styles/mapbox/light-v11');
+                      map.once('style.load', () => {
+                        map.easeTo({ pitch: 0, bearing: 0, duration: 600 });
+                        // Re-add all custom layers wiped by setStyle
+                        restoreMapLayers(map, map._matchData, map._matchIndex);
+                      });
+                    }
+                  };
+                  container.appendChild(this._btn);
+                  return container;
+                },
+                onRemove() { this._btn = null; }
+              };
+              map.addControl(Toggle3D, 'top-right');
+
               // Store match data on map instance for layer toggling
               map._matchData = m;
               map._matchIndex = i;
+              map._sourceData = {};        // pin GeoJSON per source, for 3D revert restore
+              map._boundaryData = null;    // current boundary GeoJSON (circle or polygon)
               mapInstances[i] = map;
 
               map.on('load', () => {
@@ -3341,6 +3386,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 // This is the reliable baseline regardless of Nominatim result.
                 try {
                   const circle = turf_circle([m.lng, m.lat], 0.6);
+                  map._boundaryData = circle;
                   map.addSource('neighbourhood', { type: 'geojson', data: circle });
                   map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.10 } });
                   map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.7, 'line-dasharray': [4, 2] } });
@@ -3359,6 +3405,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                       if (isPolygon) {
                         try {
                           // Replace circle data with the real polygon geometry
+                          map._boundaryData = feature;
                           map.getSource('neighbourhood').setData(feature);
                           // Upgrade to solid border
                           map.setPaintProperty('neighbourhood-fill', 'fill-opacity', 0.12);
@@ -3411,7 +3458,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                       const pd = JSON.parse(raw);
                       const pf = (pd.elements||[]).filter(e=>e.geometry?.length>2).slice(0,5)
                         .map(e=>({ type:'Feature', geometry:{ type:'Polygon', coordinates:[e.geometry.map(p=>[p.lon,p.lat])] }, properties:{ name:e.tags?.name||'Park' } }));
-                      if (pf.length) { const src = map.getSource('parks'); if(src) src.setData({ type:'FeatureCollection', features:pf }); }
+                      if (pf.length) { const src = map.getSource('parks'); if(src) { map._sourceData['parks'] = { type:'FeatureCollection', features:pf }; src.setData(map._sourceData['parks']); } }
                       const pill = document.getElementById(`pill-parks-${i}`);
                       if (pill) pill.textContent = pill.textContent.replace(' ⏳','');
                     }).catch(()=>{});
@@ -3473,6 +3520,64 @@ function toggleMapFullscreen(mapId, btn) {
     const handler = (e) => { if (e.key === 'Escape') { toggleMapFullscreen(mapId, btn); document.removeEventListener('keydown', handler); }};
     document.addEventListener('keydown', handler);
   }
+}
+
+// ── RESTORE MAP LAYERS AFTER 3D → FLAT STYLE SWAP ───────────────────────────
+// setStyle() wipes all custom sources/layers. This rebuilds them from stored data.
+function restoreMapLayers(map, m, i) {
+  try {
+    // Neighbourhood boundary
+    const boundary = map._boundaryData || turf_circle([m.lng, m.lat], 0.6);
+    map.addSource('neighbourhood', { type: 'geojson', data: boundary });
+    map.addLayer({ id: 'neighbourhood-fill', type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': boundary === map._boundaryData ? 0.12 : 0.10 } });
+    map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2, 'line-opacity': 0.7, 'line-dasharray': [4, 2] } });
+  } catch(e) {}
+
+  // Pin layers — restore sources + layers, re-populate with stored data
+  const pinLayers = [
+    { id: 'restaurants', layerId: 'restaurants-layer', type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#C4622D', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
+    { id: 'bars',        layerId: 'bars-layer',        type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#7A3030', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
+    { id: 'supermarkets',layerId: 'supermarkets-layer',type: 'circle', paint: { 'circle-radius': 8, 'circle-color': '#2E7D32', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
+    { id: 'gyms',        layerId: 'gyms-layer',        type: 'circle', paint: { 'circle-radius': 8, 'circle-color': '#6A1B9A', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
+    { id: 'museums',     layerId: 'museums-layer',     type: 'circle', paint: { 'circle-radius': 8, 'circle-color': '#B8860B', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
+    { id: 'coffee',      layerId: 'coffee-layer',      type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#795548', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
+    { id: 'transport',   layerId: 'transport-layer',   type: 'circle', paint: { 'circle-radius': 9, 'circle-color': '#185FA5', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
+  ];
+
+  pinLayers.forEach(({ id, layerId, type, paint }) => {
+    try {
+      const data = map._sourceData[id] || { type: 'FeatureCollection', features: [] };
+      map.addSource(id, { type: 'geojson', data });
+      // Restore visibility: check if the pill was active before 3D was toggled
+      const pillEl = document.querySelector(`#map-pills-${i} [data-layer="${id}"]`);
+      const wasVisible = pillEl?.classList.contains('active') ? 'visible' : 'none';
+      map.addLayer({ id: layerId, type, source: id, layout: { visibility: wasVisible }, paint });
+    } catch(e) {}
+  });
+
+  // Parks fill layer
+  try {
+    const parksData = map._sourceData['parks'] || { type: 'FeatureCollection', features: [] };
+    map.addSource('parks', { type: 'geojson', data: parksData });
+    const parksPill = document.querySelector(`#map-pills-${i} [data-layer="parks"]`);
+    const parksVisible = parksPill?.classList.contains('active') ? 'visible' : 'none';
+    map.addLayer({ id: 'parks-layer', type: 'fill', source: 'parks', layout: { visibility: parksVisible }, paint: { 'fill-color': '#3B6D11', 'fill-opacity': 0.35 } });
+  } catch(e) {}
+
+  // Re-attach click handlers on pin layers
+  ['restaurants-layer','bars-layer','transport-layer','supermarkets-layer','gyms-layer','museums-layer','coffee-layer'].forEach(layerId => {
+    map.on('click', layerId, e => {
+      const props = e.features[0].properties;
+      const cityCtx = [props.hood, props.city].filter(Boolean).join(', ');
+      const mapsUrl = props.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(props.name + (cityCtx ? ', ' + cityCtx : ''))}`;
+      new mapboxgl.Popup({ closeButton: true, maxWidth: '220px' })
+        .setLngLat(e.lngLat)
+        .setHTML(`<div style="font-size:13px;font-weight:700;color:var(--cream);margin-bottom:4px;">${props.name}</div><a href="${mapsUrl}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;">📍 Open in Google Maps →</a>`)
+        .addTo(map);
+    });
+    map.on('mouseenter', layerId, () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', layerId, () => map.getCanvas().style.cursor = '');
+  });
 }
 
 function toggleMapLayer(mapIndex, layer, pillEl) {
