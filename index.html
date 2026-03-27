@@ -3391,29 +3391,55 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
                 // Step 2: Try Nominatim to upgrade circle to a real polygon.
                 // Serial queue ensures max 1 req/sec across all map instances.
+                // Tries full query first, then simplified name-only retry on failure.
                 queueNominatim(() => new Promise(resolve => {
                   const cleanName = m.name.replace(/\s*\(.*?\)/g, '').trim();
-                  const hoodQuery = encodeURIComponent(cleanName + ', ' + m.city);
-                  fetch(`https://api.matchmyhood.com/api/nominatim?q=${hoodQuery}`)
-                    .then(r => r.json())
+
+                  const applyPolygon = (feature) => {
+                    try {
+                      map._boundaryData = feature;
+                      map.getSource('neighbourhood').setData(feature);
+                      map.setPaintProperty('neighbourhood-fill', 'fill-opacity', 0.12);
+                      map.setPaintProperty('neighbourhood-border', 'line-width', 2.5);
+                      map.setPaintProperty('neighbourhood-border', 'line-opacity', 0.85);
+                    } catch(e) { console.error('Polygon upgrade error:', e.message); }
+                  };
+
+                  const fetchNominatim = (query) => {
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+                    return fetch(`https://api.matchmyhood.com/api/nominatim?q=${encodeURIComponent(query)}`, { signal: controller.signal })
+                      .then(r => r.json())
+                      .finally(() => clearTimeout(timeout));
+                  };
+
+                  // Attempt 1: "Neighbourhood, City"
+                  fetchNominatim(`${cleanName}, ${m.city}`)
                     .then(data => {
                       const feature = data.features?.[0];
                       const isPolygon = feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon';
-                      if (isPolygon) {
-                        try {
-                          // Replace circle data with the real polygon geometry
-                          map._boundaryData = feature;
-                          map.getSource('neighbourhood').setData(feature);
-                          // Upgrade to solid border
-                          map.setPaintProperty('neighbourhood-fill', 'fill-opacity', 0.12);
-                          map.setPaintProperty('neighbourhood-border', 'line-width', 2.5);
-                          map.setPaintProperty('neighbourhood-border', 'line-opacity', 0.85);
-                        } catch(e) { console.error('Polygon upgrade error:', e.message); }
-                      }
-                      // If no polygon found, the circle stays — no need to do anything
-                      resolve();
+                      if (isPolygon) { applyPolygon(feature); resolve(); return; }
+
+                      // Attempt 2: name only — Nominatim sometimes chokes on city disambiguation
+                      return fetchNominatim(cleanName)
+                        .then(data2 => {
+                          const f2 = data2.features?.[0];
+                          const isPoly2 = f2?.geometry?.type === 'Polygon' || f2?.geometry?.type === 'MultiPolygon';
+                          if (isPoly2) applyPolygon(f2);
+                          resolve();
+                        });
                     })
-                    .catch(() => resolve());
+                    .catch(() => {
+                      // Both failed or timed out — circle stays, try name-only as last resort
+                      fetchNominatim(cleanName)
+                        .then(data3 => {
+                          const f3 = data3.features?.[0];
+                          const isPoly3 = f3?.geometry?.type === 'Polygon' || f3?.geometry?.type === 'MultiPolygon';
+                          if (isPoly3) applyPolygon(f3);
+                        })
+                        .catch(() => {})
+                        .finally(() => resolve());
+                    });
                 }));
 
                 // ── NEIGHBOURHOOD LABEL — small HTML overlay, top-left corner ──────
