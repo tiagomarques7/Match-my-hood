@@ -2710,7 +2710,9 @@ async function runMatch(isAlternative = false) {
       // Fetch Nominatim polygons for each match — used to scope amenity pins to real hood shape
       const polygons = await Promise.all(matches.map(async m => {
         try {
-          const q = encodeURIComponent(m.name + ', ' + m.city);
+          // Strip parentheticals e.g. "Neukölln (Reuterkiez)" → "Neukölln"
+          const cleanName = m.name.replace(/\s*\(.*?\)/g, '').trim();
+          const q = encodeURIComponent(cleanName + ', ' + m.city);
           const r = await fetch(`https://api.matchmyhood.com/api/nominatim?q=${q}`);
           const data = await r.json();
           const feature = data.features?.[0];
@@ -3344,7 +3346,8 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 // Step 2: Try Nominatim to upgrade circle to a real polygon.
                 // Serial queue ensures max 1 req/sec across all map instances.
                 queueNominatim(() => new Promise(resolve => {
-                  const hoodQuery = encodeURIComponent(m.name + ', ' + m.city);
+                  const cleanName = m.name.replace(/\s*\(.*?\)/g, '').trim();
+                  const hoodQuery = encodeURIComponent(cleanName + ', ' + m.city);
                   fetch(`https://api.matchmyhood.com/api/nominatim?q=${hoodQuery}`)
                     .then(r => r.json())
                     .then(data => {
