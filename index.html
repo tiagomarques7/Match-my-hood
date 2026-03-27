@@ -2697,7 +2697,6 @@ async function runMatch(isAlternative = false) {
     await renderResults(matches, homeHood, homeCity, destCity, isAlternative);
 
     // STEP 2 — Background call: Overpass amenities + transit (~30s, silent)
-    // Runs for BOTH modes — LIVE uses the full 6-tile grid, VISIT uses the 4-tile grid
     {
       const callId = `amenity-loading-${Date.now()}`;
       const amenityNote = document.createElement('div');
@@ -2706,13 +2705,29 @@ async function runMatch(isAlternative = false) {
       amenityNote.textContent = '⏳ Loading local data…';
       document.getElementById('resultsArea').prepend(amenityNote);
 
-      // Capture domOffset into a local const for the closure — prevents race with concurrent calls
       const amenityDomOffset = domOffset;
+
+      // Fetch Nominatim polygons for each match — used to scope amenity pins to real hood shape
+      const polygons = await Promise.all(matches.map(async m => {
+        try {
+          const q = encodeURIComponent(m.name + ', ' + m.city);
+          const r = await fetch(`https://api.matchmyhood.com/api/nominatim?q=${q}`);
+          const data = await r.json();
+          const feature = data.features?.[0];
+          const isPolygon = feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon';
+          return isPolygon ? feature.geometry : null;
+        } catch { return null; }
+      }));
+
+      // Attach polygon to each match before sending to amenities endpoint
+      const matchesWithPolygons = matches.map((m, idx) => ({
+        ...m, _polygon: polygons[idx] || null
+      }));
 
       fetch('https://api.matchmyhood.com/api/amenities', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matches, destCity, intent: currentIntent })
+        body: JSON.stringify({ matches: matchesWithPolygons, destCity, intent: currentIntent })
       })
       .then(r => r.json())
       .then(data => {
