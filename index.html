@@ -3275,17 +3275,18 @@ function toggleMapFullscreen(mapId, btn) {
   const mapEl = document.getElementById(mapId);
   if (!mapEl) return;
   const isFullscreen = mapEl.classList.toggle('fullscreen');
-  btn.textContent = isFullscreen ? '✕ Close' : '⛶ Expand';
-  // Add/remove floating close button when fullscreen
   const closeId = 'close-' + mapId;
   if (isFullscreen) {
+    btn.style.display = 'none'; // hide expand button while fullscreen
     const closeBtn = document.createElement('button');
     closeBtn.id = closeId;
     closeBtn.textContent = '✕ Close map';
-    closeBtn.style.cssText = 'position:absolute;top:10px;right:10px;z-index:10000;background:rgba(61,43,31,0.75);color:rgba(248,241,231,0.9);border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;backdrop-filter:blur(6px);letter-spacing:0.3px;';
+    // position:fixed on body — nothing can clip it
+    closeBtn.style.cssText = 'position:fixed;top:16px;right:16px;z-index:99999;background:rgba(61,43,31,0.9);color:rgba(248,241,231,0.95);border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);letter-spacing:0.3px;';
     closeBtn.onclick = () => toggleMapFullscreen(mapId, btn);
-    mapEl.appendChild(closeBtn);
+    document.body.appendChild(closeBtn); // ← body, not mapEl
   } else {
+    btn.style.display = ''; // restore expand button
     const existing = document.getElementById(closeId);
     if (existing) existing.remove();
   }
