@@ -2837,63 +2837,9 @@ async function runMatch(isAlternative = false) {
             }
 
             if (!data.lines?.length) return;
-            // Stagger additions — adding 150+ sources/layers simultaneously overwhelms Mapbox
-            data.lines.forEach((line, idx) => {
-              setTimeout(() => {
-              const sourceId = `transit-line-${i}-${idx}`;
-              const layerId  = `transit-line-layer-${i}-${idx}`;
-              // Add each line as a MultiLineString
-              const geojson = {
-                type: 'Feature',
-                properties: { name: line.name, ref: line.ref, colour: line.colour },
-                geometry: { type: 'MultiLineString', coordinates: line.coords }
-              };
-              const addLine = () => {
-                try {
-                  if (!map.getSource(sourceId)) {
-                    map.addSource(sourceId, { type: 'geojson', data: geojson });
-                    map.addLayer({
-                      id: layerId, type: 'line', source: sourceId,
-                      layout: { visibility: 'visible' },
-                      paint: { 'line-color': line.colour, 'line-width': 1.8, 'line-opacity': 0.35 }
-                    });
-
-                    // Draw stop pins exactly on the line
-                    if (line.stops?.length) {
-                      const stopsSourceId = `${sourceId}-stops`;
-                      const stopsLayerId  = `${layerId}-stops`;
-                      map.addSource(stopsSourceId, { type: 'geojson', data: {
-                        type: 'FeatureCollection',
-                        features: line.stops.map(c => ({
-                          type: 'Feature',
-                          geometry: { type: 'Point', coordinates: c },
-                          properties: { name: line.name, ref: line.ref }
-                        }))
-                      }});
-                      map.addLayer({ id: stopsLayerId, type: 'circle', source: stopsSourceId,
-                        layout: { visibility: 'visible' },
-                        paint: { 'circle-radius': 4, 'circle-color': line.colour, 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white', 'circle-opacity': 0.8 }
-                      });
-                    }
-                    // Hover popup showing line name + ref
-                    map.on('mouseenter', layerId, (e) => {
-                      map.getCanvas().style.cursor = 'pointer';
-                      const label = line.ref ? `${line.ref} — ${line.name}` : line.name;
-                      new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 10 })
-                        .setLngLat(e.lngLat)
-                        .setHTML(`<div style="font-size:12px;font-weight:700;color:var(--cream);padding:2px 4px;">${label}</div>`)
-                        .addTo(map);
-                    });
-                    map.on('mouseleave', layerId, () => {
-                      map.getCanvas().style.cursor = '';
-                      document.querySelectorAll('.mapboxgl-popup').forEach(p => p.remove());
-                    });
-                  }
-                } catch(e) { console.error('addLine error:', e.message); }
-              };
-              addLine();
-              }, idx * 30); // 30ms stagger per line
-            });
+            // Store lines on map instance so they can be restored after 3D → flat revert
+            map._transitLines = data.lines;
+            drawTransitLines(map, data.lines, i);
           })
           .catch(e => console.error('Transit lines error:', e));
         });
@@ -3352,9 +3298,21 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                     this._active = !this._active;
                     if (this._active) {
                       this._btn.classList.add('active');
+                      // Save current camera so 3D starts on the hood, not the city
+                      const center = map.getCenter();
+                      const zoom   = map.getZoom();
                       map.setStyle('mapbox://styles/mapbox/standard');
                       map.once('style.load', () => {
+                        // Jump back to hood centre then tilt
+                        map.jumpTo({ center, zoom });
                         map.easeTo({ pitch: 50, bearing: -15, duration: 800 });
+                        // Re-add neighbourhood boundary so it shows in 3D too
+                        try {
+                          const boundary = map._boundaryData || turf_circle([map._matchData.lng, map._matchData.lat], 0.6);
+                          map.addSource('neighbourhood', { type: 'geojson', data: boundary });
+                          map.addLayer({ id: 'neighbourhood-fill',   type: 'fill', source: 'neighbourhood', paint: { 'fill-color': '#C4622D', 'fill-opacity': 0.12 } });
+                          map.addLayer({ id: 'neighbourhood-border', type: 'line', source: 'neighbourhood', paint: { 'line-color': '#C4622D', 'line-width': 2.5, 'line-opacity': 0.85, 'line-dasharray': [4, 2] } });
+                        } catch(e) {}
                       });
                     } else {
                       this._btn.classList.remove('active');
@@ -3522,6 +3480,56 @@ function toggleMapFullscreen(mapId, btn) {
   }
 }
 
+// ── DRAW TRANSIT LINES ───────────────────────────────────────────────────────
+// Reusable — called on first load and again after 3D → flat style revert
+function drawTransitLines(map, lines, i) {
+  lines.forEach((line, idx) => {
+    setTimeout(() => {
+      const sourceId = `transit-line-${i}-${idx}`;
+      const layerId  = `transit-line-layer-${i}-${idx}`;
+      const geojson  = {
+        type: 'Feature',
+        properties: { name: line.name, ref: line.ref, colour: line.colour },
+        geometry: { type: 'MultiLineString', coordinates: line.coords }
+      };
+      try {
+        if (!map.getSource(sourceId)) {
+          map.addSource(sourceId, { type: 'geojson', data: geojson });
+          map.addLayer({
+            id: layerId, type: 'line', source: sourceId,
+            layout: { visibility: 'visible' },
+            paint: { 'line-color': line.colour, 'line-width': 1.8, 'line-opacity': 0.25 }
+          });
+          if (line.stops?.length) {
+            const stopsSourceId = `${sourceId}-stops`;
+            const stopsLayerId  = `${layerId}-stops`;
+            map.addSource(stopsSourceId, { type: 'geojson', data: {
+              type: 'FeatureCollection',
+              features: line.stops.map(c => ({ type: 'Feature', geometry: { type: 'Point', coordinates: c }, properties: { name: line.name, ref: line.ref } }))
+            }});
+            map.addLayer({ id: stopsLayerId, type: 'circle', source: stopsSourceId,
+              layout: { visibility: 'visible' },
+              paint: { 'circle-radius': 4, 'circle-color': line.colour, 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white', 'circle-opacity': 0.8 }
+            });
+          }
+          map.on('mouseenter', layerId, (e) => {
+            map.getCanvas().style.cursor = 'pointer';
+            const label = line.ref ? `${line.ref} — ${line.name}` : line.name;
+            new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 10 })
+              .setLngLat(e.lngLat)
+              .setHTML(`<div style="font-size:12px;font-weight:700;color:var(--cream);padding:2px 4px;">${label}</div>`)
+              .addTo(map);
+          });
+          map.on('mouseleave', layerId, () => {
+            map.getCanvas().style.cursor = '';
+            document.querySelectorAll('.mapboxgl-popup').forEach(p => p.remove());
+          });
+        }
+      } catch(e) { console.error('drawTransitLines error:', e.message); }
+    }, idx * 30);
+  });
+}
+
 // ── RESTORE MAP LAYERS AFTER 3D → FLAT STYLE SWAP ───────────────────────────
 // setStyle() wipes all custom sources/layers. This rebuilds them from stored data.
 function restoreMapLayers(map, m, i) {
@@ -3578,6 +3586,11 @@ function restoreMapLayers(map, m, i) {
     map.on('mouseenter', layerId, () => map.getCanvas().style.cursor = 'pointer');
     map.on('mouseleave', layerId, () => map.getCanvas().style.cursor = '');
   });
+
+  // Restore transit lines if they were loaded
+  if (map._transitLines?.length) {
+    drawTransitLines(map, map._transitLines, i);
+  }
 }
 
 function toggleMapLayer(mapIndex, layer, pillEl) {
