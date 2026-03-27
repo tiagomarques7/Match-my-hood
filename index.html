@@ -3520,7 +3520,11 @@ function toggleMapFullscreen(mapId, btn) {
   const isFullscreen = mapEl.classList.toggle('fullscreen');
   const closeId = 'close-' + mapId;
   if (isFullscreen) {
-    btn.style.display = 'none'; // hide expand button while fullscreen
+    btn.style.display = 'none';
+    // Hide site nav so it doesn't overlap the fullscreen map
+    const siteNav = document.querySelector('nav');
+    if (siteNav) siteNav.style.display = 'none';
+
     const closeBtn = document.createElement('button');
     closeBtn.id = closeId;
     closeBtn.textContent = '✕ Close map';
@@ -3528,10 +3532,10 @@ function toggleMapFullscreen(mapId, btn) {
     closeBtn.onclick = () => toggleMapFullscreen(mapId, btn);
     document.body.appendChild(closeBtn);
 
-    // Add zoom controls for fullscreen
+    // Zoom controls — bottom-right above close button
     const zoomWrap = document.createElement('div');
     zoomWrap.id = 'fs-zoom-' + mapId;
-    zoomWrap.style.cssText = 'position:fixed;bottom:80px;left:20px;z-index:99999;display:flex;flex-direction:column;gap:4px;';
+    zoomWrap.style.cssText = 'position:fixed;bottom:80px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:4px;';
     const mapIdx = parseInt(mapId.replace('map-', ''));
     const mapInst = mapInstances[mapIdx];
     [['＋', () => mapInst?.zoomIn()], ['－', () => mapInst?.zoomOut()]].forEach(([label, action]) => {
@@ -3543,7 +3547,9 @@ function toggleMapFullscreen(mapId, btn) {
     });
     document.body.appendChild(zoomWrap);
   } else {
-    btn.style.display = ''; // restore expand button
+    btn.style.display = '';
+    const siteNav = document.querySelector('nav');
+    if (siteNav) siteNav.style.display = '';
     const existing = document.getElementById(closeId);
     if (existing) existing.remove();
     const existingZoom = document.getElementById('fs-zoom-' + mapId);
