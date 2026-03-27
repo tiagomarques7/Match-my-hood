@@ -2658,7 +2658,7 @@ async function runMatch(isAlternative = false) {
   }
 
   // Pass the last shown hood to avoid repetition
-  const excludeHood = lastShownHoods.length > 0 ? lastShownHoods[lastShownHoods.length - 1] : null;
+  const excludeHoods = lastShownHoods.length > 0 ? [...lastShownHoods] : [];
 
   try {
     // STEP 1 — Fast call: Claude + Foursquare (~15s)
@@ -2678,7 +2678,7 @@ async function runMatch(isAlternative = false) {
       };
       xhr.onerror = () => reject(new Error("Network error"));
       xhr.ontimeout = () => reject(new Error("Request timed out"));
-      xhr.send(JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent, excludeHood }));
+      xhr.send(JSON.stringify({ homeCity, homeHood, destCity, vibes: activeVibes, intent: currentIntent, excludeHoods }));
     });
 
     const matches = result.matches;
@@ -2849,7 +2849,7 @@ async function runMatch(isAlternative = false) {
                     map.addLayer({
                       id: layerId, type: 'line', source: sourceId,
                       layout: { visibility: 'visible' },
-                      paint: { 'line-color': line.colour, 'line-width': 2.5, 'line-opacity': 0.5 }
+                      paint: { 'line-color': line.colour, 'line-width': 1.5, 'line-opacity': 0.2 }
                     });
 
                     // Draw stop pins exactly on the line
