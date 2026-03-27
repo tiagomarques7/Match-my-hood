@@ -1493,6 +1493,10 @@
   .pick-desc { font-size: 12px; color: rgba(248,241,231,0.5); line-height: 1.4; }
   .pick-link { font-size: 11px; color: var(--terracotta-light); text-decoration: none; margin-top: 4px; display: inline-block; transition: color 0.2s; }
   .pick-link:hover { color: var(--cream); }
+  .pick-photo { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: rgba(255,255,255,0.05); }
+  .pick-open { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px; display: inline-block; margin-top: 4px; }
+  .pick-open.open { background: rgba(107,124,74,0.25); color: #8BA55A; }
+  .pick-open.closed { background: rgba(196,98,45,0.2); color: var(--terracotta-light); }
 
   /* MUST TRY */
   .must-try { margin: 12px 0; padding: 12px 14px; background: rgba(196,98,45,0.1); border-radius: 10px; border: 1px solid rgba(196,98,45,0.2); font-size: 13px; color: rgba(248,241,231,0.85); line-height: 1.5; }
@@ -2939,24 +2943,38 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
     const restaurants = (m.top3Restaurants || []).map((r, j) => {
       const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
+      const theforkUrl = `https://www.thefork.com/search?cityName=${encodeURIComponent(destCity)}&query=${encodeURIComponent(r.name)}`;
+      const openBadge = r.openStatus ? `<span class="pick-open ${r.openStatus === 'Open now' ? 'open' : 'closed'}">${r.openStatus}</span>` : '';
+      const websiteLink = r.website ? `<a href="${r.website}" target="_blank" class="pick-link" style="margin-right:8px;">🌐 Website →</a>` : '';
+      const bookLink = `<a href="${theforkUrl}" target="_blank" class="pick-link" style="margin-right:8px;">🍽️ Reserve →</a>`;
+      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
+        ${photo}
         <div class="pick-info">
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
-          <a href="${mapsUrl}" target="_blank" class="pick-link">📍 View on map →</a>
+          ${openBadge}
+          <div style="margin-top:5px;">${bookLink}${websiteLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
         </div>
       </div>`;
     }).join('');
 
     const wineBars = (m.top3WineBars || []).map((r, j) => {
       const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
+      const theforkUrl = `https://www.thefork.com/search?cityName=${encodeURIComponent(destCity)}&query=${encodeURIComponent(r.name)}`;
+      const openBadge = r.openStatus ? `<span class="pick-open ${r.openStatus === 'Open now' ? 'open' : 'closed'}">${r.openStatus}</span>` : '';
+      const websiteLink = r.website ? `<a href="${r.website}" target="_blank" class="pick-link" style="margin-right:8px;">🌐 Website →</a>` : '';
+      const bookLink = `<a href="${theforkUrl}" target="_blank" class="pick-link" style="margin-right:8px;">🍽️ Reserve →</a>`;
+      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
+        ${photo}
         <div class="pick-info">
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
-          <a href="${mapsUrl}" target="_blank" class="pick-link">📍 View on map →</a>
+          ${openBadge}
+          <div style="margin-top:5px;">${bookLink}${websiteLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
         </div>
       </div>`;
     }).join('');
@@ -3451,23 +3469,23 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
                 // ── RESTAURANT + BAR PINS — real coords from server, populated by amenity callback ──
                 map.addSource('restaurants', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'restaurants-layer', type: 'circle', source: 'restaurants', layout: { visibility: 'none' }, paint: { 'circle-radius': 7, 'circle-color': '#C4622D', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
+                map.addLayer({ id: 'restaurants-layer', type: 'circle', source: 'restaurants', layout: { visibility: 'none' }, paint: { 'circle-radius': 5, 'circle-color': '#C4622D', 'circle-stroke-width': 1, 'circle-stroke-color': 'white' }});
                 map.addSource('bars', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'bars-layer', type: 'circle', source: 'bars', layout: { visibility: 'none' }, paint: { 'circle-radius': 7, 'circle-color': '#7A3030', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
+                map.addLayer({ id: 'bars-layer', type: 'circle', source: 'bars', layout: { visibility: 'none' }, paint: { 'circle-radius': 5, 'circle-color': '#7A3030', 'circle-stroke-width': 1, 'circle-stroke-color': 'white' }});
 
                 // ── EXTRA LAYERS (all filled by amenity callback) ──
                 map.addSource('supermarkets', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'supermarkets-layer', type: 'circle', source: 'supermarkets', layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': '#2E7D32', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+                map.addLayer({ id: 'supermarkets-layer', type: 'circle', source: 'supermarkets', layout: { visibility: 'none' }, paint: { 'circle-radius': 6, 'circle-color': '#2E7D32', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
                 map.addSource('gyms', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'gyms-layer', type: 'circle', source: 'gyms', layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': '#6A1B9A', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+                map.addLayer({ id: 'gyms-layer', type: 'circle', source: 'gyms', layout: { visibility: 'none' }, paint: { 'circle-radius': 6, 'circle-color': '#6A1B9A', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
                 map.addSource('museums', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'museums-layer', type: 'circle', source: 'museums', layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': '#B8860B', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+                map.addLayer({ id: 'museums-layer', type: 'circle', source: 'museums', layout: { visibility: 'none' }, paint: { 'circle-radius': 6, 'circle-color': '#B8860B', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
                 map.addSource('coffee', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'coffee-layer', type: 'circle', source: 'coffee', layout: { visibility: 'none' }, paint: { 'circle-radius': 7, 'circle-color': '#795548', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+                map.addLayer({ id: 'coffee-layer', type: 'circle', source: 'coffee', layout: { visibility: 'none' }, paint: { 'circle-radius': 5, 'circle-color': '#795548', 'circle-stroke-width': 1, 'circle-stroke-color': 'white' }});
 
                 // ── TRANSPORT — empty source, filled by amenity callback ──
                 map.addSource('transport', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'transport-layer', type: 'circle', source: 'transport', layout: { visibility: 'none' }, paint: { 'circle-radius': 9, 'circle-color': '#185FA5', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+                map.addLayer({ id: 'transport-layer', type: 'circle', source: 'transport', layout: { visibility: 'none' }, paint: { 'circle-radius': 7, 'circle-color': '#185FA5', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
 
                 // ── PARKS — empty source, browser fetches named park polygons after 45s ──
                 map.addSource('parks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
@@ -3631,13 +3649,13 @@ function restoreMapLayers(map, m, i) {
 
   // Pin layers — restore sources + layers, re-populate with stored data
   const pinLayers = [
-    { id: 'restaurants', layerId: 'restaurants-layer', type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#C4622D', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
-    { id: 'bars',        layerId: 'bars-layer',        type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#7A3030', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
-    { id: 'supermarkets',layerId: 'supermarkets-layer',type: 'circle', paint: { 'circle-radius': 8, 'circle-color': '#2E7D32', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
-    { id: 'gyms',        layerId: 'gyms-layer',        type: 'circle', paint: { 'circle-radius': 8, 'circle-color': '#6A1B9A', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
-    { id: 'museums',     layerId: 'museums-layer',     type: 'circle', paint: { 'circle-radius': 8, 'circle-color': '#B8860B', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
-    { id: 'coffee',      layerId: 'coffee-layer',      type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#795548', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
-    { id: 'transport',   layerId: 'transport-layer',   type: 'circle', paint: { 'circle-radius': 9, 'circle-color': '#185FA5', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
+    { id: 'restaurants', layerId: 'restaurants-layer', type: 'circle', paint: { 'circle-radius': 5, 'circle-color': '#C4622D', 'circle-stroke-width': 1,   'circle-stroke-color': 'white' } },
+    { id: 'bars',        layerId: 'bars-layer',        type: 'circle', paint: { 'circle-radius': 5, 'circle-color': '#7A3030', 'circle-stroke-width': 1,   'circle-stroke-color': 'white' } },
+    { id: 'supermarkets',layerId: 'supermarkets-layer',type: 'circle', paint: { 'circle-radius': 6, 'circle-color': '#2E7D32', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
+    { id: 'gyms',        layerId: 'gyms-layer',        type: 'circle', paint: { 'circle-radius': 6, 'circle-color': '#6A1B9A', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
+    { id: 'museums',     layerId: 'museums-layer',     type: 'circle', paint: { 'circle-radius': 6, 'circle-color': '#B8860B', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
+    { id: 'coffee',      layerId: 'coffee-layer',      type: 'circle', paint: { 'circle-radius': 5, 'circle-color': '#795548', 'circle-stroke-width': 1,   'circle-stroke-color': 'white' } },
+    { id: 'transport',   layerId: 'transport-layer',   type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#185FA5', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
   ];
 
   pinLayers.forEach(({ id, layerId, type, paint }) => {
