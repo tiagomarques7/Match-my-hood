@@ -3623,7 +3623,7 @@ function toggleMapFullscreen(mapId, btn) {
         clone.onclick = () => {
           const layer = clone.dataset.layer;
           // Toggle both original and clone in sync
-          const original = sourcePills.querySelector(\`[data-layer="\${layer}"]\`);
+          const original = sourcePills.querySelector('[data-layer="' + layer + '"');
           if (original) {
             toggleMapLayer(mapIdx, layer, original);
             clone.classList.toggle('active', original.classList.contains('active'));
