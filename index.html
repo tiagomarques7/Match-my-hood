@@ -3334,10 +3334,12 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <span class="map-layer-pill" data-layer="coffee" onclick="toggleMapLayer(${i},'coffee',this)">☕ Coffee</span>
         <span id="pill-transport-${i}" class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport ⏳</span>
         <span id="pill-parks-${i}" class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks ⏳</span>
-        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" class="map-layer-pill" style="text-decoration:none;">📍 Street View</a>
       </div>
       <div class="result-map" id="map-${i}">
         <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
+      </div>
+      <div style="text-align:right;margin-top:5px;">
+        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" style="font-size:11px;color:rgba(248,241,231,0.35);text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='rgba(248,241,231,0.7)'" onmouseout="this.style.color='rgba(248,241,231,0.35)'">📍 Street View →</a>
       </div>` : ''}
 
       ${propertyLinksHtml}
@@ -3620,7 +3622,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 const PIN_META = {
                   'restaurants':  { label: 'Restaurant',    color: '#C4622D', emoji: '🍽️' },
                   'bars':         { label: 'Bar & Drinks',  color: '#7A3030', emoji: '🍷' },
-                  'coffee':       { label: 'Coffee',        color: '#795548', emoji: '☕' },
+                  'coffee':       { label: 'Café & Food',   color: '#795548', emoji: '☕' },
                   'transport':    { label: 'Station',       color: '#185FA5', emoji: '🚇' },
                   'supermarkets': { label: 'Supermarket',   color: '#2E7D32', emoji: '🛒' },
                   'gyms':         { label: 'Gym',           color: '#6A1B9A', emoji: '🏋️' },
@@ -3710,7 +3712,7 @@ function toggleMapFullscreen(mapId, btn) {
 
     // ── Street View — hide original (bottom-right of map, clashes with Close),
     // clone to bottom-left of viewport instead ──
-    const svLink = document.querySelector(`#map-pills-${mapIdx} a[href*="map_action=pano"]`);
+    const svLink = mapEl.nextElementSibling?.querySelector('a[href*="map_action=pano"]');
     if (svLink) {
       svLink.style.display = 'none'; // hide original so it doesn't clash with Close button
       const fsSv = svLink.cloneNode(true);
@@ -3751,7 +3753,7 @@ function toggleMapFullscreen(mapId, btn) {
     const siteNav = document.querySelector('nav');
     if (siteNav) siteNav.style.display = '';
     // Restore original Street View link visibility
-    const svLinkRestore = document.querySelector(`#map-pills-${mapIdx} a[href*="map_action=pano"]`);
+    const svLinkRestore = mapEl.nextElementSibling?.querySelector('a[href*="map_action=pano"]');
     if (svLinkRestore) svLinkRestore.style.display = '';
     ['close-','fs-zoom-','fs-sv-','fs-pills-'].forEach(prefix => {
       const el = document.getElementById(prefix + mapId);
