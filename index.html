@@ -1466,8 +1466,10 @@
   .map-3d-toggle.active { background: var(--sage); border-color: var(--sage); color: white; font-weight: 600; }
   .mapboxgl-ctrl.mapboxgl-ctrl-3d { background: none; box-shadow: none; margin: 0; margin-top: 8px; }
   .result-map.fullscreen .mapboxgl-ctrl-top-right { display: none; }
-  .mapboxgl-popup-content { background: var(--text-primary) !important; color: var(--warm-white) !important; border-radius: 8px !important; padding: 4px !important; box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important; }
-  .mapboxgl-popup-tip { border-top-color: var(--text-primary) !important; }
+  .mapboxgl-popup-content { background: #FEFDFB !important; color: var(--text-primary) !important; border-radius: 14px !important; padding: 0 !important; box-shadow: 0 8px 32px rgba(44,56,39,0.16), 0 2px 8px rgba(44,56,39,0.08) !important; border: 1px solid rgba(90,125,76,0.12) !important; overflow: hidden !important; }
+  .mapboxgl-popup-tip { border-top-color: #FEFDFB !important; filter: drop-shadow(0 2px 4px rgba(44,56,39,0.1)); }
+  .mapboxgl-popup-close-button { color: var(--text-muted) !important; font-size: 18px !important; padding: 6px 10px !important; line-height: 1 !important; top: 4px !important; right: 4px !important; background: transparent !important; border-radius: 6px !important; }
+  .mapboxgl-popup-close-button:hover { background: rgba(90,125,76,0.08) !important; color: var(--sage) !important; }
   .mapboxgl-ctrl-group { background: white !important; border: 1px solid var(--sage-border) !important; }
   .mapboxgl-ctrl-group button { background: transparent !important; }
 
@@ -2764,10 +2766,10 @@ async function runMatch(isAlternative = false) {
           const stationNamesWrap = document.getElementById(`station-names-${i}`);
           if (stationNamesWrap) {
             if (busOnly && busArr.length) {
-              stationNamesWrap.innerHTML = `<div>🚌 ${busArr.join(' · ')}</div><div style="font-size:10px;color:var(--text-muted);margin-top:4px;">No metro/train/tram within 800m</div>`;
+              stationNamesWrap.innerHTML = `<div>${busArr.join(' · ')}</div><div style="font-size:10px;color:var(--text-muted);margin-top:4px;">No metro/train/tram within 800m</div>`;
               stationNamesWrap.style.display = 'block';
             } else if (metroArr.length) {
-              stationNamesWrap.innerHTML = `<div>🚇 ${metroArr.join(' · ')}</div>`;
+              stationNamesWrap.innerHTML = `<div>${metroArr.join(' · ')}</div>`;
               stationNamesWrap.style.display = 'block';
             } else {
               stationNamesWrap.style.display = 'none';
@@ -2812,7 +2814,7 @@ async function runMatch(isAlternative = false) {
             fillMapSource('transport', m.busCoords || m.transitCoords, 'Bus Stop', `pill-transport-${i}`);
             // Label pill as bus stops immediately
             const busPill = document.getElementById(`pill-transport-${i}`);
-            if (busPill) busPill.innerHTML = '🚌 Bus Stops';
+            if (busPill) busPill.innerHTML = 'Bus Stops';
           } else {
             // Load heavy transit pins as fallback (will be shown only if lines fail or stops outside polygon)
             fillMapSource('transport', m.heavyTransitCoords || m.transitCoords, 'Station', `pill-transport-${i}`);
@@ -2896,7 +2898,7 @@ async function runMatch(isAlternative = false) {
 
               if (!data.lines?.length) {
                 // No transit lines returned — show heavy transit pins if available
-                if (transportPill) transportPill.innerHTML = '🚇 Stations';
+                if (transportPill) transportPill.innerHTML = 'Stations';
                 return;
               }
 
@@ -2946,7 +2948,7 @@ async function runMatch(isAlternative = false) {
                 // keep heavy transit pins visible so user can toggle them
                 if (transportPill) {
                   transportPill.style.display = '';
-                  transportPill.innerHTML = '🚇 Stations';
+                  transportPill.innerHTML = 'Stations';
                 }
               }
             })
@@ -3296,19 +3298,19 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
     const propertySites = PROPERTY_SITES[destCity] || [];
     const propertyLinksHtml = isLive && propertySites.length ? `
       <div style="margin-top:12px;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:rgba(248,241,231,0.4);margin-bottom:8px;">🏠 Find a place to rent in <span style="color:var(--terracotta-light)">${m.name}</span></div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:8px;">Find a place to rent in <span style="color:var(--sage)">${m.name}</span></div>
         <div class="booking-btns">
           ${propertySites.map((s, idx) => `
             <a href="${s.url(m.name, destCity)}" target="_blank" class="${idx === 0 ? 'booking-btn-hotel' : 'booking-btn-airbnb'}">
-              🔍 ${s.name} →
+              ${s.name} →
             </a>`).join('')}
-          <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">🏠 Airbnb →</a>
+          <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">Airbnb →</a>
         </div>
         <div style="font-size:10px;color:rgba(248,241,231,0.3);margin-top:6px;">Links pre-filtered for ${m.name} · Refine on-site for best results</div>
       </div>` : `
       <div class="booking-btns">
-        <a href="${bookingUrl}" target="_blank" class="booking-btn-hotel">🏨 Hotels in ${m.name} →</a>
-        <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">🏠 Airbnb in ${m.name} →</a>
+        <a href="${bookingUrl}" target="_blank" class="booking-btn-hotel">Hotels in ${m.name} →</a>
+              <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">Airbnb in ${m.name} →</a>
       </div>`;
 
     // SVG icon helper — sage green line icons, no emoji
@@ -3401,7 +3403,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       <div class="mmh-card-head">
         <div class="mmh-card-head-row">
           <div style="flex:1;min-width:0;">
-            <div class="mmh-city-label">${m.city} · ${isLive ? '🏡 Long stay' : '✈️ Visit'}</div>
+            <div class="mmh-city-label">${m.city} · <span style="font-weight:400;opacity:0.7;">${isLive ? 'Long stay' : 'Visit'}</span></div>
             <div class="mmh-hood-name">${m.name}</div>
             <div class="mmh-tagline">"${m.tagline}"</div>
           </div>
@@ -3449,7 +3451,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           <div class="mmh-sec-inner">
             ${isLive ? liveGrid : visitGrid}
             <div id="station-names-${i}" class="mmh-station-names" style="margin-top:10px;display:${(m.nearestMetro?.length || m.busOnly) ? 'block' : 'none'};">
-              ${m.busOnly ? '🚌 ' + (m.nearestBus?.join(' · ') || '') : '🚇 ' + (m.nearestMetro?.join(' · ') || '')}
+              ${m.busOnly ? (m.nearestBus?.join(' · ') || '') : (m.nearestMetro?.join(' · ') || '')}
               ${m.busOnly ? '<div style="font-size:10px;color:var(--text-muted);margin-top:3px;">No metro/train/tram within 800m</div>' : ''}
             </div>
             <div id="transit-wrap-${i}" style="display:none;">
@@ -3908,43 +3910,51 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
 
                 // Rich popup on pin click — category-aware card with relevant CTAs
                 const PIN_META = {
-                  'restaurants':  { label: 'Restaurant',    color: '#C4622D', emoji: '🍽️' },
-                  'bars':         { label: 'Bar & Drinks',  color: '#7A3030', emoji: '🍷' },
-                  'coffee':       { label: 'Café & Food',   color: '#795548', emoji: '☕' },
-                  'transport':    { label: 'Station',       color: '#185FA5', emoji: '🚇' },
-                  'supermarkets': { label: 'Supermarket',   color: '#2E7D32', emoji: '🛒' },
-                  'gyms':         { label: 'Gym',           color: '#6A1B9A', emoji: '🏋️' },
-                  'museums':      { label: 'Attraction',    color: '#B8860B', emoji: '🏛️' },
-                  'toppicks':     { label: 'Top Pick',       color: '#C9A455', emoji: '⭐' },
+                  'restaurants':  { label: 'Restaurant',  dot: '#C4622D' },
+                  'bars':         { label: 'Bar & drinks', dot: '#7A5C3B' },
+                  'coffee':       { label: 'Café',         dot: '#8B6914' },
+                  'transport':    { label: 'Station',      dot: '#4E7A40' },
+                  'supermarkets': { label: 'Supermarket',  dot: '#3B6D3B' },
+                  'gyms':         { label: 'Gym',          dot: '#6A5A8A' },
+                  'museums':      { label: 'Attraction',   dot: '#8B6914' },
+                  'toppicks':     { label: 'Top pick',     dot: '#B89448' },
                 };
                 ['restaurants-layer', 'bars-layer', 'coffee-layer', 'toppicks-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer'].forEach(layerId => {
                   map.on('click', layerId, e => {
                     const props = e.features[0].properties;
                     const pinType = props.pinType || layerId.replace('-layer','');
-                    const meta = PIN_META[pinType] || { label: 'Place', color: '#C4622D', emoji: '📍' };
+                    const meta = PIN_META[pinType] || { label: 'Place', dot: '#4E7A40' };
                     const cityCtx = [props.hood, props.city].filter(Boolean).join(', ');
                     const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(props.name + (cityCtx ? ', ' + cityCtx : ''))}`;
                     const gygUrl = `https://www.getyourguide.com/s/?q=${encodeURIComponent(props.name + ' ' + (props.city||''))}&partner_id=${GYG_AFF}`;
                     const isBookable = ['museums','attractions'].includes(pinType);
-                    const isFood = ['restaurants','bars','coffee'].includes(pinType);
                     const hasPhoto = props.isEnriched && props.photoUrl;
-                    const openBadge = props.openStatus ? `<span style="font-size:10px;padding:2px 7px;border-radius:100px;font-weight:700;background:${props.openStatus==='Open now'?'rgba(107,124,74,0.3)':'rgba(122,48,48,0.3)'};color:${props.openStatus==='Open now'?'#8EA065':'#E8875A'};">${props.openStatus}</span>` : '';
-                    new mapboxgl.Popup({ closeButton: true, maxWidth: '280px', className: 'mmh-popup' })
+                    const isOpen = props.openStatus === 'Open now';
+                    const isClosed = props.openStatus === 'Closed';
+                    new mapboxgl.Popup({ closeButton: true, maxWidth: '260px', className: 'mmh-popup', offset: 12 })
                       .setLngLat(e.lngLat)
                       .setHTML(`
-                        <div style="background:var(--earth);border-radius:10px;overflow:hidden;font-family:'DM Sans',sans-serif;">
-                          ${hasPhoto ? `<img src="${props.photoUrl}" style="width:100%;height:120px;object-fit:cover;display:block;" onerror="this.style.display='none'">` : `<div style="background:${meta.color};padding:8px 12px;display:flex;align-items:center;gap:6px;"><span style="font-size:14px;">${meta.emoji}</span><span style="font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.85);">${meta.label}</span></div>`}
-                          <div style="padding:10px 12px 12px;">
-                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px;">
-                              <div style="font-size:14px;font-weight:700;color:var(--cream);line-height:1.3;">${props.name||'Unknown'}</div>
-                              ${openBadge}
-                            </div>
-                            ${props.description && props.isEnriched ? `<div style="font-size:11px;color:rgba(248,241,231,0.5);margin-bottom:8px;line-height:1.3;">${props.description}</div>` : ''}
-                            <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px;">
-                              ${props.website ? `<a href="${props.website}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;">🌐 Visit website →</a>` : ''}
-                              <a href="${mapsUrl}" target="_blank" style="font-size:11px;color:${props.website?'rgba(248,241,231,0.5)':'#E8875A'};text-decoration:none;font-weight:600;">📍 Open in Google Maps →</a>
-                              ${isBookable ? `<a href="${gygUrl}" target="_blank" style="font-size:11px;color:#C9A455;text-decoration:none;font-weight:600;">🎫 Book experience →</a>` : ''}
-
+                        <div style="font-family:'DM Sans',sans-serif;overflow:hidden;border-radius:14px;">
+                          ${hasPhoto
+                            ? `<div style="position:relative;">
+                                <img src="${props.photoUrl}" style="width:100%;height:130px;object-fit:cover;display:block;" onerror="this.parentElement.style.display='none'">
+                                <div style="position:absolute;bottom:8px;left:10px;">
+                                  <span style="font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.9);background:rgba(0,0,0,0.38);padding:3px 8px;border-radius:20px;backdrop-filter:blur(4px);">${meta.label}</span>
+                                </div>
+                               </div>`
+                            : `<div style="padding:14px 16px 0;display:flex;align-items:center;gap:6px;">
+                                <span style="width:8px;height:8px;border-radius:50%;background:${meta.dot};flex-shrink:0;display:inline-block;"></span>
+                                <span style="font-size:10px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-muted);">${meta.label}</span>
+                               </div>`
+                          }
+                          <div style="padding:${hasPhoto ? '12px' : '8px'} 16px 14px;">
+                            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;font-weight:600;color:#2C3827;line-height:1.25;margin-bottom:${props.description ? '5px' : '10px'};">${props.name || 'Unknown'}</div>
+                            ${props.description && props.isEnriched ? `<div style="font-size:11px;color:#9BAF94;margin-bottom:8px;line-height:1.45;">${props.description}</div>` : ''}
+                            ${props.openStatus ? `<div style="margin-bottom:10px;"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;${isOpen ? 'background:rgba(78,122,64,0.12);color:#3D6131;' : 'background:rgba(196,98,45,0.1);color:#9B4A20;'}">${props.openStatus}</span></div>` : ''}
+                            <div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid rgba(90,125,76,0.1);padding-top:10px;">
+                              ${props.website ? `<a href="${props.website}" target="_blank" style="font-size:12px;color:#4E7A40;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 010 20"/></svg>Visit website</a>` : ''}
+                              <a href="${mapsUrl}" target="_blank" style="font-size:12px;color:#4E7A40;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Open in Maps</a>
+                              ${isBookable ? `<a href="${gygUrl}" target="_blank" style="font-size:12px;color:#B89448;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Book experience</a>` : ''}
                             </div>
                           </div>
                         </div>
@@ -4135,7 +4145,7 @@ function drawTransitLines(map, lines, i) {
             const label = line.ref ? `${line.ref} — ${line.name}` : line.name;
             new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 10 })
               .setLngLat(e.lngLat)
-              .setHTML(`<div style="font-size:12px;font-weight:700;color:var(--cream);padding:2px 4px;">${label}</div>`)
+              .setHTML(`<div style="font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:#2C3827;padding:4px 6px;white-space:nowrap;">${label}</div>`)
               .addTo(map);
           });
           map.on('mouseleave', layerId, () => {
@@ -4214,9 +4224,14 @@ function restoreMapLayers(map, m, i) {
       const props = e.features[0].properties;
       const cityCtx = [props.hood, props.city].filter(Boolean).join(', ');
       const mapsUrl = props.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(props.name + (cityCtx ? ', ' + cityCtx : ''))}`;
-      new mapboxgl.Popup({ closeButton: true, maxWidth: '220px' })
+      new mapboxgl.Popup({ closeButton: true, maxWidth: '220px', offset: 12 })
         .setLngLat(e.lngLat)
-        .setHTML(`<div style="font-size:13px;font-weight:700;color:var(--cream);margin-bottom:4px;">${props.name}</div><a href="${mapsUrl}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;">📍 Open in Google Maps →</a>`)
+        .setHTML(`
+          <div style="font-family:'DM Sans',sans-serif;padding:12px 14px 14px;">
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;font-weight:600;color:#2C3827;margin-bottom:8px;line-height:1.25;">${props.name}</div>
+            <a href="${mapsUrl}" target="_blank" style="font-size:12px;color:#4E7A40;text-decoration:none;font-weight:500;display:flex;align-items:center;gap:5px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Open in Maps</a>
+          </div>
+        `)
         .addTo(map);
     });
     map.on('mouseenter', layerId, () => map.getCanvas().style.cursor = 'pointer');
