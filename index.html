@@ -183,6 +183,8 @@
     animation: pulse 2s infinite;
   }
 
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.5; transform: scale(0.8); }
@@ -2090,80 +2092,20 @@
 <!-- PRICING -->
 <section class="pricing-section" id="pricing">
   <div class="section-label">Pricing</div>
-  <h2 class="section-title">Simple, <em>honest</em> pricing</h2>
-  <p style="color:var(--earth-mid); font-size:16px; margin-bottom:56px; max-width:520px;">Start free. Upgrade when you're ready. The first 500 members get a lifetime deal that will never be offered again.</p>
-
-  <div class="pricing-grid">
-
-    <div class="price-card">
-      <div class="price-tier">Free</div>
-      <div class="price-amount">€0<span>/month</span></div>
-      <div class="price-desc">For occasional travellers just getting started.</div>
-      <ul class="price-features">
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 3 neighbourhood matches/month</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Basic neighbourhood profiles</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Booking.com links</li>
-        <li class="disabled"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#D9C9B0" stroke-width="1.3" fill="none"/><path d="M5.5 10.5 L10.5 5.5 M10.5 10.5 L5.5 5.5" stroke="#D9C9B0" stroke-width="1.3" stroke-linecap="round"/></svg> Food crawl builder</li>
-        <li class="disabled"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#D9C9B0" stroke-width="1.3" fill="none"/><path d="M5.5 10.5 L10.5 5.5 M10.5 10.5 L5.5 5.5" stroke="#D9C9B0" stroke-width="1.3" stroke-linecap="round"/></svg> Wine bar layer</li>
-        <li class="disabled"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#D9C9B0" stroke-width="1.3" fill="none"/><path d="M5.5 10.5 L10.5 5.5 M10.5 10.5 L5.5 5.5" stroke="#D9C9B0" stroke-width="1.3" stroke-linecap="round"/></svg> Neighbourhood maps</li>
-      </ul>
-      <a href="#newsletter" onclick="selectPlan('free')" class="price-btn price-btn-outline">Get started free</a>
+  <h2 class="section-title">Pricing <em>coming soon</em></h2>
+  <p style="color:var(--earth-mid); font-size:16px; margin-bottom:56px; max-width:520px;">We're still building. MatchMyHood is free to use while we're in beta — join the waitlist to be first to know when plans launch and lock in an early-bird rate.</p>
+  <div style="max-width:480px; margin:0 auto; background:linear-gradient(135deg, rgba(196,98,45,0.07), rgba(61,43,31,0.12)); border:1.5px solid rgba(196,98,45,0.2); border-radius:24px; padding:48px 40px; text-align:center;">
+    <div style="font-size:48px; margin-bottom:16px;">🗺️</div>
+    <h3 style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:var(--earth); margin-bottom:12px;">Free during beta</h3>
+    <p style="font-size:15px; color:var(--earth-mid); line-height:1.7; margin-bottom:32px;">Unlimited neighbourhood matches, full maps, real amenity data — all free while we're in beta. Join the waitlist and we'll tell you first when paid plans go live.</p>
+    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:28px; text-align:left; max-width:300px; margin-left:auto; margin-right:auto;">
+      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--earth-mid);"><span style="color:var(--olive); font-size:16px;">✓</span> Neighbourhood character matching</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--earth-mid);"><span style="color:var(--olive); font-size:16px;">✓</span> Interactive maps with real data</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--earth-mid);"><span style="color:var(--olive); font-size:16px;">✓</span> Top restaurants & bars</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--earth-mid);"><span style="color:var(--olive); font-size:16px;">✓</span> Transit lines & amenity counts</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--earth-mid);"><span style="color:var(--gold); font-size:16px;">★</span> Early-bird pricing for waitlist members</div>
     </div>
-
-    <div class="price-card">
-      <div class="price-tier">Pay as you go</div>
-      <div class="price-amount">€0.90<span>/search</span></div>
-      <div class="price-desc">No subscription. Pay only when you need a match.</div>
-      <ul class="price-features">
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Full neighbourhood profile</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Booking & Airbnb links</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#6B7C4A" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#6B7C4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> No subscription required</li>
-        <li class="disabled"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#D9C9B0" stroke-width="1.3" fill="none"/><path d="M5.5 10.5 L10.5 5.5 M10.5 10.5 L5.5 5.5" stroke="#D9C9B0" stroke-width="1.3" stroke-linecap="round"/></svg> Food crawl builder</li>
-        <li class="disabled"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#D9C9B0" stroke-width="1.3" fill="none"/><path d="M5.5 10.5 L10.5 5.5 M10.5 10.5 L5.5 5.5" stroke="#D9C9B0" stroke-width="1.3" stroke-linecap="round"/></svg> Weekly newsletter</li>
-      </ul>
-      <button onclick="handleStripeCheckout('payg')" class="price-btn price-btn-outline" style="width:100%;cursor:pointer;">
-        💳 Buy a search — €0.90
-      </button>
-    </div>
-
-    <div class="price-card price-card-featured">
-      <div class="price-badge">Most popular</div>
-      <div class="price-tier">Explorer</div>
-      <div class="price-amount">€5.90<span>/month</span></div>
-      <div class="price-desc">For frequent travellers and digital nomads.</div>
-      <ul class="price-features">
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#F8F1E7" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#F8F1E7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Unlimited matches</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#F8F1E7" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#F8F1E7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Full neighbourhood profiles</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#F8F1E7" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#F8F1E7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Food crawl builder</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#F8F1E7" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#F8F1E7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Wine bar layer</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#F8F1E7" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#F8F1E7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Neighbourhood maps</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#F8F1E7" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#F8F1E7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Weekly newsletter</li>
-      </ul>
-      <button onclick="handleStripeCheckout('explorer_annual')" class="price-btn price-btn-light" style="width:100%;cursor:pointer;border:none;">
-        💳 Subscribe — €49/year
-      </button>
-      <p style="font-size:11px; margin-top:10px; opacity:0.6; text-align:center;">or <button onclick="handleStripeCheckout('explorer_monthly')" style="background:none;border:none;font-size:11px;opacity:0.8;cursor:pointer;text-decoration:underline;font-family:inherit;">€5.90/month</button>, cancel anytime</p>
-    </div>
-
-    <div class="price-card price-card-lifetime">
-      <div class="price-badge price-badge-gold">⚡ First 500 only</div>
-      <div class="price-tier">Founding Member</div>
-      <div class="price-amount">€149<span>once, forever</span></div>
-      <div class="price-desc">Lock in lifetime access before we launch. Never pay again.</div>
-      <ul class="price-features">
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#C9A455" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#C9A455" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Everything in Explorer, forever</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#C9A455" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#C9A455" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Nomad Pro features on launch</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#C9A455" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#C9A455" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Rental & real estate maps (Q4 2026)</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#C9A455" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#C9A455" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Mood restaurant maps (Q3 2026)</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#C9A455" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#C9A455" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Founding member badge & input</li>
-        <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#C9A455" stroke-width="1.3" fill="none"/><path d="M5 8 L7 10 L11 6" stroke="#C9A455" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Priority access to new cities</li>
-      </ul>
-      <button onclick="handleStripeCheckout('founding_member')" class="price-btn price-btn-gold" style="width:100%;cursor:pointer;border:none;">
-        ⭐ Claim lifetime access — €149
-      </button>
-      <p style="font-size:11px; margin-top:10px; color:var(--gold); text-align:center; font-weight:600;">Only 500 available · Never repeated</p>
-    </div>
-
+    <a href="#newsletter" style="display:inline-block; background:var(--terracotta); color:white; text-decoration:none; padding:14px 32px; border-radius:100px; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; transition:background 0.2s;" onmouseover="this.style.background='var(--terracotta-dark)'" onmouseout="this.style.background='var(--terracotta)'">Join the waitlist →</a>
   </div>
 </section>
 
@@ -2904,6 +2846,41 @@ async function runMatch(isAlternative = false) {
             })
             .catch(e => console.error('Transit lines error:', e));
           }
+
+          // ── LANDMARKS FETCH ────────────────────────────────────────────────
+          // Fire after amenities — Claude generates top 8 city must-dos with
+          // transport from the matched neighbourhood
+          fetch('https://api.matchmyhood.com/api/landmarks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ city: destCity, neighbourhood: m.name, lat: m.lat, lng: m.lng })
+          })
+          .then(r => r.json())
+          .then(data => {
+            const list = document.getElementById(`landmarks-list-${i}`);
+            if (!list || !data.landmarks?.length) return;
+
+            const transportIcon = t => ({ walk: '🚶', metro: '🚇', bus: '🚌', tram: '🚊', taxi: '🚕' })[t] || '🗺️';
+
+            list.innerHTML = data.landmarks.map((l, idx) => `
+              <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);${idx === data.landmarks.length - 1 ? 'border-bottom:none;' : ''}">
+                <div style="flex-shrink:0;width:24px;height:24px;background:rgba(201,164,85,0.15);border:1px solid rgba(201,164,85,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);margin-top:1px;">${idx + 1}</div>
+                <div style="flex:1;min-width:0;">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px;">
+                    <a href="https://maps.google.com/?q=${encodeURIComponent(l.name + ' ' + destCity)}" target="_blank" style="font-size:14px;font-weight:700;color:var(--cream);text-decoration:none;line-height:1.3;" onmouseover="this.style.color='var(--terracotta-light)'" onmouseout="this.style.color='var(--cream)'">${l.name}</a>
+                    ${l.bookInAdvance ? '<span style="flex-shrink:0;font-size:9px;background:rgba(196,98,45,0.25);color:var(--terracotta-light);padding:2px 7px;border-radius:100px;font-weight:700;letter-spacing:0.3px;white-space:nowrap;">Book ahead</span>' : ''}
+                  </div>
+                  <div style="font-size:12px;color:rgba(248,241,231,0.55);margin-bottom:5px;line-height:1.4;">${l.why}</div>
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span style="font-size:11px;color:rgba(248,241,231,0.35);">${l.distanceKm} km away</span>
+                    <span style="font-size:11px;color:rgba(248,241,231,0.5);display:flex;align-items:center;gap:4px;">${transportIcon(l.transport)} ${l.minutes} min${l.transportLine ? ' · <span style="color:rgba(248,241,231,0.35);">' + l.transportLine + '</span>' : ''}</span>
+                  </div>
+                  ${l.tip ? `<div style="margin-top:5px;font-size:11px;color:rgba(201,164,85,0.7);font-style:italic;">💡 ${l.tip}</div>` : ''}
+                </div>
+              </div>
+            `).join('');
+          })
+          .catch(e => console.error('Landmarks error:', e));
         });
       })
       .catch(err => {
@@ -3222,6 +3199,21 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       ${isLive ? rentHtml : ''}
 
       ${m.mustTry ? `<div class="must-try">⭐ <strong>Must try:</strong> ${m.mustTry}</div>` : ''}
+
+      <div class="picks-section" id="landmarks-section-${i}" style="background:linear-gradient(135deg,rgba(201,164,85,0.06),rgba(61,43,31,0.2));border:1.5px solid rgba(201,164,85,0.25);border-radius:16px;padding:20px 20px 16px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px;">
+          <div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;">✦ City Guide</div>
+            <div class="picks-title" style="margin-bottom:0;font-size:17px;">🗺️ Top things to do in ${destCity}</div>
+            <div style="font-size:11px;color:rgba(248,241,231,0.3);margin-top:3px;font-style:italic;">Curated from ${m.name}</div>
+          </div>
+        </div>
+        <div id="landmarks-list-${i}" class="picks-list">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;color:rgba(248,241,231,0.35);font-size:13px;">
+            <span style="display:inline-block;animation:spin 1.2s linear infinite;">⟳</span> Building your city guide…
+          </div>
+        </div>
+      </div>
 
       <div class="picks-section">
         <div class="picks-title">🍽️ Top restaurants</div>
