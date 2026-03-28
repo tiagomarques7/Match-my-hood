@@ -2767,6 +2767,34 @@ async function runMatch(isAlternative = false) {
 
           fillMapSource('restaurants',  m.restaurantCoords,  'Restaurant',  null);
           fillMapSource('bars',         m.barCoords,         'Bar',         null);
+
+          // ── INJECT TOP 3 ENRICHED PINS — overlay Google Places data on the map ──
+          // These have photoUrl, rating, website, openStatus from Google Places
+          // They replace or supplement the OSM pins for the most prominent venues
+          const injectEnrichedPins = (sourceId, venues, pinType) => {
+            const map = mapInstances[i];
+            if (!map || !venues?.length) return;
+            const validVenues = venues.filter(v => v.lat && v.lng);
+            if (!validVenues.length) return;
+            const src = map.getSource(sourceId);
+            if (!src) return;
+            const existing = map._sourceData[sourceId] || { type:'FeatureCollection', features:[] };
+            const enriched = validVenues.map(v => ({
+              type: 'Feature',
+              geometry: { type:'Point', coordinates:[v.lng, v.lat] },
+              properties: {
+                name: v.name, city: m.city||destCity, hood: m.name, pinType: sourceId,
+                photoUrl: v.photoUrl||'', website: v.website||'', openStatus: v.openStatus||'',
+                description: v.description||'', isEnriched: true
+              }
+            }));
+            // Merge: enriched pins first, then OSM (dedup by rough proximity not needed — different sources)
+            const merged = { type:'FeatureCollection', features: [...enriched, ...existing.features] };
+            map._sourceData[sourceId] = merged;
+            src.setData(merged);
+          };
+          injectEnrichedPins('restaurants', m.top3Restaurants, 'restaurants');
+          injectEnrichedPins('bars', m.top3WineBars, 'bars');
           fillMapSource('supermarkets', m.supermarketCoords, 'Supermarket', null);
           fillMapSource('gyms',         m.gymCoords,         'Gym',         null);
           fillMapSource('museums',      m.museumCoords,      'Attraction',  null);
@@ -3553,20 +3581,25 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                     const gygUrl = `https://www.getyourguide.com/s/?q=${encodeURIComponent(props.name + ' ' + (props.city||''))}&partner_id=${GYG_AFF}`;
                     const isBookable = ['museums','attractions'].includes(pinType);
                     const isFood = ['restaurants','bars','coffee'].includes(pinType);
-                    new mapboxgl.Popup({ closeButton: true, maxWidth: '260px', className: 'mmh-popup' })
+                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent((props.name||'') + ' ' + (props.city||''))}`;
+                    const hasPhoto = props.isEnriched && props.photoUrl;
+                    const openBadge = props.openStatus ? `<span style="font-size:10px;padding:2px 7px;border-radius:100px;font-weight:700;background:${props.openStatus==='Open now'?'rgba(107,124,74,0.3)':'rgba(122,48,48,0.3)'};color:${props.openStatus==='Open now'?'#8EA065':'#E8875A'};">${props.openStatus}</span>` : '';
+                    new mapboxgl.Popup({ closeButton: true, maxWidth: '280px', className: 'mmh-popup' })
                       .setLngLat(e.lngLat)
                       .setHTML(`
                         <div style="background:var(--earth);border-radius:10px;overflow:hidden;font-family:'DM Sans',sans-serif;">
-                          <div style="background:${meta.color};padding:8px 12px;display:flex;align-items:center;gap:6px;">
-                            <span style="font-size:14px;">${meta.emoji}</span>
-                            <span style="font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.85);">${meta.label}</span>
-                          </div>
+                          ${hasPhoto ? `<img src="${props.photoUrl}" style="width:100%;height:120px;object-fit:cover;display:block;" onerror="this.style.display='none'">` : `<div style="background:${meta.color};padding:8px 12px;display:flex;align-items:center;gap:6px;"><span style="font-size:14px;">${meta.emoji}</span><span style="font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.85);">${meta.label}</span></div>`}
                           <div style="padding:10px 12px 12px;">
-                            <div style="font-size:14px;font-weight:700;color:var(--cream);margin-bottom:8px;line-height:1.3;">${props.name || 'Unknown'}</div>
-                            <div style="display:flex;flex-direction:column;gap:5px;">
-                              <a href="${mapsUrl}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;display:flex;align-items:center;gap:4px;">📍 Open in Google Maps →</a>
-                              ${isBookable ? `<a href="${gygUrl}" target="_blank" style="font-size:11px;color:#C9A455;text-decoration:none;font-weight:600;display:flex;align-items:center;gap:4px;">🎫 Book experience →</a>` : ''}
-                              ${isFood ? `<a href="https://maps.google.com/?q=${encodeURIComponent(props.name + ' menu ' + (props.city||''))}" target="_blank" style="font-size:11px;color:rgba(248,241,231,0.5);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:4px;">🔍 Search reviews →</a>` : ''}
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px;">
+                              <div style="font-size:14px;font-weight:700;color:var(--cream);line-height:1.3;">${props.name||'Unknown'}</div>
+                              ${openBadge}
+                            </div>
+                            ${props.description && props.isEnriched ? `<div style="font-size:11px;color:rgba(248,241,231,0.5);margin-bottom:8px;line-height:1.3;">${props.description}</div>` : ''}
+                            <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px;">
+                              ${props.website ? `<a href="${props.website}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;">🌐 Visit website →</a>` : ''}
+                              <a href="${mapsUrl}" target="_blank" style="font-size:11px;color:${props.website?'rgba(248,241,231,0.5)':'#E8875A'};text-decoration:none;font-weight:600;">📍 Open in Google Maps →</a>
+                              ${isBookable ? `<a href="${gygUrl}" target="_blank" style="font-size:11px;color:#C9A455;text-decoration:none;font-weight:600;">🎫 Book experience →</a>` : ''}
+                              ${isFood && !props.website ? `<a href="${searchUrl}" target="_blank" style="font-size:11px;color:rgba(248,241,231,0.45);text-decoration:none;font-weight:500;">🔍 Search on Google →</a>` : ''}
                             </div>
                           </div>
                         </div>
