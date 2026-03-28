@@ -3334,10 +3334,10 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <span class="map-layer-pill" data-layer="coffee" onclick="toggleMapLayer(${i},'coffee',this)">☕ Coffee</span>
         <span id="pill-transport-${i}" class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport ⏳</span>
         <span id="pill-parks-${i}" class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks ⏳</span>
+        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" class="map-layer-pill" style="text-decoration:none;">📍 Street View</a>
       </div>
       <div class="result-map" id="map-${i}">
         <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
-        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" style="position:absolute;bottom:42px;right:8px;z-index:10;background:rgba(61,43,31,0.85);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;text-decoration:none;backdrop-filter:blur(4px);transition:background 0.2s;" onmouseover="this.style.background='var(--terracotta)'" onmouseout="this.style.background='rgba(61,43,31,0.85)'">📍 Street View</a>
       </div>` : ''}
 
       ${propertyLinksHtml}
@@ -3710,7 +3710,7 @@ function toggleMapFullscreen(mapId, btn) {
 
     // ── Street View — hide original (bottom-right of map, clashes with Close),
     // clone to bottom-left of viewport instead ──
-    const svLink = mapEl.querySelector('a[href*="map_action=pano"]');
+    const svLink = document.querySelector(`#map-pills-${mapIdx} a[href*="map_action=pano"]`);
     if (svLink) {
       svLink.style.display = 'none'; // hide original so it doesn't clash with Close button
       const fsSv = svLink.cloneNode(true);
@@ -3751,7 +3751,7 @@ function toggleMapFullscreen(mapId, btn) {
     const siteNav = document.querySelector('nav');
     if (siteNav) siteNav.style.display = '';
     // Restore original Street View link visibility
-    const svLinkRestore = mapEl.querySelector('a[href*="map_action=pano"]');
+    const svLinkRestore = document.querySelector(`#map-pills-${mapIdx} a[href*="map_action=pano"]`);
     if (svLinkRestore) svLinkRestore.style.display = '';
     ['close-','fs-zoom-','fs-sv-','fs-pills-'].forEach(prefix => {
       const el = document.getElementById(prefix + mapId);
