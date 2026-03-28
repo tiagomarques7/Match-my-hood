@@ -2809,7 +2809,20 @@ async function runMatch(isAlternative = false) {
             };
             go();
           };
-          fillMapSource('transport',    m.transitCoords,     'Station',     `pill-transport-${i}`);
+          // ── TRANSPORT MAP SOURCES ─────────────────────────────────────────────
+          // Scenario C (busOnly): load bus stop coords labeled as Bus Stop
+          // Scenarios A/B (metro exists): load heavy transit coords labeled as Station
+          //   — lines will draw themselves; pins are fallback if stops outside polygon
+          if (m.busOnly) {
+            fillMapSource('transport', m.busCoords || m.transitCoords, 'Bus Stop', `pill-transport-${i}`);
+            // Label pill as bus stops immediately
+            const busPill = document.getElementById(`pill-transport-${i}`);
+            if (busPill) busPill.innerHTML = '🚌 Bus Stops';
+          } else {
+            // Load heavy transit pins as fallback (will be shown only if lines fail or stops outside polygon)
+            fillMapSource('transport', m.heavyTransitCoords || m.transitCoords, 'Station', `pill-transport-${i}`);
+          }
+
           fillMapSource('restaurants',  m.restaurantCoords,  'Restaurant',  null);
           fillMapSource('bars',         m.barCoords,         'Bar',         null);
           fillMapSource('supermarkets', m.supermarketCoords, 'Supermarket', null);
@@ -2817,83 +2830,80 @@ async function runMatch(isAlternative = false) {
           fillMapSource('museums',      m.museumCoords,      'Attraction',  null);
           fillMapSource('coffee',       m.cafeCoords,        'Café',        null);
 
-          // Fetch and draw real transit lines
-          fetch('https://api.matchmyhood.com/api/transitlines', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lat: m.lat, lng: m.lng })
-          })
-          .then(r => r.json())
-          .then(data => {
-            const map = mapInstances[i];
-            if (!map) return;
+          // ── TRANSIT LINES ──────────────────────────────────────────────────────
+          // Scenario A: lines exist, stops inside polygon → draw lines, hide pill
+          // Scenario B: lines exist, stops outside polygon → draw lines, show heavy pins pill as fallback
+          // Scenario C (busOnly): no lines expected → bus stop pins already loaded above
+          if (!m.busOnly) {
+            fetch('https://api.matchmyhood.com/api/transitlines', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ lat: m.lat, lng: m.lng })
+            })
+            .then(r => r.json())
+            .then(data => {
+              const map = mapInstances[i];
+              if (!map) return;
+              const transportPill = document.getElementById(`pill-transport-${i}`);
 
-            const transportPill = document.getElementById(`pill-transport-${i}`);
-
-            if (data.lines?.length) {
-              // Transit lines exist — hide the transport pins pill entirely
-              if (transportPill) transportPill.style.display = 'none';
-            } else {
-              // No lines — rename pill to Bus Stops so it's clear what it shows
-              if (transportPill) {
-                transportPill.textContent = transportPill.textContent.replace('⏳','').trim();
-                transportPill.innerHTML = '🚌 Bus Stops';
+              if (!data.lines?.length) {
+                // No transit lines returned — show heavy transit pins if available
+                if (transportPill) transportPill.innerHTML = '🚇 Stations';
+                return;
               }
-            }
 
-            if (!data.lines?.length) return;
-            // Store lines on map instance so they can be restored after 3D → flat revert
-            map._transitLines = data.lines;
-            drawTransitLines(map, data.lines, i);
+              // Lines exist — draw them
+              map._transitLines = data.lines;
+              drawTransitLines(map, data.lines, i);
 
-            // Update stations tile — count unique stops inside the neighbourhood boundary
-            const hoodLat = m.lat, hoodLng = m.lng;
-            const boundary = map._boundaryData;
-            const nearbyStops = new Set();
+              // Count stops inside the neighbourhood polygon
+              const hoodLat = m.lat, hoodLng = m.lng;
+              const boundary = map._boundaryData;
+              const nearbyStops = new Set();
 
-            // Simple point-in-bbox pre-filter using boundary extent, then polygon test
-            const ptInPolygon = (lng, lat, geojson) => {
-              try {
-                const rings = geojson.type === 'Feature'
-                  ? (geojson.geometry.type === 'Polygon' ? [geojson.geometry.coordinates[0]] : geojson.geometry.coordinates.map(p => p[0]))
-                  : geojson.type === 'Polygon' ? [geojson.coordinates[0]] : geojson.coordinates.map(p => p[0]);
-                for (const ring of rings) {
-                  let inside = false;
-                  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-                    const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
-                    if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+              const ptInPolygon = (lng, lat, geojson) => {
+                try {
+                  const rings = geojson.type === 'Feature'
+                    ? (geojson.geometry.type === 'Polygon' ? [geojson.geometry.coordinates[0]] : geojson.geometry.coordinates.map(p => p[0]))
+                    : geojson.type === 'Polygon' ? [geojson.coordinates[0]] : geojson.coordinates.map(p => p[0]);
+                  for (const ring of rings) {
+                    let inside = false;
+                    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+                      if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+                    }
+                    if (inside) return true;
                   }
-                  if (inside) return true;
-                }
-              } catch(e) {}
-              return false;
-            };
+                } catch(e) {}
+                return false;
+              };
 
-            data.lines.forEach(line => {
-              (line.stops || []).forEach(c => {
-                const lng = c[0], lat = c[1];
-                const inArea = boundary
-                  ? ptInPolygon(lng, lat, boundary)
-                  : (Math.sqrt((lat-hoodLat)**2 + (lng-hoodLng)**2) * 111) <= 1.5;
-                if (inArea) {
-                  nearbyStops.add(`${Math.round(lat*1000)},${Math.round(lng*1000)}`);
-                }
+              data.lines.forEach(line => {
+                (line.stops || []).forEach(c => {
+                  const lng = c[0], lat = c[1];
+                  const inArea = boundary
+                    ? ptInPolygon(lng, lat, boundary)
+                    : (Math.sqrt((lat-hoodLat)**2 + (lng-hoodLng)**2) * 111) <= 1.5;
+                  if (inArea) nearbyStops.add(`${Math.round(lat*1000)},${Math.round(lng*1000)}`);
+                });
               });
-            });
-            if (nearbyStops.size > 0) {
-              const stationsEl = document.getElementById(`amenity-${i}-stations`);
-              if (stationsEl && !m.busOnly) stationsEl.textContent = nearbyStops.size;
-            } else if (m.transitCoords?.length) {
-              // All transit line stops are outside the polygon boundary —
-              // fall back to showing the Overpass station pins (already loaded into
-              // the transport source by fillMapSource above) via the transport pill
-              if (transportPill) {
-                transportPill.style.display = '';
-                transportPill.innerHTML = '🚇 Stations';
+
+              if (nearbyStops.size > 0) {
+                // Scenario A: stops inside polygon — update tile count, hide pill (lines show everything)
+                const stationsEl = document.getElementById(`amenity-${i}-stations`);
+                if (stationsEl) stationsEl.textContent = nearbyStops.size;
+                if (transportPill) transportPill.style.display = 'none';
+              } else {
+                // Scenario B: lines pass through but stops outside polygon —
+                // keep heavy transit pins visible so user can toggle them
+                if (transportPill) {
+                  transportPill.style.display = '';
+                  transportPill.innerHTML = '🚇 Stations';
+                }
               }
-            }
-          })
-          .catch(e => console.error('Transit lines error:', e));
+            })
+            .catch(e => console.error('Transit lines error:', e));
+          }
         });
       })
       .catch(err => {
@@ -3250,9 +3260,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       </div>
       <div class="result-map" id="map-${i}">
         <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
-      </div>
-      <div style="margin-top:8px;text-align:right;">
-        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}" target="_blank" style="font-size:12px;color:rgba(248,241,231,0.45);text-decoration:none;font-weight:500;letter-spacing:0.2px;transition:color 0.2s;" onmouseover="this.style.color='rgba(248,241,231,0.8)'" onmouseout="this.style.color='rgba(248,241,231,0.45)'">📍 Street View →</a>
+        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" style="position:absolute;bottom:8px;right:8px;z-index:10;background:rgba(61,43,31,0.85);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;text-decoration:none;backdrop-filter:blur(4px);transition:background 0.2s;" onmouseover="this.style.background='var(--terracotta)'" onmouseout="this.style.background='rgba(61,43,31,0.85)'">📍 Street View</a>
       </div>` : ''}
 
       ${propertyLinksHtml}
