@@ -2853,7 +2853,7 @@ async function runMatch(isAlternative = false) {
           fetch('https://api.matchmyhood.com/api/landmarks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ city: destCity, neighbourhood: m.name, lat: m.lat, lng: m.lng })
+            body: JSON.stringify({ city: destCity, neighbourhood: m.name, lat: m.lat, lng: m.lng, vibes: activeVibes })
           })
           .then(r => r.json())
           .then(data => {
@@ -3478,21 +3478,42 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 labelEl.textContent = m.name;
                 document.getElementById('map-' + i).appendChild(labelEl);
 
-                // ── RESTAURANT + BAR PINS — real coords from server, populated by amenity callback ──
-                map.addSource('restaurants', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'restaurants-layer', type: 'circle', source: 'restaurants', layout: { visibility: 'none' }, paint: { 'circle-radius': 5, 'circle-color': '#C4622D', 'circle-stroke-width': 1, 'circle-stroke-color': 'white' }});
-                map.addSource('bars', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'bars-layer', type: 'circle', source: 'bars', layout: { visibility: 'none' }, paint: { 'circle-radius': 5, 'circle-color': '#7A3030', 'circle-stroke-width': 1, 'circle-stroke-color': 'white' }});
+                // ── RESTAURANT + BAR + COFFEE PINS — clustered sources ──
+                // Clustering groups nearby pins into count bubbles when zoomed out
+                const addClusteredSource = (id, color, radius) => {
+                  map.addSource(id, { type: 'geojson', data: { type: 'FeatureCollection', features: [] }, cluster: true, clusterRadius: 40, clusterMaxZoom: 15 });
+                  // Cluster bubble
+                  map.addLayer({ id: id+'-cluster', type: 'circle', source: id, filter: ['has', 'point_count'], layout: { visibility: 'none' },
+                    paint: { 'circle-radius': ['step', ['get', 'point_count'], 14, 10, 18, 30, 22], 'circle-color': color, 'circle-opacity': 0.85, 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+                  // Cluster count label
+                  map.addLayer({ id: id+'-cluster-count', type: 'symbol', source: id, filter: ['has', 'point_count'], layout: { visibility: 'none', 'text-field': '{point_count_abbreviated}', 'text-size': 12, 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'] },
+                    paint: { 'text-color': 'white' }});
+                  // Individual unclustered pin
+                  map.addLayer({ id: id+'-layer', type: 'circle', source: id, filter: ['!', ['has', 'point_count']], layout: { visibility: 'none' },
+                    paint: { 'circle-radius': radius, 'circle-color': color, 'circle-stroke-width': 1, 'circle-stroke-color': 'white' }});
+                  // Click cluster → zoom in
+                  map.on('click', id+'-cluster', e => {
+                    const features = map.queryRenderedFeatures(e.point, { layers: [id+'-cluster'] });
+                    const clusterId = features[0].properties.cluster_id;
+                    map.getSource(id).getClusterExpansionZoom(clusterId, (err, zoom) => {
+                      if (err) return;
+                      map.easeTo({ center: features[0].geometry.coordinates, zoom });
+                    });
+                  });
+                  map.on('mouseenter', id+'-cluster', () => map.getCanvas().style.cursor = 'pointer');
+                  map.on('mouseleave', id+'-cluster', () => map.getCanvas().style.cursor = '');
+                };
+                addClusteredSource('restaurants', '#C4622D', 5);
+                addClusteredSource('bars', '#7A3030', 5);
+                addClusteredSource('coffee', '#795548', 5);
 
-                // ── EXTRA LAYERS (all filled by amenity callback) ──
+                // ── EXTRA LAYERS (non-clustered — fewer pins) ──
                 map.addSource('supermarkets', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'supermarkets-layer', type: 'circle', source: 'supermarkets', layout: { visibility: 'none' }, paint: { 'circle-radius': 6, 'circle-color': '#2E7D32', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
                 map.addSource('gyms', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'gyms-layer', type: 'circle', source: 'gyms', layout: { visibility: 'none' }, paint: { 'circle-radius': 6, 'circle-color': '#6A1B9A', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
                 map.addSource('museums', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'museums-layer', type: 'circle', source: 'museums', layout: { visibility: 'none' }, paint: { 'circle-radius': 6, 'circle-color': '#B8860B', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
-                map.addSource('coffee', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-                map.addLayer({ id: 'coffee-layer', type: 'circle', source: 'coffee', layout: { visibility: 'none' }, paint: { 'circle-radius': 5, 'circle-color': '#795548', 'circle-stroke-width': 1, 'circle-stroke-color': 'white' }});
 
                 // ── TRANSPORT — empty source, filled by amenity callback ──
                 map.addSource('transport', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
@@ -3518,7 +3539,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 }, 45000);
 
                 // Popup on pin click with Google Maps link
-                ['restaurants-layer', 'bars-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer', 'coffee-layer'].forEach(layerId => {
+                ['restaurants-layer', 'bars-layer', 'coffee-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer'].forEach(layerId => {
                   map.on('click', layerId, e => {
                     const props = e.features[0].properties;
                     const cityCtx = [props.hood, props.city].filter(Boolean).join(', '); const mapsUrl = props.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(props.name + (cityCtx ? ", " + cityCtx : ""))}`;
@@ -3548,13 +3569,16 @@ function toggleMapFullscreen(mapId, btn) {
   const mapEl = document.getElementById(mapId);
   if (!mapEl) return;
   const isFullscreen = mapEl.classList.toggle('fullscreen');
+  const mapIdx = parseInt(mapId.replace('map-', ''));
+  const mapInst = mapInstances[mapIdx];
   const closeId = 'close-' + mapId;
+
   if (isFullscreen) {
     btn.style.display = 'none';
-    // Hide site nav so it doesn't overlap the fullscreen map
     const siteNav = document.querySelector('nav');
     if (siteNav) siteNav.style.display = 'none';
 
+    // ── Close button — bottom-right ──
     const closeBtn = document.createElement('button');
     closeBtn.id = closeId;
     closeBtn.textContent = '✕ Close map';
@@ -3562,12 +3586,10 @@ function toggleMapFullscreen(mapId, btn) {
     closeBtn.onclick = () => toggleMapFullscreen(mapId, btn);
     document.body.appendChild(closeBtn);
 
-    // Zoom controls — bottom-right above close button
+    // ── Zoom controls — bottom-right above close ──
     const zoomWrap = document.createElement('div');
     zoomWrap.id = 'fs-zoom-' + mapId;
     zoomWrap.style.cssText = 'position:fixed;bottom:80px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:4px;';
-    const mapIdx = parseInt(mapId.replace('map-', ''));
-    const mapInst = mapInstances[mapIdx];
     [['＋', () => mapInst?.zoomIn()], ['－', () => mapInst?.zoomOut()]].forEach(([label, action]) => {
       const zBtn = document.createElement('button');
       zBtn.textContent = label;
@@ -3576,21 +3598,56 @@ function toggleMapFullscreen(mapId, btn) {
       zoomWrap.appendChild(zBtn);
     });
     document.body.appendChild(zoomWrap);
+
+    // ── Street View — bottom-left, clear of close button ──
+    const svLink = mapEl.querySelector('a[href*="map_action=pano"]');
+    if (svLink) {
+      const fsSv = svLink.cloneNode(true);
+      fsSv.id = 'fs-sv-' + mapId;
+      fsSv.style.cssText = 'position:fixed;bottom:24px;left:24px;z-index:99999;background:rgba(61,43,31,0.9);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;font-family:DM Sans,sans-serif;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);';
+      document.body.appendChild(fsSv);
+    }
+
+    // ── Pin layer pills — top bar in fullscreen ──
+    const sourcePills = document.getElementById('map-pills-' + mapIdx);
+    if (sourcePills) {
+      const fsPills = document.createElement('div');
+      fsPills.id = 'fs-pills-' + mapId;
+      fsPills.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:90vw;';
+      // Clone each pill and wire it to the same toggle function
+      sourcePills.querySelectorAll('.map-layer-pill').forEach(pill => {
+        const clone = pill.cloneNode(true);
+        // Sync active state
+        if (pill.classList.contains('active')) clone.classList.add('active');
+        clone.style.cssText += 'background:rgba(61,43,31,0.88);backdrop-filter:blur(8px);';
+        clone.onclick = () => {
+          const layer = clone.dataset.layer;
+          // Toggle both original and clone in sync
+          const original = sourcePills.querySelector(\`[data-layer="\${layer}"]\`);
+          if (original) {
+            toggleMapLayer(mapIdx, layer, original);
+            clone.classList.toggle('active', original.classList.contains('active'));
+          }
+        };
+        fsPills.appendChild(clone);
+      });
+      document.body.appendChild(fsPills);
+    }
+
   } else {
     btn.style.display = '';
     const siteNav = document.querySelector('nav');
     if (siteNav) siteNav.style.display = '';
-    const existing = document.getElementById(closeId);
-    if (existing) existing.remove();
-    const existingZoom = document.getElementById('fs-zoom-' + mapId);
-    if (existingZoom) existingZoom.remove();
+    ['close-','fs-zoom-','fs-sv-','fs-pills-'].forEach(prefix => {
+      const el = document.getElementById(prefix + mapId);
+      if (el) el.remove();
+    });
   }
-  // Resize the Mapbox map after container size changes
-  const idx = parseInt(mapId.replace('map-', ''));
-  if (mapInstances[idx]) {
-    setTimeout(() => mapInstances[idx].resize(), 100);
-  }
-  // Close on Escape
+
+  // Resize Mapbox after container size change
+  if (mapInst) setTimeout(() => mapInst.resize(), 100);
+
+  // Escape key to close
   if (isFullscreen) {
     const handler = (e) => { if (e.key === 'Escape') { toggleMapFullscreen(mapId, btn); document.removeEventListener('keydown', handler); }};
     document.addEventListener('keydown', handler);
@@ -3659,13 +3716,31 @@ function restoreMapLayers(map, m, i) {
   } catch(e) {}
 
   // Pin layers — restore sources + layers, re-populate with stored data
+  // Clustered sources — restaurants, bars, coffee
+  const clusteredSources = [
+    { id: 'restaurants', color: '#C4622D', radius: 5 },
+    { id: 'bars',        color: '#7A3030', radius: 5 },
+    { id: 'coffee',      color: '#795548', radius: 5 },
+  ];
+  clusteredSources.forEach(({ id, color, radius }) => {
+    try {
+      const data = map._sourceData[id] || { type: 'FeatureCollection', features: [] };
+      const pillEl = document.querySelector(`#map-pills-${i} [data-layer="${id}"]`);
+      const vis = pillEl?.classList.contains('active') ? 'visible' : 'none';
+      map.addSource(id, { type: 'geojson', data, cluster: true, clusterRadius: 40, clusterMaxZoom: 15 });
+      map.addLayer({ id: id+'-cluster', type: 'circle', source: id, filter: ['has','point_count'], layout: { visibility: vis },
+        paint: { 'circle-radius': ['step',['get','point_count'],14,10,18,30,22], 'circle-color': color, 'circle-opacity': 0.85, 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+      map.addLayer({ id: id+'-cluster-count', type: 'symbol', source: id, filter: ['has','point_count'], layout: { visibility: vis, 'text-field': '{point_count_abbreviated}', 'text-size': 12, 'text-font': ['DIN Offc Pro Medium','Arial Unicode MS Bold'] }, paint: { 'text-color': 'white' }});
+      map.addLayer({ id: id+'-layer', type: 'circle', source: id, filter: ['!',['has','point_count']], layout: { visibility: vis },
+        paint: { 'circle-radius': radius, 'circle-color': color, 'circle-stroke-width': 1, 'circle-stroke-color': 'white' }});
+    } catch(e) {}
+  });
+
+  // Non-clustered sources
   const pinLayers = [
-    { id: 'restaurants', layerId: 'restaurants-layer', type: 'circle', paint: { 'circle-radius': 5, 'circle-color': '#C4622D', 'circle-stroke-width': 1,   'circle-stroke-color': 'white' } },
-    { id: 'bars',        layerId: 'bars-layer',        type: 'circle', paint: { 'circle-radius': 5, 'circle-color': '#7A3030', 'circle-stroke-width': 1,   'circle-stroke-color': 'white' } },
     { id: 'supermarkets',layerId: 'supermarkets-layer',type: 'circle', paint: { 'circle-radius': 6, 'circle-color': '#2E7D32', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
     { id: 'gyms',        layerId: 'gyms-layer',        type: 'circle', paint: { 'circle-radius': 6, 'circle-color': '#6A1B9A', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
     { id: 'museums',     layerId: 'museums-layer',     type: 'circle', paint: { 'circle-radius': 6, 'circle-color': '#B8860B', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
-    { id: 'coffee',      layerId: 'coffee-layer',      type: 'circle', paint: { 'circle-radius': 5, 'circle-color': '#795548', 'circle-stroke-width': 1,   'circle-stroke-color': 'white' } },
     { id: 'transport',   layerId: 'transport-layer',   type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#185FA5', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
   ];
 
@@ -3673,7 +3748,6 @@ function restoreMapLayers(map, m, i) {
     try {
       const data = map._sourceData[id] || { type: 'FeatureCollection', features: [] };
       map.addSource(id, { type: 'geojson', data });
-      // Restore visibility: check if the pill was active before 3D was toggled
       const pillEl = document.querySelector(`#map-pills-${i} [data-layer="${id}"]`);
       const wasVisible = pillEl?.classList.contains('active') ? 'visible' : 'none';
       map.addLayer({ id: layerId, type, source: id, layout: { visibility: wasVisible }, paint });
@@ -3690,7 +3764,7 @@ function restoreMapLayers(map, m, i) {
   } catch(e) {}
 
   // Re-attach click handlers on pin layers
-  ['restaurants-layer','bars-layer','transport-layer','supermarkets-layer','gyms-layer','museums-layer','coffee-layer'].forEach(layerId => {
+  ['restaurants-layer','bars-layer','coffee-layer','transport-layer','supermarkets-layer','gyms-layer','museums-layer'].forEach(layerId => {
     map.on('click', layerId, e => {
       const props = e.features[0].properties;
       const cityCtx = [props.hood, props.city].filter(Boolean).join(', ');
@@ -3719,14 +3793,14 @@ function toggleMapLayer(mapIndex, layer, pillEl) {
 
   const layerMap = {
     'neighbourhood': ['neighbourhood-fill', 'neighbourhood-border'],
-    'restaurants': ['restaurants-layer'],
-    'bars': ['bars-layer'],
+    'restaurants': ['restaurants-layer', 'restaurants-cluster', 'restaurants-cluster-count'],
+    'bars': ['bars-layer', 'bars-cluster', 'bars-cluster-count'],
     'transport': ['transport-layer'],
     'parks': ['parks-layer'],
     'supermarkets': ['supermarkets-layer'],
     'gyms': ['gyms-layer'],
     'museums': ['museums-layer'],
-    'coffee': ['coffee-layer'],
+    'coffee': ['coffee-layer', 'coffee-cluster', 'coffee-cluster-count'],
   };
 
   const layers = layerMap[layer] || [];
