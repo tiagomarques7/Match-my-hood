@@ -2794,7 +2794,32 @@ async function runMatch(isAlternative = false) {
             src.setData(merged);
           };
           injectEnrichedPins('restaurants', m.top3Restaurants, 'restaurants');
-          injectEnrichedPins('bars', m.top3WineBars, 'bars');
+          injectEnrichedPins('bars', m.top3Bars, 'bars');
+
+          // Populate dedicated top picks source — gold pins for top 3 restaurants + bars
+          const mapTP = mapInstances[i];
+          if (mapTP) {
+            const topFeats = [
+              ...(m.top3Restaurants||[]).filter(v => v.lat && v.lng).map(v => ({
+                type:'Feature', geometry:{type:'Point',coordinates:[v.lng,v.lat]},
+                properties:{ name:v.name, city:m.city||destCity, hood:m.name, pinType:'toppicks',
+                  photoUrl:v.photoUrl||'', website:v.website||'', openStatus:v.openStatus||'',
+                  description:v.description||'', isEnriched:true, category:'Restaurant' }
+              })),
+              ...(m.top3Bars||[]).filter(v => v.lat && v.lng).map(v => ({
+                type:'Feature', geometry:{type:'Point',coordinates:[v.lng,v.lat]},
+                properties:{ name:v.name, city:m.city||destCity, hood:m.name, pinType:'toppicks',
+                  photoUrl:v.photoUrl||'', website:v.website||'', openStatus:v.openStatus||'',
+                  description:v.description||'', isEnriched:true, category:'Bar & Drinks' }
+              }))
+            ];
+            if (topFeats.length) {
+              const tpGeojson = { type:'FeatureCollection', features:topFeats };
+              mapTP._sourceData['toppicks'] = tpGeojson;
+              const goTP = () => { const src = mapTP.getSource('toppicks'); if(src) src.setData(tpGeojson); else setTimeout(goTP, 500); };
+              goTP();
+            }
+          }
           fillMapSource('supermarkets', m.supermarketCoords, 'Supermarket', null);
           fillMapSource('gyms',         m.gymCoords,         'Gym',         null);
           fillMapSource('museums',      m.museumCoords,      'Attraction',  null);
@@ -2990,11 +3015,30 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       </div>`;
     }).join('');
 
-    const wineBars = (m.top3WineBars || []).map((r, j) => {
+    const wineBars = (m.top3Bars || []).map((r, j) => {
       const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       const openBadge = r.openStatus ? `<span class="pick-open ${r.openStatus === 'Open now' ? 'open' : 'closed'}">${r.openStatus}</span>` : '';
       const bookUrl = r.website || `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       const bookLabel = r.website ? '🌐 Website & Book →' : '📍 Find & Book →';
+      const bookLink = `<a href="${bookUrl}" target="_blank" class="pick-link" style="margin-right:8px;">${bookLabel}</a>`;
+      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
+      return `<div class="pick-item">
+        <div class="pick-num">${j+1}</div>
+        ${photo}
+        <div class="pick-info">
+          <div class="pick-name">${r.name}</div>
+          <div class="pick-desc">${r.description}</div>
+          ${openBadge}
+          <div style="margin-top:5px;">${bookLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const cafePicks = (m.top3Cafes || []).map((r, j) => {
+      const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
+      const openBadge = r.openStatus ? `<span class="pick-open ${r.openStatus === 'Open now' ? 'open' : 'closed'}">${r.openStatus}</span>` : '';
+      const bookUrl = r.website || `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
+      const bookLabel = r.website ? '🌐 Website →' : '📍 Find →';
       const bookLink = `<a href="${bookUrl}" target="_blank" class="pick-link" style="margin-right:8px;">${bookLabel}</a>`;
       const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
       return `<div class="pick-item">
@@ -3256,8 +3300,13 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       </div>
 
       <div class="picks-section">
-        <div class="picks-title">🍷 Top wine bars & drinks</div>
+        <div class="picks-title">🍺 Top bars & pubs</div>
         <div class="picks-list">${wineBars || '<div class="pick-item"><div class="pick-desc" style="color:rgba(248,241,231,0.4);">No picks found nearby</div></div>'}</div>
+      </div>
+
+      <div class="picks-section">
+        <div class="picks-title">☕ Your daily caffeine</div>
+        <div class="picks-list" id="cafe-picks-${i}">${cafePicks || '<div class="pick-item"><div class="pick-desc" style="color:rgba(248,241,231,0.4);">No picks found nearby</div></div>'}</div>
       </div>
 
       <div class="picks-section">
@@ -3279,15 +3328,16 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
           ? `<span class="map-layer-pill" data-layer="supermarkets" onclick="toggleMapLayer(${i},'supermarkets',this)">🛒 Supermarkets</span>
              <span class="map-layer-pill" data-layer="gyms" onclick="toggleMapLayer(${i},'gyms',this)">🏋️ Gyms</span>`
           : `<span class="map-layer-pill" data-layer="restaurants" onclick="toggleMapLayer(${i},'restaurants',this)">🍽️ Restaurants</span>
-             <span class="map-layer-pill" data-layer="bars" onclick="toggleMapLayer(${i},'bars',this)">🍷 Wine Bars</span>
-             <span class="map-layer-pill" data-layer="museums" onclick="toggleMapLayer(${i},'museums',this)">🏛️ Attractions</span>`}
+             <span class="map-layer-pill" data-layer="bars" onclick="toggleMapLayer(${i},'bars',this)">🍺 Bars & Pubs</span>
+             <span class="map-layer-pill" data-layer="museums" onclick="toggleMapLayer(${i},'museums',this)">🏛️ Attractions</span>
+             <span id="pill-toppicks-${i}" class="map-layer-pill" data-layer="toppicks" onclick="toggleMapLayer(${i},'toppicks',this)">⭐ Top Picks</span>`}
         <span class="map-layer-pill" data-layer="coffee" onclick="toggleMapLayer(${i},'coffee',this)">☕ Coffee</span>
         <span id="pill-transport-${i}" class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport ⏳</span>
         <span id="pill-parks-${i}" class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks ⏳</span>
       </div>
       <div class="result-map" id="map-${i}">
         <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
-        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" style="position:absolute;bottom:8px;right:8px;z-index:10;background:rgba(61,43,31,0.85);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;text-decoration:none;backdrop-filter:blur(4px);transition:background 0.2s;" onmouseover="this.style.background='var(--terracotta)'" onmouseout="this.style.background='rgba(61,43,31,0.85)'">📍 Street View</a>
+        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" style="position:absolute;bottom:8px;left:8px;z-index:10;background:rgba(61,43,31,0.85);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;text-decoration:none;backdrop-filter:blur(4px);transition:background 0.2s;" onmouseover="this.style.background='var(--terracotta)'" onmouseout="this.style.background='rgba(61,43,31,0.85)'">📍 Street View</a>
       </div>` : ''}
 
       ${propertyLinksHtml}
@@ -3530,6 +3580,11 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 addClusteredSource('bars', '#7A3030', 5);
                 addClusteredSource('coffee', '#795548', 5);
 
+                // ── TOP PICKS — gold star pins for top 3 restaurants + bars ──
+                map.addSource('toppicks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
+                map.addLayer({ id: 'toppicks-layer', type: 'circle', source: 'toppicks', layout: { visibility: 'none' },
+                  paint: { 'circle-radius': 9, 'circle-color': '#C9A455', 'circle-stroke-width': 2, 'circle-stroke-color': 'white' }});
+
                 // ── EXTRA LAYERS (non-clustered — fewer pins) ──
                 map.addSource('supermarkets', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
                 map.addLayer({ id: 'supermarkets-layer', type: 'circle', source: 'supermarkets', layout: { visibility: 'none' }, paint: { 'circle-radius': 6, 'circle-color': '#2E7D32', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' }});
@@ -3570,8 +3625,9 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                   'supermarkets': { label: 'Supermarket',   color: '#2E7D32', emoji: '🛒' },
                   'gyms':         { label: 'Gym',           color: '#6A1B9A', emoji: '🏋️' },
                   'museums':      { label: 'Attraction',    color: '#B8860B', emoji: '🏛️' },
+                  'toppicks':     { label: 'Top Pick',       color: '#C9A455', emoji: '⭐' },
                 };
-                ['restaurants-layer', 'bars-layer', 'coffee-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer'].forEach(layerId => {
+                ['restaurants-layer', 'bars-layer', 'coffee-layer', 'toppicks-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer'].forEach(layerId => {
                   map.on('click', layerId, e => {
                     const props = e.features[0].properties;
                     const pinType = props.pinType || layerId.replace('-layer','');
@@ -3581,7 +3637,6 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                     const gygUrl = `https://www.getyourguide.com/s/?q=${encodeURIComponent(props.name + ' ' + (props.city||''))}&partner_id=${GYG_AFF}`;
                     const isBookable = ['museums','attractions'].includes(pinType);
                     const isFood = ['restaurants','bars','coffee'].includes(pinType);
-                    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent((props.name||'') + ' ' + (props.city||''))}`;
                     const hasPhoto = props.isEnriched && props.photoUrl;
                     const openBadge = props.openStatus ? `<span style="font-size:10px;padding:2px 7px;border-radius:100px;font-weight:700;background:${props.openStatus==='Open now'?'rgba(107,124,74,0.3)':'rgba(122,48,48,0.3)'};color:${props.openStatus==='Open now'?'#8EA065':'#E8875A'};">${props.openStatus}</span>` : '';
                     new mapboxgl.Popup({ closeButton: true, maxWidth: '280px', className: 'mmh-popup' })
@@ -3599,7 +3654,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                               ${props.website ? `<a href="${props.website}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;">🌐 Visit website →</a>` : ''}
                               <a href="${mapsUrl}" target="_blank" style="font-size:11px;color:${props.website?'rgba(248,241,231,0.5)':'#E8875A'};text-decoration:none;font-weight:600;">📍 Open in Google Maps →</a>
                               ${isBookable ? `<a href="${gygUrl}" target="_blank" style="font-size:11px;color:#C9A455;text-decoration:none;font-weight:600;">🎫 Book experience →</a>` : ''}
-                              ${isFood && !props.website ? `<a href="${searchUrl}" target="_blank" style="font-size:11px;color:rgba(248,241,231,0.45);text-decoration:none;font-weight:500;">🔍 Search on Google →</a>` : ''}
+
                             </div>
                           </div>
                         </div>
@@ -3802,6 +3857,7 @@ function restoreMapLayers(map, m, i) {
     { id: 'gyms',        layerId: 'gyms-layer',        type: 'circle', paint: { 'circle-radius': 6, 'circle-color': '#6A1B9A', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
     { id: 'museums',     layerId: 'museums-layer',     type: 'circle', paint: { 'circle-radius': 6, 'circle-color': '#B8860B', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
     { id: 'transport',   layerId: 'transport-layer',   type: 'circle', paint: { 'circle-radius': 7, 'circle-color': '#185FA5', 'circle-stroke-width': 1.5, 'circle-stroke-color': 'white' } },
+    { id: 'toppicks',    layerId: 'toppicks-layer',    type: 'circle', paint: { 'circle-radius': 9, 'circle-color': '#C9A455', 'circle-stroke-width': 2,   'circle-stroke-color': 'white' } },
   ];
 
   pinLayers.forEach(({ id, layerId, type, paint }) => {
@@ -3824,7 +3880,7 @@ function restoreMapLayers(map, m, i) {
   } catch(e) {}
 
   // Re-attach click handlers on pin layers
-  ['restaurants-layer','bars-layer','coffee-layer','transport-layer','supermarkets-layer','gyms-layer','museums-layer'].forEach(layerId => {
+  ['restaurants-layer','bars-layer','coffee-layer','toppicks-layer','transport-layer','supermarkets-layer','gyms-layer','museums-layer'].forEach(layerId => {
     map.on('click', layerId, e => {
       const props = e.features[0].properties;
       const cityCtx = [props.hood, props.city].filter(Boolean).join(', ');
@@ -3857,6 +3913,7 @@ function toggleMapLayer(mapIndex, layer, pillEl) {
     'bars': ['bars-layer', 'bars-cluster', 'bars-cluster-count'],
     'transport': ['transport-layer'],
     'parks': ['parks-layer'],
+    'toppicks': ['toppicks-layer'],
     'supermarkets': ['supermarkets-layer'],
     'gyms': ['gyms-layer'],
     'museums': ['museums-layer'],
