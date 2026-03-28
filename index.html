@@ -12,19 +12,30 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YG0BGC28QZ');</script>
 <style>
   :root {
+    --sage: #4E7A40;
+    --sage-light: #7DAA6A;
+    --sage-dark: #3D6131;
+    --sage-bg: #EDF4E8;
+    --sage-border: rgba(90,125,76,0.16);
+    --warm-white: #F6F4EE;
+    --warm-white-card: rgba(255,255,255,0.74);
+    --text-primary: #2C3827;
+    --text-secondary: #6B7D64;
+    --text-muted: #9BAF94;
+    --gold: #B89448;
+    --gold-bg: rgba(184,148,72,0.10);
     --terracotta: #C4622D;
     --terracotta-light: #E8875A;
     --terracotta-dark: #9B4A20;
-    --cream: #F8F1E7;
-    --cream-dark: #EDE3D4;
-    --sand: #D9C9B0;
-    --earth: #3D2B1F;
-    --earth-mid: #6B4C3B;
-    --olive: #6B7C4A;
-    --olive-light: #8EA065;
-    --burgundy: #7A3030;
-    --gold: #C9A455;
-    --white: #FEFCF8;
+    /* legacy aliases so unchanged HTML doesn't break */
+    --cream: #F6F4EE;
+    --cream-dark: #EAE8E1;
+    --sand: #C8D8C0;
+    --earth: #2C3827;
+    --earth-mid: #6B7D64;
+    --olive: #4E7A40;
+    --olive-light: #7DAA6A;
+    --white: #FEFDFB;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,48 +44,47 @@
 
   body {
     font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--earth);
+    background: var(--warm-white);
+    color: var(--text-primary);
     overflow-x: hidden;
   }
 
-  /* ── TEXTURE OVERLAY ── */
+  /* ── SUBTLE TEXTURE OVERLAY ── */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 1000;
-    opacity: 0.4;
+    opacity: 0.2;
   }
 
   /* ── NAV ── */
   nav {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     z-index: 100;
-    padding: 18px 48px;
+    padding: 16px 48px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(248, 241, 231, 0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(196, 98, 45, 0.15);
+    background: rgba(246,244,238,0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(90,125,76,0.12);
     transition: all 0.3s ease;
   }
 
   .nav-logo {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 22px;
-    color: var(--earth);
+    font-weight: 600;
+    color: var(--text-primary);
     text-decoration: none;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.2px;
   }
 
-  .nav-logo span { color: var(--terracotta); }
+  .nav-logo span { color: var(--sage); font-style: italic; }
 
   .nav-links {
     display: flex;
@@ -85,28 +95,28 @@
 
   .nav-links a {
     text-decoration: none;
-    color: var(--earth-mid);
+    color: var(--text-secondary);
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.3px;
     transition: color 0.2s;
   }
 
-  .nav-links a:hover { color: var(--terracotta); }
+  .nav-links a:hover { color: var(--sage); }
 
   .nav-cta {
-    background: var(--terracotta);
-    color: var(--white) !important;
-    padding: 10px 22px;
+    background: var(--sage) !important;
+    color: white !important;
+    padding: 9px 22px;
     border-radius: 100px;
     font-weight: 600 !important;
     transition: background 0.2s, transform 0.2s !important;
   }
 
   .nav-cta:hover {
-    background: var(--terracotta-dark) !important;
+    background: var(--sage-dark) !important;
     transform: translateY(-1px);
-    color: var(--white) !important;
+    color: white !important;
   }
 
   /* ── HERO ── */
@@ -117,32 +127,26 @@
     padding: 120px 48px 80px;
     position: relative;
     overflow: hidden;
+    background: var(--warm-white);
   }
 
   .hero-bg {
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(196,98,45,0.08) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 50% at 20% 80%, rgba(107,124,74,0.07) 0%, transparent 60%),
-      linear-gradient(160deg, var(--cream) 0%, var(--cream-dark) 100%);
+      radial-gradient(ellipse 70% 55% at 65% 38%, rgba(90,125,76,0.07) 0%, transparent 65%),
+      radial-gradient(ellipse 45% 45% at 15% 75%, rgba(90,125,76,0.05) 0%, transparent 55%);
   }
 
-  /* Azulejo tile pattern in background */
+  /* Subtle dot grid pattern */
   .hero-tiles {
     position: absolute;
-    right: -40px;
-    top: 50%;
+    right: -40px; top: 50%;
     transform: translateY(-50%);
-    width: 520px;
-    height: 520px;
-    opacity: 0.07;
-    background-image: repeating-linear-gradient(
-      0deg, var(--terracotta) 0px, var(--terracotta) 1px, transparent 1px, transparent 40px
-    ),
-    repeating-linear-gradient(
-      90deg, var(--terracotta) 0px, var(--terracotta) 1px, transparent 1px, transparent 40px
-    );
+    width: 520px; height: 520px;
+    opacity: 0.045;
+    background-image: radial-gradient(circle, var(--sage) 1px, transparent 1px);
+    background-size: 28px 28px;
     border-radius: 50%;
   }
 
@@ -162,13 +166,13 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(196, 98, 45, 0.1);
-    border: 1px solid rgba(196, 98, 45, 0.25);
+    background: rgba(90,125,76,0.09);
+    border: 1px solid rgba(90,125,76,0.22);
     padding: 7px 14px;
     border-radius: 100px;
     font-size: 12px;
     font-weight: 600;
-    color: var(--terracotta-dark);
+    color: var(--sage-dark);
     letter-spacing: 0.8px;
     text-transform: uppercase;
     margin-bottom: 28px;
@@ -176,10 +180,9 @@
 
   .hero-badge::before {
     content: '';
-    width: 6px;
-    height: 6px;
+    width: 6px; height: 6px;
     border-radius: 50%;
-    background: var(--terracotta);
+    background: var(--sage);
     animation: pulse 2s infinite;
   }
 
@@ -195,20 +198,20 @@
     font-size: clamp(48px, 6vw, 76px);
     font-weight: 600;
     line-height: 1.05;
-    color: var(--earth);
+    color: var(--text-primary);
     margin-bottom: 24px;
     letter-spacing: -1px;
   }
 
   h1 em {
     font-style: italic;
-    color: var(--terracotta);
+    color: var(--sage);
   }
 
   .hero-sub {
     font-size: 17px;
     line-height: 1.65;
-    color: var(--earth-mid);
+    color: var(--text-secondary);
     margin-bottom: 44px;
     font-weight: 400;
     max-width: 460px;
@@ -338,23 +341,18 @@
 
   /* ── SEARCH SECTION ── */
   .search-section {
-    background: var(--earth);
+    background: var(--warm-white);
     padding: 80px 48px;
     position: relative;
     overflow: hidden;
+    border-top: 1px solid rgba(90,125,76,0.1);
   }
 
   .search-section::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 30px,
-      rgba(255,255,255,0.015) 30px,
-      rgba(255,255,255,0.015) 31px
-    );
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(90,125,76,0.05) 0%, transparent 70%);
   }
 
   .search-inner {
@@ -369,31 +367,33 @@
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(36px, 4vw, 54px);
     font-weight: 600;
-    color: var(--cream);
+    color: var(--text-primary);
     margin-bottom: 12px;
     letter-spacing: -0.5px;
   }
 
   .search-inner h2 em {
     font-style: italic;
-    color: var(--terracotta-light);
+    color: var(--sage);
   }
 
   .search-inner p {
     font-size: 16px;
-    color: rgba(248,241,231,0.6);
+    color: var(--text-secondary);
     margin-bottom: 44px;
   }
 
   .search-form {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.75);
+    border: 1px solid var(--sage-border);
     border-radius: 20px;
     padding: 28px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr auto;
     gap: 14px;
     align-items: end;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 32px rgba(44,56,39,0.07);
   }
 
   .form-group {
@@ -408,18 +408,18 @@
     font-weight: 600;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: rgba(248,241,231,0.5);
+    color: var(--text-muted);
   }
 
   .form-group select,
   .form-group input {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.9);
+    border: 1px solid var(--sage-border);
     border-radius: 12px;
     padding: 14px 16px;
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
-    color: var(--cream);
+    color: var(--text-primary);
     outline: none;
     transition: border-color 0.2s, background 0.2s;
     cursor: pointer;
@@ -428,18 +428,19 @@
     width: 100%;
   }
 
-  .form-group select option { background: var(--earth); color: var(--cream); }
+  .form-group select option { background: white; color: var(--text-primary); }
 
   .form-group select:focus,
   .form-group input:focus {
-    border-color: var(--terracotta-light);
-    background: rgba(255,255,255,0.12);
+    border-color: var(--sage-light);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(90,125,76,0.08);
   }
 
-  .form-group input::placeholder { color: rgba(248,241,231,0.3); }
+  .form-group input::placeholder { color: var(--text-muted); }
 
   .search-btn {
-    background: var(--terracotta);
+    background: var(--sage);
     color: white;
     border: none;
     border-radius: 12px;
@@ -457,9 +458,9 @@
   }
 
   .search-btn:hover {
-    background: var(--terracotta-light);
+    background: var(--sage-dark);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(196,98,45,0.4);
+    box-shadow: 0 8px 24px rgba(78,122,64,0.35);
   }
 
   .search-btn:disabled {
@@ -478,11 +479,13 @@
   .results-area.visible { display: block; animation: fadeUp 0.5s ease; }
 
   .result-card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 16px;
-    padding: 24px;
+    background: var(--warm-white-card);
+    border: 1px solid var(--sage-border);
+    border-radius: 18px;
+    overflow: hidden;
     margin-bottom: 14px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 20px rgba(44,56,39,0.06);
   }
 
   .result-header {
@@ -496,11 +499,11 @@
     font-family: 'Cormorant Garamond', serif;
     font-size: 28px;
     font-weight: 600;
-    color: var(--cream);
+    color: var(--text-primary);
   }
 
   .result-score {
-    background: var(--terracotta);
+    background: var(--sage);
     color: white;
     font-size: 13px;
     font-weight: 700;
@@ -513,14 +516,14 @@
     font-weight: 600;
     letter-spacing: 0.8px;
     text-transform: uppercase;
-    color: var(--terracotta-light);
+    color: var(--sage);
     margin-bottom: 10px;
   }
 
   .result-desc {
     font-size: 14px;
     line-height: 1.65;
-    color: rgba(248,241,231,0.7);
+    color: var(--text-secondary);
     margin-bottom: 14px;
   }
 
@@ -531,9 +534,9 @@
     font-weight: 500;
     padding: 4px 10px;
     border-radius: 100px;
-    background: rgba(196,98,45,0.2);
-    color: var(--terracotta-light);
-    border: 1px solid rgba(196,98,45,0.25);
+    background: var(--sage-bg);
+    color: var(--sage-dark);
+    border: 1px solid rgba(90,125,76,0.2);
   }
 
   .result-extras {
@@ -544,7 +547,8 @@
   }
 
   .result-extra {
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.5);
+    border: 1px solid var(--sage-border);
     border-radius: 10px;
     padding: 10px 12px;
   }
@@ -554,37 +558,20 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    color: rgba(248,241,231,0.35);
+    color: var(--text-muted);
     margin-bottom: 4px;
   }
 
   .result-extra-val {
     font-size: 13px;
     font-weight: 500;
-    color: rgba(248,241,231,0.8);
+    color: var(--text-primary);
   }
-
-  .booking-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 16px;
-    background: var(--olive);
-    color: white;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 100px;
-    transition: all 0.2s;
-  }
-
-  .booking-btn:hover { background: var(--olive-light); transform: translateY(-1px); }
 
   .loading-msg {
     text-align: center;
     padding: 32px;
-    color: rgba(248,241,231,0.5);
+    color: var(--text-secondary);
     font-size: 15px;
     display: none;
   }
@@ -606,11 +593,11 @@
   }
 
   .error-msg {
-    background: rgba(122,48,48,0.3);
-    border: 1px solid rgba(122,48,48,0.5);
+    background: rgba(196,98,45,0.08);
+    border: 1px solid rgba(196,98,45,0.25);
     border-radius: 12px;
     padding: 16px 20px;
-    color: #ffb3b3;
+    color: var(--terracotta-dark);
     font-size: 14px;
     display: none;
     margin-top: 16px;
@@ -1455,64 +1442,129 @@
 
   /* VIBE SELECTOR */
   .vibe-selector-wrap { grid-column: 1 / -1; padding: 0 2px; }
-  .vibe-selector-label { font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: rgba(248,241,231,0.5); font-weight: 600; margin-bottom: 10px; }
+  .vibe-selector-label { font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 10px; }
   .vibe-pills { display: flex; flex-wrap: wrap; gap: 8px; }
-  .vibe-pill { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 100px; border: 1.5px solid rgba(248,241,231,0.2); background: rgba(248,241,231,0.05); color: rgba(248,241,231,0.7); font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; white-space: nowrap; }
-  .vibe-pill:hover { border-color: var(--terracotta-light); color: var(--cream); }
-  .vibe-pill.active { background: var(--terracotta); border-color: var(--terracotta); color: white; font-weight: 600; }
+  .vibe-pill { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 100px; border: 1.5px solid var(--sage-border); background: rgba(90,125,76,0.05); color: var(--text-secondary); font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; white-space: nowrap; }
+  .vibe-pill:hover { border-color: var(--sage-light); color: var(--sage-dark); }
+  .vibe-pill.active { background: var(--sage); border-color: var(--sage); color: white; font-weight: 600; }
 
   /* RESULT PHOTO */
-  .result-photo { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; display: block; }
-  .result-photo-placeholder { width: 100%; height: 180px; border-radius: 12px; margin-bottom: 16px; background: linear-gradient(135deg, rgba(196,98,45,0.2), rgba(61,43,31,0.4)); display: flex; align-items: center; justify-content: center; color: rgba(248,241,231,0.3); font-size: 13px; }
+  .result-photo { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 0; display: block; }
+  .result-photo-placeholder { width: 100%; height: 180px; border-radius: 12px 12px 0 0; margin-bottom: 0; background: linear-gradient(135deg, rgba(90,125,76,0.12), rgba(90,125,76,0.06)); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; }
 
   /* RESULT MAP */
-  .result-map { width: 100%; height: 280px; border-radius: 12px; margin: 16px 0; position: relative; }
+  .result-map { width: 100%; height: 280px; border-radius: 12px; margin: 0; position: relative; }
   .result-map.fullscreen { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; border-radius: 0 !important; z-index: 9999 !important; margin: 0 !important; overflow: visible !important; }
-  .map-expand-btn { position: absolute; top: 8px; left: 8px; z-index: 10; background: rgba(61,43,31,0.85); color: var(--cream); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; backdrop-filter: blur(4px); }
-  .map-expand-btn:hover { background: var(--terracotta); }
-  .map-layer-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-  .map-layer-pill { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 100px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: rgba(248,241,231,0.6); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; }
-  .map-layer-pill:hover { border-color: var(--terracotta-light); color: var(--cream); }
-  .map-3d-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 100px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(20,20,20,0.75); color: rgba(248,241,231,0.6); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; backdrop-filter: blur(4px); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-  .map-3d-toggle:hover { border-color: var(--terracotta-light); color: var(--cream); }
-  .map-3d-toggle.active { background: var(--terracotta); border-color: var(--terracotta); color: white; font-weight: 600; }
+  .map-expand-btn { position: absolute; top: 8px; left: 8px; z-index: 10; background: rgba(255,255,255,0.9); color: var(--text-primary); border: 1px solid var(--sage-border); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; backdrop-filter: blur(4px); }
+  .map-expand-btn:hover { background: var(--sage); color: white; }
+  .map-layer-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; padding: 0 2px; }
+  .map-layer-pill { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 100px; border: 1.5px solid var(--sage-border); background: rgba(255,255,255,0.6); color: var(--text-secondary); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; }
+  .map-layer-pill:hover { border-color: var(--sage-light); color: var(--sage-dark); }
+  .map-layer-pill.active { background: var(--sage); border-color: var(--sage); color: white; font-weight: 600; }
+  .map-3d-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border-radius: 100px; border: 1.5px solid var(--sage-border); background: rgba(255,255,255,0.8); color: var(--text-secondary); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; user-select: none; backdrop-filter: blur(4px); }
+  .map-3d-toggle:hover { border-color: var(--sage-light); color: var(--sage-dark); }
+  .map-3d-toggle.active { background: var(--sage); border-color: var(--sage); color: white; font-weight: 600; }
   .mapboxgl-ctrl.mapboxgl-ctrl-3d { background: none; box-shadow: none; margin: 0; margin-top: 8px; }
   .result-map.fullscreen .mapboxgl-ctrl-top-right { display: none; }
-  .mapboxgl-popup-content { background: var(--earth) !important; color: var(--cream) !important; border-radius: 8px !important; padding: 4px !important; box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important; }
-  .mapboxgl-popup-tip { border-top-color: var(--earth) !important; }
-  .mapboxgl-ctrl-group { background: var(--earth) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+  .mapboxgl-popup-content { background: var(--text-primary) !important; color: var(--warm-white) !important; border-radius: 8px !important; padding: 4px !important; box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important; }
+  .mapboxgl-popup-tip { border-top-color: var(--text-primary) !important; }
+  .mapboxgl-ctrl-group { background: white !important; border: 1px solid var(--sage-border) !important; }
   .mapboxgl-ctrl-group button { background: transparent !important; }
-  .mapboxgl-ctrl-group button .mapboxgl-ctrl-icon { filter: invert(1) !important; }
 
   /* TOP 3 PICKS */
-  .picks-section { margin: 14px 0; }
-  .picks-title { font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: rgba(248,241,231,0.5); font-weight: 600; margin-bottom: 8px; }
+  .picks-section { margin: 0; }
+  .picks-title { font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
   .picks-list { display: flex; flex-direction: column; gap: 6px; }
-  .pick-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); }
-  .pick-num { font-size: 11px; color: var(--terracotta-light); font-weight: 700; min-width: 16px; margin-top: 2px; }
+  .pick-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.55); border-radius: 10px; border: 1px solid var(--sage-border); }
+  .pick-num { font-size: 11px; color: var(--sage); font-weight: 700; min-width: 16px; margin-top: 2px; }
   .pick-info { flex: 1; }
-  .pick-name { font-size: 14px; color: var(--cream); font-weight: 600; margin-bottom: 2px; }
-  .pick-desc { font-size: 12px; color: rgba(248,241,231,0.5); line-height: 1.4; }
-  .pick-link { font-size: 11px; color: var(--terracotta-light); text-decoration: none; margin-top: 4px; display: inline-block; transition: color 0.2s; }
-  .pick-link:hover { color: var(--cream); }
-  .pick-photo { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: rgba(255,255,255,0.05); }
+  .pick-name { font-size: 14px; color: var(--text-primary); font-weight: 600; margin-bottom: 2px; }
+  .pick-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+  .pick-link { font-size: 11px; color: var(--sage); text-decoration: none; margin-top: 4px; display: inline-block; transition: color 0.2s; font-weight: 500; }
+  .pick-link:hover { color: var(--sage-dark); }
+  .pick-photo { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--sage-bg); }
   .pick-open { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px; display: inline-block; margin-top: 4px; }
-  .pick-open.open { background: rgba(107,124,74,0.25); color: #8BA55A; }
-  .pick-open.closed { background: rgba(196,98,45,0.2); color: var(--terracotta-light); }
+  .pick-open.open { background: rgba(78,122,64,0.15); color: var(--sage-dark); }
+  .pick-open.closed { background: rgba(196,98,45,0.12); color: var(--terracotta-dark); }
 
   /* MUST TRY */
-  .must-try { margin: 12px 0; padding: 12px 14px; background: rgba(196,98,45,0.1); border-radius: 10px; border: 1px solid rgba(196,98,45,0.2); font-size: 13px; color: rgba(248,241,231,0.85); line-height: 1.5; }
-  .must-try strong { color: var(--terracotta-light); }
+  .must-try { margin: 12px 0; padding: 12px 14px; background: rgba(90,125,76,0.07); border-radius: 10px; border: 1px solid rgba(90,125,76,0.18); font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .must-try strong { color: var(--sage-dark); }
 
   /* BOOKING BUTTONS */
   .booking-btns { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-  .booking-btn-hotel { flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 16px; background: var(--terracotta); color: white; text-decoration: none; border-radius: 100px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-align: center; }
-  .booking-btn-hotel:hover { background: var(--terracotta-dark); transform: translateY(-1px); }
-  .booking-btn-airbnb { flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 16px; background: transparent; color: var(--cream); text-decoration: none; border-radius: 100px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; border: 1.5px solid rgba(248,241,231,0.25); transition: all 0.2s; text-align: center; }
-  .booking-btn-airbnb:hover { border-color: var(--cream); transform: translateY(-1px); }
+  .booking-btn-hotel { flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 16px; background: var(--sage); color: white; text-decoration: none; border-radius: 100px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-align: center; }
+  .booking-btn-hotel:hover { background: var(--sage-dark); transform: translateY(-1px); }
+  .booking-btn-airbnb { flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 16px; background: transparent; color: var(--text-primary); text-decoration: none; border-radius: 100px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; border: 1.5px solid var(--sage-border); transition: all 0.2s; text-align: center; }
+  .booking-btn-airbnb:hover { border-color: var(--sage-light); transform: translateY(-1px); }
 
-  /* SUGGESTION SECTION */
-  .suggestions-section { background: var(--cream-dark); padding: 80px 24px; }
+  /* ── MMH COLLAPSIBLE CARD SECTIONS ── */
+  .mmh-card { background: var(--warm-white-card); border: 1px solid var(--sage-border); border-radius: 18px; overflow: hidden; margin-bottom: 14px; backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(44,56,39,0.06); }
+  .mmh-card-photo { width: 100%; height: 190px; object-fit: cover; display: block; }
+  .mmh-card-photo-placeholder { width: 100%; height: 170px; background: linear-gradient(135deg, rgba(90,125,76,0.1), rgba(90,125,76,0.05)); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; }
+  .mmh-card-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--sage-border); }
+  .mmh-card-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+  .mmh-score-badge { width: 52px; height: 52px; border-radius: 13px; background: var(--sage-bg); border: 1px solid rgba(90,125,76,0.18); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+  .mmh-score-n { font-size: 20px; font-weight: 700; color: var(--sage); line-height: 1; }
+  .mmh-score-s { font-size: 9px; color: var(--text-muted); font-weight: 500; margin-top: 1px; }
+  .mmh-hood-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--text-primary); line-height: 1.15; margin-bottom: 3px; }
+  .mmh-city-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--sage); margin-bottom: 5px; }
+  .mmh-tagline { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-secondary); line-height: 1.4; }
+  .mmh-vibe-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .mmh-vtag { font-size: 11px; padding: 3px 10px; border-radius: 12px; background: var(--sage-bg); color: var(--sage-dark); font-weight: 500; }
+
+  /* Section rows */
+  .mmh-sec { border-top: 1px solid rgba(90,125,76,0.09); }
+  .mmh-sec-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; cursor: pointer; transition: background 0.15s; user-select: none; }
+  .mmh-sec-head:hover { background: rgba(90,125,76,0.04); }
+  .mmh-sec-left { display: flex; align-items: center; gap: 10px; }
+  .mmh-sec-icon { width: 28px; height: 28px; border-radius: 7px; background: var(--sage-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .mmh-sec-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .mmh-sec-preview { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+  .mmh-chev { font-size: 10px; color: var(--text-muted); transition: transform 0.22s; display: inline-block; }
+  .mmh-chev.open { transform: rotate(180deg); }
+  .mmh-sec-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .mmh-sec-body.open { max-height: 3000px; }
+  .mmh-sec-inner { padding: 4px 22px 18px; }
+
+  /* Why it matches block */
+  .mmh-why-text { font-size: 13px; color: var(--text-secondary); line-height: 1.7; padding: 12px 14px; background: rgba(90,125,76,0.05); border-radius: 10px; border-left: 2px solid rgba(90,125,76,0.3); margin-bottom: 12px; }
+
+  /* Amenity tile grid */
+  .mmh-amenity-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .mmh-amenity-grid-wide { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
+  .mmh-a-tile { background: rgba(255,255,255,0.6); border: 1px solid var(--sage-border); border-radius: 10px; padding: 10px 6px; text-align: center; }
+  .mmh-a-icon { width: 22px; height: 22px; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; }
+  .mmh-a-count { font-size: 16px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+  .mmh-a-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .mmh-section-sub-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 14px 0 8px; }
+
+  /* Stats row (walk/cost/safety) */
+  .mmh-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .mmh-stat-tile { background: rgba(255,255,255,0.5); border: 1px solid var(--sage-border); border-radius: 10px; padding: 10px 12px; }
+  .mmh-stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 3px; }
+  .mmh-stat-val { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+
+  /* Pros/cons */
+  .mmh-pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mmh-pc-box { padding: 12px 14px; border-radius: 10px; font-size: 12px; line-height: 1.6; }
+  .mmh-pc-box.pro { background: rgba(90,125,76,0.07); border: 1px solid rgba(90,125,76,0.15); color: #3D5E32; }
+  .mmh-pc-box.con { background: rgba(196,98,45,0.05); border: 1px solid rgba(196,98,45,0.12); color: #7A3C20; }
+  .mmh-pc-title { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .mmh-pc-box.pro .mmh-pc-title { color: var(--sage); }
+  .mmh-pc-box.con .mmh-pc-title { color: var(--terracotta); }
+
+  /* City guide section */
+  .mmh-city-guide-sec { border-left: 2px solid rgba(184,148,72,0.4); background: rgba(184,148,72,0.04); }
+  .mmh-city-guide-sec .mmh-sec-head { background: transparent; }
+  .mmh-city-guide-sec .mmh-sec-icon { background: rgba(184,148,72,0.12); }
+
+  /* Alternative match button */
+  .mmh-alt-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: transparent; border: 1.5px dashed rgba(90,125,76,0.28); border-radius: 14px; color: var(--sage-light); font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 8px; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .mmh-alt-btn:hover { background: rgba(90,125,76,0.05); border-color: var(--sage-light); color: var(--sage-dark); }
+
+  /* Station names */
+  .mmh-station-names { margin: 8px 0 4px; padding: 8px 12px; background: rgba(255,255,255,0.4); border-radius: 8px; border: 1px solid var(--sage-border); font-size: 12px; color: var(--text-secondary); }
   .suggestions-inner { max-width: 860px; margin: 0 auto; }
   .suggestions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 40px; }
   .suggestion-card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 16px rgba(61,43,31,0.06); }
@@ -2652,7 +2704,7 @@ async function runMatch(isAlternative = false) {
       const callId = `amenity-loading-${Date.now()}`;
       const amenityNote = document.createElement('div');
       amenityNote.id = callId;
-      amenityNote.style.cssText = 'text-align:center;font-size:12px;color:rgba(248,241,231,0.4);padding:8px;';
+      amenityNote.style.cssText = 'text-align:center;font-size:12px;color:var(--text-muted);padding:8px;';
       amenityNote.textContent = '⏳ Loading local data…';
       document.getElementById('resultsArea').prepend(amenityNote);
 
@@ -2697,21 +2749,22 @@ async function runMatch(isAlternative = false) {
           const stationsEl = document.getElementById(`amenity-${i}-stations`);
           if (stationsEl) stationsEl.textContent = busOnly ? busCount : (m.amenities?.stations ?? metroArr.length);
 
-          // Update station tile icon + label for bus-only
+          // Update station tile label for bus-only
           if (busOnly) {
-            const tileEl = stationsEl?.closest('div[style*="text-align:center"]');
-            if (tileEl) {
-              const iconEl = tileEl.querySelector('div:first-child');
-              const labelEl = tileEl.querySelector('div:last-child');
-              if (iconEl) iconEl.textContent = '🚌';
-              if (labelEl) labelEl.textContent = 'Bus stops';
+            const stationEl = document.getElementById(`amenity-${i}-stations`);
+            if (stationEl) {
+              const tile = stationEl.closest('.mmh-a-tile');
+              if (tile) {
+                const lbl = tile.querySelector('.mmh-a-label');
+                if (lbl) lbl.textContent = 'Bus stops';
+              }
             }
           }
 
           const stationNamesWrap = document.getElementById(`station-names-${i}`);
           if (stationNamesWrap) {
             if (busOnly && busArr.length) {
-              stationNamesWrap.innerHTML = `<div>🚌 ${busArr.join(' · ')}</div><div style="font-size:10px;color:rgba(248,241,231,0.3);margin-top:4px;">No metro/train/tram within 800m</div>`;
+              stationNamesWrap.innerHTML = `<div>🚌 ${busArr.join(' · ')}</div><div style="font-size:10px;color:var(--text-muted);margin-top:4px;">No metro/train/tram within 800m</div>`;
               stationNamesWrap.style.display = 'block';
             } else if (metroArr.length) {
               stationNamesWrap.innerHTML = `<div>🚇 ${metroArr.join(' · ')}</div>`;
@@ -2912,6 +2965,9 @@ async function runMatch(isAlternative = false) {
           .then(data => {
             const list = document.getElementById(`landmarks-list-${i}`);
             if (!list || !data.landmarks?.length) return;
+            // Update city guide section preview text
+            const cityGuideHead = list.closest('.mmh-sec')?.querySelector('.mmh-sec-preview');
+            if (cityGuideHead) cityGuideHead.textContent = `${data.landmarks.length} highlights`;
 
             const transportIcon = t => ({ walk: '🚶', metro: '🚇', bus: '🚌', tram: '🚊', train: '🚆', taxi: '🚕' })[t] || '🗺️';
 
@@ -2919,22 +2975,22 @@ async function runMatch(isAlternative = false) {
               const gygUrl = `https://www.getyourguide.com/s/?q=${encodeURIComponent(l.name + ' ' + destCity)}&partner_id=${GYG_AFF}`;
               const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(l.name + ' ' + destCity)}`;
               return `
-              <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);${idx === data.landmarks.length - 1 ? 'border-bottom:none;' : ''}">
-                <div style="flex-shrink:0;width:24px;height:24px;background:rgba(201,164,85,0.15);border:1px solid rgba(201,164,85,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);margin-top:1px;">${idx + 1}</div>
+              <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--sage-border);${idx === data.landmarks.length - 1 ? 'border-bottom:none;' : ''}">
+                <div style="flex-shrink:0;width:24px;height:24px;background:var(--gold-bg);border:1px solid rgba(184,148,72,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);margin-top:1px;">${idx + 1}</div>
                 <div style="flex:1;min-width:0;">
                   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px;">
-                    <a href="${mapsUrl}" target="_blank" style="font-size:14px;font-weight:700;color:var(--cream);text-decoration:none;line-height:1.3;" onmouseover="this.style.color='var(--terracotta-light)'" onmouseout="this.style.color='var(--cream)'">${l.name}</a>
-                    ${l.bookInAdvance ? '<span style="flex-shrink:0;font-size:9px;background:rgba(196,98,45,0.25);color:var(--terracotta-light);padding:2px 7px;border-radius:100px;font-weight:700;letter-spacing:0.3px;white-space:nowrap;">Book ahead</span>' : ''}
+                    <a href="${mapsUrl}" target="_blank" style="font-size:14px;font-weight:700;color:var(--text-primary);text-decoration:none;line-height:1.3;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-primary)'">${l.name}</a>
+                    ${l.bookInAdvance ? '<span style="flex-shrink:0;font-size:9px;background:rgba(184,148,72,0.12);color:var(--gold);padding:2px 7px;border-radius:100px;font-weight:700;letter-spacing:0.3px;white-space:nowrap;">Book ahead</span>' : ''}
                   </div>
-                  <div style="font-size:12px;color:rgba(248,241,231,0.55);margin-bottom:5px;line-height:1.4;">${l.why}</div>
+                  <div style="font-size:12px;color:var(--text-secondary);margin-bottom:5px;line-height:1.4;">${l.why}</div>
                   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
-                    <span style="font-size:11px;color:rgba(248,241,231,0.35);">${l.distanceKm} km away</span>
-                    <span style="font-size:11px;color:rgba(248,241,231,0.5);display:flex;align-items:center;gap:4px;">${transportIcon(l.transport)} ${l.minutes} min${l.transportLine ? ' · <span style="color:rgba(248,241,231,0.35);">' + l.transportLine + '</span>' : ''}</span>
+                    <span style="font-size:11px;color:var(--text-muted);">${l.distanceKm} km away</span>
+                    <span style="font-size:11px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;">${transportIcon(l.transport)} ${l.minutes} min${l.transportLine ? ' · <span style="color:var(--text-muted);">' + l.transportLine + '</span>' : ''}</span>
                   </div>
-                  ${l.tip ? `<div style="margin-bottom:6px;font-size:11px;color:rgba(201,164,85,0.7);font-style:italic;">💡 ${l.tip}</div>` : ''}
+                  ${l.tip ? `<div style="margin-bottom:6px;font-size:11px;color:var(--gold);font-style:italic;">Tip: ${l.tip}</div>` : ''}
                   <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <a href="${gygUrl}" target="_blank" class="pick-link">🎫 Book experience →</a>
-                    <a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a>
+                    <a href="${gygUrl}" target="_blank" class="pick-link">Book experience →</a>
+                    <a href="${mapsUrl}" target="_blank" class="pick-link">Directions →</a>
                   </div>
                 </div>
               </div>`;
@@ -2960,7 +3016,7 @@ async function runMatch(isAlternative = false) {
     // Restore all alternative buttons
     document.querySelectorAll('.alt-search-btn').forEach(b => {
       b.disabled = false;
-      b.textContent = 'Search for an alternative match →';
+      b.textContent = `✦ Show me another match`;
       b.style.opacity = '1';
       b.style.cursor = 'pointer';
     });
@@ -2975,18 +3031,16 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
   const indexOffset = existingCards;
 
   const header = isAlternative
-    ? `<div style="margin:32px 0 24px;padding-top:24px;border-top:1px solid rgba(248,241,231,0.1);">
-        <p style="font-size:13px; color:rgba(248,241,231,0.5); letter-spacing:0.8px; text-transform:uppercase; font-weight:600; margin-bottom:10px;">✦ Your alternative match</p>
-        <p style="font-size:18px; color:var(--cream); font-family:'Cormorant Garamond',serif; font-weight:600;">
-          Here's another neighbourhood in ${destCity} for you:
+    ? `<div style="margin:32px 0 20px;padding-top:24px;border-top:1px solid var(--sage-border);">
+        <p style="font-size:11px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px;">✦ Alternative match</p>
+        <p style="font-size:18px;color:var(--text-primary);font-family:'Cormorant Garamond',serif;font-weight:600;">
+          Here's another neighbourhood in ${destCity}:
         </p>
       </div>`
-    : `<div style="margin-bottom:24px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
-          <p style="font-size:13px; color:rgba(248,241,231,0.5); letter-spacing:0.8px; text-transform:uppercase; font-weight:600;">✦ Your match</p>
-        </div>
-        <p style="font-size:18px; color:var(--cream); font-family:'Cormorant Garamond',serif; font-weight:600;">
-          If you love <em style="color:var(--terracotta-light)">${homeHood}</em> in ${homeCity}, here's your perfect neighbourhood in ${destCity}:
+    : `<div style="margin-bottom:20px;">
+        <p style="font-size:11px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px;">✦ Your match</p>
+        <p style="font-size:18px;color:var(--text-primary);font-family:'Cormorant Garamond',serif;font-weight:600;">
+          If you love <em style="color:var(--sage)">${homeHood}</em> in ${homeCity}, here's your neighbourhood in ${destCity}:
         </p>
       </div>`;
 
@@ -3257,113 +3311,343 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <a href="${airbnbUrl}" target="_blank" class="booking-btn-airbnb">🏠 Airbnb in ${m.name} →</a>
       </div>`;
 
+    // SVG icon helper — sage green line icons, no emoji
+    const aIcon = (type) => {
+      const s = (d) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4E7A40" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+      const map = {
+        restaurants: s('<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'),
+        bars:        s('<path d="M8 22H5a2 2 0 01-2-2v-1l3-9h10l3 9v1a2 2 0 01-2 2h-3"/><path d="M8 22v-7m8 7v-7"/><path d="M3 11V8a2 2 0 012-2h14a2 2 0 012 2v3"/>'),
+        cafes:       s('<path d="M17 8h1a4 4 0 010 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="7" y1="2" x2="7" y2="5"/><line x1="11" y1="2" x2="11" y2="5"/>'),
+        parks:       s('<path d="M12 22V12"/><path d="M5 12l7-7 7 7"/><path d="M3 21h18"/>'),
+        museums:     s('<path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>'),
+        gyms:        s('<path d="M6.5 6.5h11M6.5 17.5h11M3 12h18"/><circle cx="2" cy="6.5" r="1.5"/><circle cx="2" cy="17.5" r="1.5"/><circle cx="22" cy="6.5" r="1.5"/><circle cx="22" cy="17.5" r="1.5"/>'),
+        pharmacies:  s('<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>'),
+        supermarkets:s('<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>'),
+        stations:    s('<rect x="4" y="3" width="16" height="16" rx="2"/><path d="M9 19l3 3 3-3"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/>'),
+        bus:         s('<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 11h20"/><path d="M7 20l-2-2M17 20l2-2"/><circle cx="8" cy="15" r="1"/><circle cx="16" cy="15" r="1"/>'),
+        musicVenues: s('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'),
+        cinemas:     s('<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h5m10 0h5M2 14h5m10 0h5"/>'),
+        theatres:    s('<path d="M2 10s3-3 3-8h14s3 5 3 8"/><path d="M12 10v4"/><path d="M9 14h6"/><path d="M4 18h16a2 2 0 002-2v-1H2v1a2 2 0 002 2z"/>'),
+        markets:     s('<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>'),
+        hospitals:   s('<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>'),
+        intlSchools: s('<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>'),
+      };
+      return map[type] || s('<circle cx="12" cy="12" r="10"/>');
+    };
+
+    const aTile = (key, label, initialVal, isBusIcon) => {
+      const icon = isBusIcon ? aIcon('bus') : aIcon(key);
+      return `<div class="mmh-a-tile">
+        <div class="mmh-a-icon">${icon}</div>
+        <div class="mmh-a-count" id="amenity-${i}-${key}">${initialVal}</div>
+        <div class="mmh-a-label">${label}</div>
+      </div>`;
+    };
+
+    const visitGrid = `
+      <div class="mmh-amenity-grid">
+        ${aTile('restaurants','Restaurants', m.amenities?.restaurants ?? '…')}
+        ${aTile('bars','Bars & pubs', m.amenities?.bars ?? '…')}
+        ${aTile('cafes','Coffee shops', m.amenities?.cafes ?? '…')}
+        ${aTile('parks','Parks', m.amenities?.parks ?? '…')}
+        ${aTile('museums','Attractions', m.amenities?.museums ?? '…')}
+        ${aTile('stations', m.busOnly ? 'Bus stops' : 'Stations', m.busOnly ? (m.busCount ?? m.nearestBus?.length ?? '…') : (m.nearestMetro?.length ?? '…'), m.busOnly)}
+      </div>
+      <div class="mmh-section-sub-label">Entertainment & Culture</div>
+      <div class="mmh-amenity-grid">
+        ${aTile('musicVenues','Music venues', m.amenities?.musicVenues ?? '…')}
+        ${aTile('cinemas','Cinemas', m.amenities?.cinemas ?? '…')}
+        ${aTile('theatres','Theatres', m.amenities?.theatres ?? '…')}
+        ${aTile('markets','Markets', m.amenities?.markets ?? '…')}
+      </div>`;
+
+    const liveGrid = `
+      <div class="mmh-amenity-grid">
+        ${aTile('pharmacies','Pharmacies', m.amenities?.pharmacies ?? '…')}
+        ${aTile('supermarkets','Supermarkets', m.amenities?.supermarkets ?? '…')}
+        ${aTile('parks','Parks', m.amenities?.parks ?? '…')}
+        ${aTile('gyms','Gyms', m.amenities?.gyms ?? '…')}
+        ${aTile('intlSchools','Int\'l schools', m.amenities?.intlSchools ?? '…')}
+        ${aTile('stations', m.busOnly ? 'Bus stops' : 'Stations', m.busOnly ? (m.busCount ?? m.nearestBus?.length ?? '…') : (m.nearestMetro?.length ?? '…'), m.busOnly)}
+      </div>
+      <div class="mmh-section-sub-label">Food & Entertainment</div>
+      <div class="mmh-amenity-grid">
+        ${aTile('restaurants','Restaurants', m.amenities?.restaurants ?? '…')}
+        ${aTile('bars','Bars & pubs', m.amenities?.bars ?? '…')}
+        ${aTile('cafes','Coffee shops', m.amenities?.cafes ?? '…')}
+        ${aTile('musicVenues','Music venues', m.amenities?.musicVenues ?? '…')}
+        ${aTile('cinemas','Cinemas', m.amenities?.cinemas ?? '…')}
+        ${aTile('hospitals','Hospitals', m.amenities?.hospitals ?? '…')}
+      </div>`;
+
+    const prosListHtml = (m.pros || []).map(p =>
+      `<div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:5px;font-size:12px;color:#3D5E32;">
+        <span style="color:var(--sage);font-weight:700;margin-top:1px;flex-shrink:0;">✓</span>${p}
+      </div>`).join('');
+
+    const consListHtml = (m.cons || []).map(c =>
+      `<div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:5px;font-size:12px;color:#7A3C20;">
+        <span style="color:var(--terracotta);font-weight:700;margin-top:1px;flex-shrink:0;">!</span>${c}
+      </div>`).join('');
+
+    const metroLink = METRO_LINKS[destCity];
+
     return `
     <div class="result-card-wrap">
-    <div class="result-card" id="card-${i}" style="animation-delay:${i * 0.1}s">
-      <div id="photo-${i}" class="result-photo-placeholder">Loading photo…</div>
-      <div class="result-header">
-        <div>
-          <div class="result-city">${m.city} · <span style="color:var(--terracotta-light);font-size:11px;">${isLive ? '🏡 LIVE' : '✈️ VISIT'}</span></div>
-          <div class="result-hood-name">${m.name}</div>
-        </div>
-        <div class="result-score">${m.matchScore}% match</div>
-      </div>
-      <p style="font-size:15px; color:rgba(248,241,231,0.85); font-style:italic; margin-bottom:10px; font-family:'Cormorant Garamond',serif;">"${m.tagline}"</p>
-      <div class="result-desc">${m.whyItMatches}</div>
-      <div class="result-tags">${(m.vibes||[]).map(v=>`<span class="result-tag">${v}</span>`).join('')}</div>
+    <div class="mmh-card" id="card-${i}">
 
-      ${prosConsHtml}
-      ${transportHtml}
-      ${isLive ? amenitiesHtml : visitAmenitiesHtml}
-      ${isLive ? rentHtml : ''}
+      <!-- Photo header -->
+      <div id="photo-${i}" class="mmh-card-photo-placeholder">Loading photo…</div>
 
-      ${m.mustTry ? `<div class="must-try">⭐ <strong>Must try:</strong> ${m.mustTry}</div>` : ''}
-
-      <div class="picks-section" id="landmarks-section-${i}" style="background:linear-gradient(135deg,rgba(201,164,85,0.06),rgba(61,43,31,0.2));border:1.5px solid rgba(201,164,85,0.25);border-radius:16px;padding:20px 20px 16px;">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px;">
-          <div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;">✦ City Guide</div>
-            <div class="picks-title" style="margin-bottom:0;font-size:17px;">🗺️ Top things to do in ${destCity}</div>
-            <div style="font-size:11px;color:rgba(248,241,231,0.3);margin-top:3px;font-style:italic;">Curated from ${m.name}</div>
+      <!-- Card identity header — always visible -->
+      <div class="mmh-card-head">
+        <div class="mmh-card-head-row">
+          <div style="flex:1;min-width:0;">
+            <div class="mmh-city-label">${m.city} · ${isLive ? '🏡 Long stay' : '✈️ Visit'}</div>
+            <div class="mmh-hood-name">${m.name}</div>
+            <div class="mmh-tagline">"${m.tagline}"</div>
+          </div>
+          <div class="mmh-score-badge">
+            <div class="mmh-score-n">${m.matchScore}</div>
+            <div class="mmh-score-s">match</div>
           </div>
         </div>
-        <div id="landmarks-list-${i}" class="picks-list">
-          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;color:rgba(248,241,231,0.35);font-size:13px;">
-            <span style="display:inline-block;animation:spin 1.2s linear infinite;">⟳</span> Building your city guide…
+        <div class="mmh-vibe-tags">${(m.vibes||[]).map(v=>`<span class="mmh-vtag">${v}</span>`).join('')}</div>
+      </div>
+
+      <!-- SECTION 1: Why it matches — OPEN by default -->
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4E7A40" stroke-width="2" stroke-linecap="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
+            <span class="mmh-sec-title">Why it matches</span>
+          </div>
+          <span class="mmh-chev open">▾</span>
+        </div>
+        <div class="mmh-sec-body open">
+          <div class="mmh-sec-inner">
+            <div class="mmh-why-text">${m.whyItMatches}</div>
+            ${m.mustTry ? `<div class="must-try" style="margin-bottom:10px;"><strong>Must try:</strong> ${m.mustTry}</div>` : ''}
+            <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Best for: <span style="color:var(--text-secondary);font-weight:500;">${m.bestFor||'—'}</span></p>
+            <div class="mmh-stats-row" style="margin-top:10px;">
+              <div class="mmh-stat-tile"><div class="mmh-stat-label">Walkability</div><div class="mmh-stat-val">${m.walkScore||'—'}</div></div>
+              <div class="mmh-stat-tile"><div class="mmh-stat-label">Cost level</div><div class="mmh-stat-val">${m.costLevel||'—'}</div></div>
+              <div class="mmh-stat-tile"><div class="mmh-stat-label">Safety</div><div class="mmh-stat-val">${m.safetyRating||'—'}</div></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="picks-section">
-        <div class="picks-title">🍽️ Top restaurants</div>
-        <div class="picks-list">${restaurants || '<div class="pick-item"><div class="pick-desc" style="color:rgba(248,241,231,0.4);">No picks found nearby</div></div>'}</div>
+      <!-- SECTION 2: What's around — OPEN by default -->
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4E7A40" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+            <span class="mmh-sec-title">What's around</span>
+          </div>
+          <span class="mmh-chev open">▾</span>
+        </div>
+        <div class="mmh-sec-body open">
+          <div class="mmh-sec-inner">
+            ${isLive ? liveGrid : visitGrid}
+            <div id="station-names-${i}" class="mmh-station-names" style="margin-top:10px;display:${(m.nearestMetro?.length || m.busOnly) ? 'block' : 'none'};">
+              ${m.busOnly ? '🚌 ' + (m.nearestBus?.join(' · ') || '') : '🚇 ' + (m.nearestMetro?.join(' · ') || '')}
+              ${m.busOnly ? '<div style="font-size:10px;color:var(--text-muted);margin-top:3px;">No metro/train/tram within 800m</div>' : ''}
+            </div>
+            <div id="transit-wrap-${i}" style="display:none;">
+              <div id="transit-${i}"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="picks-section">
-        <div class="picks-title">🍺 Top bars & pubs</div>
-        <div class="picks-list">${wineBars || '<div class="pick-item"><div class="pick-desc" style="color:rgba(248,241,231,0.4);">No picks found nearby</div></div>'}</div>
+      <!-- SECTION 3: City Guide — CLOSED, gold accent -->
+      <div class="mmh-sec mmh-city-guide-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B89448" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+            <span class="mmh-sec-title" style="color:var(--gold);">City guide — top things to do in ${destCity}</span>
+            <span class="mmh-sec-preview">Loading…</span>
+          </div>
+          <span class="mmh-chev">▾</span>
+        </div>
+        <div class="mmh-sec-body">
+          <div class="mmh-sec-inner">
+            <div id="landmarks-list-${i}" class="picks-list">
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 0;color:var(--text-muted);font-size:13px;">
+                <span style="display:inline-block;animation:spin 1.2s linear infinite;">⟳</span> Building your city guide…
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="picks-section">
-        <div class="picks-title">☕ Your daily caffeine</div>
-        <div class="picks-list" id="cafe-picks-${i}">${cafePicks || '<div class="pick-item"><div class="pick-desc" style="color:rgba(248,241,231,0.4);">No picks found nearby</div></div>'}</div>
+      <!-- SECTION 4: Top Restaurants — CLOSED -->
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon">${aIcon('restaurants')}</div>
+            <span class="mmh-sec-title">Top restaurants</span>
+            ${m.top3Restaurants?.[0] ? `<span class="mmh-sec-preview">${m.top3Restaurants[0].name}${m.top3Restaurants[1] ? ' · ' + m.top3Restaurants[1].name : ''}</span>` : ''}
+          </div>
+          <span class="mmh-chev">▾</span>
+        </div>
+        <div class="mmh-sec-body">
+          <div class="mmh-sec-inner">
+            <div class="picks-list">${restaurants || '<div class="pick-item"><div class="pick-desc">No picks found nearby</div></div>'}</div>
+          </div>
+        </div>
       </div>
 
-      <div class="picks-section">
-        <div class="picks-title">🏛️ Top things to do</div>
-        <div class="picks-list">${thingsToDo || '<div class="pick-item"><div class="pick-desc">Loading…</div></div>'}</div>
+      <!-- SECTION 5: Top Bars — CLOSED -->
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon">${aIcon('bars')}</div>
+            <span class="mmh-sec-title">Top bars & pubs</span>
+            ${m.top3Bars?.[0] ? `<span class="mmh-sec-preview">${m.top3Bars[0].name}${m.top3Bars[1] ? ' · ' + m.top3Bars[1].name : ''}</span>` : ''}
+          </div>
+          <span class="mmh-chev">▾</span>
+        </div>
+        <div class="mmh-sec-body">
+          <div class="mmh-sec-inner">
+            <div class="picks-list">${wineBars || '<div class="pick-item"><div class="pick-desc">No picks found nearby</div></div>'}</div>
+          </div>
+        </div>
       </div>
 
-      <div class="result-extras">
-        <div class="result-extra"><div class="result-extra-label">🚶 Walkability</div><div class="result-extra-val">${m.walkScore||'—'}</div></div>
-        <div class="result-extra"><div class="result-extra-label">💶 Cost level</div><div class="result-extra-val">${m.costLevel||'—'}</div></div>
-        <div class="result-extra"><div class="result-extra-label">🔒 Safety</div><div class="result-extra-val">${m.safetyRating||'—'}</div></div>
+      <!-- SECTION 6: Top Cafés — CLOSED -->
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon">${aIcon('cafes')}</div>
+            <span class="mmh-sec-title">Top cafés</span>
+            ${m.top3Cafes?.[0] ? `<span class="mmh-sec-preview">${m.top3Cafes[0].name}${m.top3Cafes[1] ? ' · ' + m.top3Cafes[1].name : ''}</span>` : ''}
+          </div>
+          <span class="mmh-chev">▾</span>
+        </div>
+        <div class="mmh-sec-body">
+          <div class="mmh-sec-inner">
+            <div class="picks-list" id="cafe-picks-${i}">${cafePicks || '<div class="pick-item"><div class="pick-desc">No picks found nearby</div></div>'}</div>
+          </div>
+        </div>
       </div>
-      <p style="font-size:12px; color:rgba(248,241,231,0.4); margin-top:12px;">🎯 Best for: ${m.bestFor||'—'}</p>
 
-      ${(m.lat && m.lng) ? `
-      <div class="map-layer-pills" id="map-pills-${i}">
-        <span class="map-layer-pill active" data-layer="neighbourhood" onclick="toggleMapLayer(${i},'neighbourhood',this)">🏘️ Neighbourhood</span>
-        ${isLive
-          ? `<span class="map-layer-pill" data-layer="supermarkets" onclick="toggleMapLayer(${i},'supermarkets',this)">🛒 Supermarkets</span>
-             <span class="map-layer-pill" data-layer="gyms" onclick="toggleMapLayer(${i},'gyms',this)">🏋️ Gyms</span>`
-          : `<span class="map-layer-pill" data-layer="restaurants" onclick="toggleMapLayer(${i},'restaurants',this)">🍽️ Restaurants</span>
-             <span class="map-layer-pill" data-layer="bars" onclick="toggleMapLayer(${i},'bars',this)">🍺 Bars & Pubs</span>
-             <span class="map-layer-pill" data-layer="museums" onclick="toggleMapLayer(${i},'museums',this)">🏛️ Attractions</span>
-             <span id="pill-toppicks-${i}" class="map-layer-pill" data-layer="toppicks" onclick="toggleMapLayer(${i},'toppicks',this)">⭐ Top Picks</span>`}
-        <span class="map-layer-pill" data-layer="coffee" onclick="toggleMapLayer(${i},'coffee',this)">☕ Coffee</span>
-        <span id="pill-transport-${i}" class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">🚇 Transport ⏳</span>
-        <span id="pill-parks-${i}" class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">🌳 Parks ⏳</span>
-      </div>
-      <div class="result-map" id="map-${i}">
-        <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
-      </div>
-      <div style="text-align:right;margin-top:5px;">
-        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" style="font-size:11px;color:rgba(248,241,231,0.35);text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='rgba(248,241,231,0.7)'" onmouseout="this.style.color='rgba(248,241,231,0.35)'">📍 Street View →</a>
+      ${!isLive ? `
+      <!-- SECTION 7: Things to do (visit mode) — CLOSED -->
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4E7A40" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <span class="mmh-sec-title">Top things to do</span>
+          </div>
+          <span class="mmh-chev">▾</span>
+        </div>
+        <div class="mmh-sec-body">
+          <div class="mmh-sec-inner">
+            <div class="picks-list">${thingsToDo || '<div class="pick-item"><div class="pick-desc">Loading…</div></div>'}</div>
+          </div>
+        </div>
       </div>` : ''}
 
-      ${propertyLinksHtml}
-    </div>
-    </div>
-    <div style="text-align:center;margin:20px 0 8px;">
-      <button onclick="runMatch(true)" class="alt-search-btn" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid rgba(196,98,45,0.5);color:var(--terracotta-light);padding:13px 26px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.2px;" onmouseover="if(!isSearching){this.style.borderColor='var(--terracotta-light)';this.style.background='rgba(196,98,45,0.08)'}" onmouseout="this.style.borderColor='rgba(196,98,45,0.5)';this.style.background='transparent'">
-        Search for an alternative match →
-      </button>
-    </div>`;
+      <!-- SECTION: Strengths & Watch-outs — CLOSED -->
+      ${(prosListHtml || consListHtml) ? `
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4E7A40" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <span class="mmh-sec-title">Strengths & watch-outs</span>
+          </div>
+          <span class="mmh-chev">▾</span>
+        </div>
+        <div class="mmh-sec-body">
+          <div class="mmh-sec-inner">
+            <div class="mmh-pc-grid">
+              ${prosListHtml ? `<div class="mmh-pc-box pro"><div class="mmh-pc-title">Strengths</div>${prosListHtml}</div>` : ''}
+              ${consListHtml ? `<div class="mmh-pc-box con"><div class="mmh-pc-title">Watch out</div>${consListHtml}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>` : ''}
+
+      ${isLive ? `
+      <!-- SECTION: Rent & Move (live mode) — CLOSED -->
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4E7A40" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <span class="mmh-sec-title">Rent & find a place</span>
+            ${m.averageRent1bed ? `<span class="mmh-sec-preview">${m.averageRent1bed}</span>` : ''}
+          </div>
+          <span class="mmh-chev">▾</span>
+        </div>
+        <div class="mmh-sec-body">
+          <div class="mmh-sec-inner">
+            ${m.averageRent1bed ? `<div style="margin-bottom:12px;padding:10px 14px;background:var(--gold-bg);border-radius:10px;border:1px solid rgba(184,148,72,0.2);font-size:13px;color:var(--text-primary);">Average 1-bed rent: <strong style="color:var(--gold);">${m.averageRent1bed}</strong></div>` : ''}
+            ${propertyLinksHtml}
+          </div>
+        </div>
+      </div>` : ''}
+
+      <!-- SECTION: Map — CLOSED -->
+      ${(m.lat && m.lng) ? `
+      <div class="mmh-sec">
+        <div class="mmh-sec-head" onclick="mmhToggle(this)">
+          <div class="mmh-sec-left">
+            <div class="mmh-sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4E7A40" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
+            <span class="mmh-sec-title">Map</span>
+          </div>
+          <span class="mmh-chev">▾</span>
+        </div>
+        <div class="mmh-sec-body">
+          <div class="mmh-sec-inner" style="padding-bottom:14px;">
+            <div class="map-layer-pills" id="map-pills-${i}">
+              <span class="map-layer-pill active" data-layer="neighbourhood" onclick="toggleMapLayer(${i},'neighbourhood',this)">Neighbourhood</span>
+              ${isLive
+                ? `<span class="map-layer-pill" data-layer="supermarkets" onclick="toggleMapLayer(${i},'supermarkets',this)">Supermarkets</span>
+                   <span class="map-layer-pill" data-layer="gyms" onclick="toggleMapLayer(${i},'gyms',this)">Gyms</span>`
+                : `<span class="map-layer-pill" data-layer="restaurants" onclick="toggleMapLayer(${i},'restaurants',this)">Restaurants</span>
+                   <span class="map-layer-pill" data-layer="bars" onclick="toggleMapLayer(${i},'bars',this)">Bars</span>
+                   <span class="map-layer-pill" data-layer="museums" onclick="toggleMapLayer(${i},'museums',this)">Attractions</span>
+                   <span id="pill-toppicks-${i}" class="map-layer-pill" data-layer="toppicks" onclick="toggleMapLayer(${i},'toppicks',this)">Top Picks</span>`}
+              <span class="map-layer-pill" data-layer="coffee" onclick="toggleMapLayer(${i},'coffee',this)">Coffee</span>
+              <span id="pill-transport-${i}" class="map-layer-pill" data-layer="transport" onclick="toggleMapLayer(${i},'transport',this)">Transport ⏳</span>
+              <span id="pill-parks-${i}" class="map-layer-pill" data-layer="parks" onclick="toggleMapLayer(${i},'parks',this)">Parks ⏳</span>
+            </div>
+            <div class="result-map" id="map-${i}">
+              <button class="map-expand-btn" onclick="toggleMapFullscreen('map-${i}', this)">⛶ Expand</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+              <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${m.lat},${m.lng}&radius=200" target="_blank" style="font-size:11px;color:var(--text-muted);text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">Street View →</a>
+              ${metroLink ? `<a href="${metroLink.url}" target="_blank" style="font-size:11px;color:var(--text-muted);text-decoration:none;font-weight:500;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">${metroLink.name} map →</a>` : ''}
+            </div>
+            ${!isLive ? `<div class="booking-btns" style="margin-top:14px;">
+              <a href="${`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(m.name + ' ' + destCity)}`}" target="_blank" class="booking-btn-hotel">Hotels in ${m.name} →</a>
+              <a href="${`https://www.airbnb.com/s/${encodeURIComponent(destCity + '--' + m.name)}/homes`}" target="_blank" class="booking-btn-airbnb">Airbnb →</a>
+            </div>` : ''}
+          </div>
+        </div>
+      </div>` : ''}
+
+    </div><!-- /.mmh-card -->
+    </div><!-- /.result-card-wrap -->
+    <button onclick="runMatch(true)" class="mmh-alt-btn alt-search-btn">
+      ✦ Show me another match in ${destCity}
+    </button>`;
   }).join('');
 
-  const shareText = `<div style="margin-top:20px; padding:16px 20px; background:rgba(255,255,255,0.05); border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
-    <p style="font-size:13px; color:rgba(248,241,231,0.5); margin-bottom:10px;">Share your match 👇</p>
-    <button onclick="shareMatch('${homeHood}','${homeCity}','${matches[0]?.name}','${destCity}')" style="background:var(--terracotta); color:white; border:none; border-radius:100px; padding:10px 20px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='var(--terracotta-light)'" onmouseout="this.style.background='var(--terracotta)'">
+  const shareText = `<div style="margin-top:20px;padding:16px 20px;background:rgba(255,255,255,0.6);border-radius:14px;border:1px solid var(--sage-border);">
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;">Share your match</p>
+    <button onclick="shareMatch('${homeHood}','${homeCity}','${matches[0]?.name}','${destCity}')" style="background:var(--sage);color:white;border:none;border-radius:100px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--sage-dark)'" onmouseout="this.style.background='var(--sage)'">
       Share on social ✦
     </button>
   </div>`;
 
   const premiumTeaser = `
-  <div style="margin-top:24px; padding:20px 28px; background:rgba(255,255,255,0.03); border-radius:16px; border:1px solid rgba(255,255,255,0.07); text-align:center;">
-    <p style="font-size:13px; color:rgba(248,241,231,0.45); margin-bottom:10px;">Enjoying MatchMyHood? Join the waitlist for early access when we launch.</p>
-    <a href="#newsletter" style="display:inline-block;background:var(--terracotta);color:white;text-decoration:none;padding:10px 24px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;">Join the waitlist →</a>
-  </div>\``;
+  <div style="margin-top:20px;padding:20px 28px;background:rgba(255,255,255,0.55);border-radius:16px;border:1px solid var(--sage-border);text-align:center;">
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;">Enjoying MatchMyHood? Join the waitlist for early access when we launch.</p>
+    <a href="#newsletter" style="display:inline-block;background:var(--sage);color:white;text-decoration:none;padding:10px 24px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;">Join the waitlist →</a>
+  </div>`;
 
   if (isAlternative) {
     // Remove old premiumTeaser + shareText before appending new content
@@ -3401,9 +3685,10 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         }
         const photoEl = document.getElementById(`photo-${i}`);
         if (photoEl && photoUrl) {
-          photoEl.outerHTML = `<img src="${photoUrl}" class="result-photo" alt="${m.name} neighbourhood" loading="lazy"/>`;
+          photoEl.outerHTML = `<img src="${photoUrl}" class="mmh-card-photo" alt="${m.name} neighbourhood" loading="lazy"/>`;
         } else if (photoEl) {
-          photoEl.innerHTML = `🏘️ ${m.name}`;
+          photoEl.innerHTML = `${m.name}`;
+          photoEl.className = 'mmh-card-photo-placeholder';
         }
       }
 
@@ -3676,6 +3961,15 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
   })();
 }
 
+function mmhToggle(headEl) {
+  const body = headEl.nextElementSibling;
+  const chev = headEl.querySelector('.mmh-chev');
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  if (chev) chev.classList.toggle('open', !isOpen);
+}
+
 function toggleMapFullscreen(mapId, btn) {
   const mapEl = document.getElementById(mapId);
   if (!mapEl) return;
@@ -3717,7 +4011,7 @@ function toggleMapFullscreen(mapId, btn) {
       svLink.style.display = 'none'; // hide original so it doesn't clash with Close button
       const fsSv = svLink.cloneNode(true);
       fsSv.id = 'fs-sv-' + mapId;
-      fsSv.style.cssText = 'position:fixed;bottom:130px;right:24px;z-index:99999;background:rgba(61,43,31,0.9);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;font-family:DM Sans,sans-serif;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);';
+      fsSv.style.cssText = 'position:fixed;bottom:168px;right:24px;z-index:99999;background:rgba(61,43,31,0.9);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;font-family:DM Sans,sans-serif;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);';
       fsSv.style.display = '';
       document.body.appendChild(fsSv);
     }
