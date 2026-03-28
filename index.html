@@ -1499,7 +1499,7 @@
   .booking-btn-airbnb:hover { border-color: var(--sage-light); transform: translateY(-1px); }
 
   /* ── MMH COLLAPSIBLE CARD SECTIONS ── */
-  .mmh-card { background: var(--warm-white-card); border: 1px solid var(--sage-border); border-radius: 18px; overflow: hidden; margin-bottom: 14px; backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(44,56,39,0.06); }
+  .mmh-card { background: var(--warm-white-card); border: 1px solid var(--sage-border); border-radius: 18px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 2px 20px rgba(44,56,39,0.06); }
   .mmh-card-photo { width: 100%; height: 190px; object-fit: cover; display: block; }
   .mmh-card-photo-placeholder { width: 100%; height: 170px; background: linear-gradient(135deg, rgba(90,125,76,0.1), rgba(90,125,76,0.05)); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; }
   .mmh-card-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--sage-border); }
@@ -3690,12 +3690,17 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         }
       }
 
-      // Init Mapbox map
+      // Init Mapbox map — lazy: defer until section is opened if container is collapsed
       if (m.lat && m.lng) {
-        setTimeout(() => {
+        window._mmhPendingMap = window._mmhPendingMap || {};
+
+        const doMapInit = () => {
           const mapEl = document.getElementById(`map-${i}`);
-          if (mapEl && !mapInstances[i]) {
-            try {
+          if (!mapEl || mapInstances[i]) return; // already done
+          // Only init if container has real height (section is open)
+          if (mapEl.offsetHeight === 0) return;
+          delete window._mmhPendingMap[i]; // clear pending flag
+          try {
               mapboxgl.accessToken = MAPBOX_TOKEN;
               const map = new mapboxgl.Map({
                 container: `map-${i}`,
@@ -3951,7 +3956,16 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                 });
               });
 
-            } catch(e) { console.error('Map error:', e); }
+          } catch(e) { console.error('Map error:', e); }
+        };
+
+        // Try immediately after a short delay; if section is collapsed, register for later
+        setTimeout(() => {
+          const mapEl = document.getElementById(`map-${i}`);
+          if (mapEl && mapEl.offsetHeight > 0) {
+            doMapInit();
+          } else {
+            window._mmhPendingMap[i] = doMapInit;
           }
         }, 500 + i * 300);
       }
@@ -3966,6 +3980,24 @@ function mmhToggle(headEl) {
   const isOpen = body.classList.contains('open');
   body.classList.toggle('open', !isOpen);
   if (chev) chev.classList.toggle('open', !isOpen);
+
+  if (!isOpen) {
+    const mapEl = body.querySelector('.result-map[id^="map-"]');
+    if (mapEl) {
+      const mapIdx = parseInt(mapEl.id.replace('map-', ''));
+      // Wait for CSS transition, then either run pending init or resize existing map
+      setTimeout(() => {
+        const pending = window._mmhPendingMap?.[mapIdx];
+        if (pending) {
+          pending(); // first open — initialise Mapbox now that container has size
+          // Give Mapbox time to render, then resize to confirm dimensions
+          setTimeout(() => mapInstances[mapIdx]?.resize(), 800);
+        } else if (mapInstances[mapIdx]) {
+          mapInstances[mapIdx].resize(); // already initialised — just recalculate size
+        }
+      }, 360);
+    }
+  }
 }
 
 function toggleMapFullscreen(mapId, btn) {
@@ -3985,7 +4017,7 @@ function toggleMapFullscreen(mapId, btn) {
     const closeBtn = document.createElement('button');
     closeBtn.id = closeId;
     closeBtn.textContent = '✕ Close map';
-    closeBtn.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;background:rgba(61,43,31,0.9);color:rgba(248,241,231,0.95);border:none;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);letter-spacing:0.3px;';
+    closeBtn.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:99999;background:rgba(255,255,255,0.95);color:var(--text-primary);border:1px solid var(--sage-border);padding:12px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.15);letter-spacing:0.3px;';
     closeBtn.onclick = () => toggleMapFullscreen(mapId, btn);
     document.body.appendChild(closeBtn);
 
@@ -3996,7 +4028,7 @@ function toggleMapFullscreen(mapId, btn) {
     [['＋', () => mapInst?.zoomIn()], ['－', () => mapInst?.zoomOut()]].forEach(([label, action]) => {
       const zBtn = document.createElement('button');
       zBtn.textContent = label;
-      zBtn.style.cssText = 'width:36px;height:36px;background:rgba(61,43,31,0.9);color:rgba(248,241,231,0.95);border:none;border-radius:6px;font-size:20px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 2px 8px rgba(0,0,0,0.3);line-height:1;';
+      zBtn.style.cssText = 'width:36px;height:36px;background:rgba(255,255,255,0.95);color:var(--text-primary);border:1px solid var(--sage-border);border-radius:6px;font-size:20px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 2px 8px rgba(0,0,0,0.12);line-height:1;';
       zBtn.onclick = action;
       zoomWrap.appendChild(zBtn);
     });
@@ -4009,7 +4041,7 @@ function toggleMapFullscreen(mapId, btn) {
       svLink.style.display = 'none'; // hide original so it doesn't clash with Close button
       const fsSv = svLink.cloneNode(true);
       fsSv.id = 'fs-sv-' + mapId;
-      fsSv.style.cssText = 'position:fixed;bottom:168px;right:24px;z-index:99999;background:rgba(61,43,31,0.9);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;font-family:DM Sans,sans-serif;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);';
+      fsSv.style.cssText = 'position:fixed;bottom:168px;right:24px;z-index:99999;background:rgba(255,255,255,0.95);color:var(--text-primary);border:1px solid var(--sage-border);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;font-family:DM Sans,sans-serif;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.12);';
       fsSv.style.display = '';
       document.body.appendChild(fsSv);
     }
@@ -4025,7 +4057,7 @@ function toggleMapFullscreen(mapId, btn) {
         const clone = pill.cloneNode(true);
         // Sync active state
         if (pill.classList.contains('active')) clone.classList.add('active');
-        clone.style.cssText += 'background:rgba(61,43,31,0.88);backdrop-filter:blur(8px);';
+        clone.style.cssText += 'background:rgba(255,255,255,0.92);backdrop-filter:blur(8px);border-color:rgba(90,125,76,0.3);';
         clone.onclick = () => {
           const layer = clone.dataset.layer;
           // Toggle both original and clone in sync
@@ -4053,8 +4085,11 @@ function toggleMapFullscreen(mapId, btn) {
     });
   }
 
-  // Resize Mapbox after container size change
-  if (mapInst) setTimeout(() => mapInst.resize(), 100);
+  // Resize Mapbox after container size change — call twice to handle slow tile loads
+  if (mapInst) {
+    setTimeout(() => mapInst.resize(), 100);
+    setTimeout(() => mapInst.resize(), 500);
+  }
 
   // Escape key to close
   if (isFullscreen) {
