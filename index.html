@@ -1982,6 +1982,10 @@
           <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Culture &amp; Architecture">🏛️ Culture &amp; Architecture</span>
           <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Music &amp; Arts">🎵 Music &amp; Arts</span>
           <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Cafés &amp; Chill">☕ Cafés &amp; Chill</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Off the Beaten Track">🗺️ Off the Beaten Track</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="LGBT+ Friendly">🏳️‍🌈 LGBT+ Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Senior Friendly">🧓 Senior Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Accessible">♿ Accessible</span>
         </div>
       </div>
     </div>
@@ -2735,7 +2739,7 @@ async function runMatch(isAlternative = false) {
           const fillMapSource = (sourceId, coords, label, pillId) => {
             const map = mapInstances[i];
             if (!map || !coords?.length) return;
-            const feats = coords.map(c => ({ type:'Feature', geometry:{ type:'Point', coordinates:[c.lon,c.lat] }, properties:{ name:c.name||label, city: m.city||destCity, hood: m.name } }));
+            const feats = coords.map(c => ({ type:'Feature', geometry:{ type:'Point', coordinates:[c.lon,c.lat] }, properties:{ name:c.name||label, city: m.city||destCity, hood: m.name, pinType: sourceId } }));
             const geojson = { type:'FeatureCollection', features:feats };
             map._sourceData[sourceId] = geojson; // store for 3D revert restore
             const go = () => {
@@ -3529,17 +3533,43 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
                     }).catch(()=>{});
                 }, 45000);
 
-                // Popup on pin click with Google Maps link
+                // Rich popup on pin click — category-aware card with relevant CTAs
+                const PIN_META = {
+                  'restaurants':  { label: 'Restaurant',    color: '#C4622D', emoji: '🍽️' },
+                  'bars':         { label: 'Bar & Drinks',  color: '#7A3030', emoji: '🍷' },
+                  'coffee':       { label: 'Coffee',        color: '#795548', emoji: '☕' },
+                  'transport':    { label: 'Station',       color: '#185FA5', emoji: '🚇' },
+                  'supermarkets': { label: 'Supermarket',   color: '#2E7D32', emoji: '🛒' },
+                  'gyms':         { label: 'Gym',           color: '#6A1B9A', emoji: '🏋️' },
+                  'museums':      { label: 'Attraction',    color: '#B8860B', emoji: '🏛️' },
+                };
                 ['restaurants-layer', 'bars-layer', 'coffee-layer', 'transport-layer', 'supermarkets-layer', 'gyms-layer', 'museums-layer'].forEach(layerId => {
                   map.on('click', layerId, e => {
                     const props = e.features[0].properties;
-                    const cityCtx = [props.hood, props.city].filter(Boolean).join(', '); const mapsUrl = props.mapsUrl || `https://maps.google.com/?q=${encodeURIComponent(props.name + (cityCtx ? ", " + cityCtx : ""))}`;
-                    new mapboxgl.Popup({ closeButton: true, maxWidth: '220px' })
+                    const pinType = props.pinType || layerId.replace('-layer','');
+                    const meta = PIN_META[pinType] || { label: 'Place', color: '#C4622D', emoji: '📍' };
+                    const cityCtx = [props.hood, props.city].filter(Boolean).join(', ');
+                    const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(props.name + (cityCtx ? ', ' + cityCtx : ''))}`;
+                    const gygUrl = `https://www.getyourguide.com/s/?q=${encodeURIComponent(props.name + ' ' + (props.city||''))}&partner_id=${GYG_AFF}`;
+                    const isBookable = ['museums','attractions'].includes(pinType);
+                    const isFood = ['restaurants','bars','coffee'].includes(pinType);
+                    new mapboxgl.Popup({ closeButton: true, maxWidth: '260px', className: 'mmh-popup' })
                       .setLngLat(e.lngLat)
                       .setHTML(`
-                        <div style="font-size:13px;font-weight:700;color:var(--cream);margin-bottom:4px;">${props.name}</div>
-                        ${props.desc ? `<div style="font-size:11px;color:rgba(248,241,231,0.6);margin-bottom:8px;line-height:1.4;">${props.desc}</div>` : ''}
-                        <a href="${mapsUrl}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;">📍 Open in Google Maps →</a>
+                        <div style="background:var(--earth);border-radius:10px;overflow:hidden;font-family:'DM Sans',sans-serif;">
+                          <div style="background:${meta.color};padding:8px 12px;display:flex;align-items:center;gap:6px;">
+                            <span style="font-size:14px;">${meta.emoji}</span>
+                            <span style="font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.85);">${meta.label}</span>
+                          </div>
+                          <div style="padding:10px 12px 12px;">
+                            <div style="font-size:14px;font-weight:700;color:var(--cream);margin-bottom:8px;line-height:1.3;">${props.name || 'Unknown'}</div>
+                            <div style="display:flex;flex-direction:column;gap:5px;">
+                              <a href="${mapsUrl}" target="_blank" style="font-size:11px;color:#E8875A;text-decoration:none;font-weight:600;display:flex;align-items:center;gap:4px;">📍 Open in Google Maps →</a>
+                              ${isBookable ? `<a href="${gygUrl}" target="_blank" style="font-size:11px;color:#C9A455;text-decoration:none;font-weight:600;display:flex;align-items:center;gap:4px;">🎫 Book experience →</a>` : ''}
+                              ${isFood ? `<a href="https://maps.google.com/?q=${encodeURIComponent(props.name + ' menu ' + (props.city||''))}" target="_blank" style="font-size:11px;color:rgba(248,241,231,0.5);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:4px;">🔍 Search reviews →</a>` : ''}
+                            </div>
+                          </div>
+                        </div>
                       `)
                       .addTo(map);
                   });
@@ -3590,12 +3620,15 @@ function toggleMapFullscreen(mapId, btn) {
     });
     document.body.appendChild(zoomWrap);
 
-    // ── Street View — bottom-left, clear of close button ──
+    // ── Street View — hide original (bottom-right of map, clashes with Close),
+    // clone to bottom-left of viewport instead ──
     const svLink = mapEl.querySelector('a[href*="map_action=pano"]');
     if (svLink) {
+      svLink.style.display = 'none'; // hide original so it doesn't clash with Close button
       const fsSv = svLink.cloneNode(true);
       fsSv.id = 'fs-sv-' + mapId;
-      fsSv.style.cssText = 'position:fixed;bottom:24px;left:24px;z-index:99999;background:rgba(61,43,31,0.9);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;font-family:DM Sans,sans-serif;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);max-width:160px;';
+      fsSv.style.cssText = 'position:fixed;bottom:24px;left:24px;z-index:99999;background:rgba(61,43,31,0.9);color:var(--cream);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;font-family:DM Sans,sans-serif;text-decoration:none;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.4);';
+      fsSv.style.display = '';
       document.body.appendChild(fsSv);
     }
 
@@ -3629,6 +3662,9 @@ function toggleMapFullscreen(mapId, btn) {
     btn.style.display = '';
     const siteNav = document.querySelector('nav');
     if (siteNav) siteNav.style.display = '';
+    // Restore original Street View link visibility
+    const svLinkRestore = mapEl.querySelector('a[href*="map_action=pano"]');
+    if (svLinkRestore) svLinkRestore.style.display = '';
     ['close-','fs-zoom-','fs-sv-','fs-pills-'].forEach(prefix => {
       const el = document.getElementById(prefix + mapId);
       if (el) el.remove();
