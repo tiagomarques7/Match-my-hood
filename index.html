@@ -2027,19 +2027,19 @@
       <div class="vibe-selector-wrap">
         <div class="vibe-selector-label" id="vibeSelectorLabel">✦ Your vibe (optional — select all that apply)</div>
         <div class="vibe-pills" id="vibePills">
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Wine &amp; Nightlife">🍷 Wine &amp; Nightlife</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Shopping &amp; Boutiques">🛍️ Shopping &amp; Boutiques</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Food &amp; Restaurants">🍽️ Food &amp; Restaurants</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Parks &amp; Outdoors">🌿 Parks &amp; Outdoors</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Family Friendly">👨‍👩‍👧 Family Friendly</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Digital Nomad">💻 Digital Nomad</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Culture &amp; Architecture">🏛️ Culture &amp; Architecture</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Music &amp; Arts">🎵 Music &amp; Arts</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Cafés &amp; Chill">☕ Cafés &amp; Chill</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Off the Beaten Track">🗺️ Off the Beaten Track</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="LGBT+ Friendly">🏳️‍🌈 LGBT+ Friendly</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Senior Friendly">🧓 Senior Friendly</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Accessible">♿ Accessible</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Wine &amp; Nightlife">Wine &amp; Nightlife</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Shopping &amp; Boutiques">Shopping &amp; Boutiques</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Food &amp; Restaurants">Food &amp; Restaurants</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Parks &amp; Outdoors">Parks &amp; Outdoors</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Family Friendly">Family Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Digital Nomad">Digital Nomad</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Culture &amp; Architecture">Culture &amp; Architecture</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Music &amp; Arts">Music &amp; Arts</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Cafés &amp; Chill">Cafés &amp; Chill</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Off the Beaten Track">Off the Beaten Track</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="LGBT+ Friendly">LGBT+ Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Senior Friendly">Senior Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Accessible">Accessible</span>
         </div>
       </div>
     </div>
@@ -2562,27 +2562,35 @@ function toggleVibe(el) {
 }
 
 const VISIT_VIBES = [
-  {vibe: "Wine & Nightlife", emoji: "🍷"},
-  {vibe: "Shopping & Boutiques", emoji: "🛍️"},
-  {vibe: "Food & Restaurants", emoji: "🍽️"},
-  {vibe: "Parks & Outdoors", emoji: "🌿"},
-  {vibe: "Culture & Architecture", emoji: "🏛️"},
-  {vibe: "Music & Arts", emoji: "🎵"},
-  {vibe: "Cafés & Chill", emoji: "☕"},
-  {vibe: "Family Friendly", emoji: "👨‍👩‍👧"},
-  {vibe: "Digital Nomad", emoji: "💻"},
+  {vibe: "Wine & Nightlife"},
+  {vibe: "Shopping & Boutiques"},
+  {vibe: "Food & Restaurants"},
+  {vibe: "Parks & Outdoors"},
+  {vibe: "Culture & Architecture"},
+  {vibe: "Music & Arts"},
+  {vibe: "Cafés & Chill"},
+  {vibe: "Family Friendly"},
+  {vibe: "Digital Nomad"},
+  {vibe: "Off the Beaten Track"},
+  {vibe: "LGBT+ Friendly"},
+  {vibe: "Senior Friendly"},
+  {vibe: "Accessible"},
 ];
 
 const LIVE_VIBES = [
-  {vibe: "Good Transport Links", emoji: "🚇"},
-  {vibe: "Parks & Green Spaces", emoji: "🌿"},
-  {vibe: "Family Friendly", emoji: "👨‍👩‍👧"},
-  {vibe: "Quiet & Residential", emoji: "🏡"},
-  {vibe: "Vibrant Local Scene", emoji: "🎭"},
-  {vibe: "Expat Community", emoji: "🌍"},
-  {vibe: "Budget Friendly", emoji: "💶"},
-  {vibe: "Digital Nomad", emoji: "💻"},
-  {vibe: "Cafés & Coworking", emoji: "☕"},
+  {vibe: "Good Transport Links"},
+  {vibe: "Parks & Green Spaces"},
+  {vibe: "Family Friendly"},
+  {vibe: "Quiet & Residential"},
+  {vibe: "Vibrant Local Scene"},
+  {vibe: "Expat Community"},
+  {vibe: "Budget Friendly"},
+  {vibe: "Digital Nomad"},
+  {vibe: "Cafés & Coworking"},
+  {vibe: "Off the Beaten Track"},
+  {vibe: "LGBT+ Friendly"},
+  {vibe: "Senior Friendly"},
+  {vibe: "Accessible"},
 ];
 
 function setIntent(type) {
@@ -2600,7 +2608,7 @@ function setIntent(type) {
   const pills = document.getElementById('vibePills');
   const vibes = type === 'move' ? LIVE_VIBES : VISIT_VIBES;
   pills.innerHTML = vibes.map(v =>
-    `<span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="${v.vibe}">${v.emoji} ${v.vibe}</span>`
+    `<span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="${v.vibe}">${v.vibe}</span>`
   ).join('');
 
   const label = document.getElementById('vibeSelectorLabel');
