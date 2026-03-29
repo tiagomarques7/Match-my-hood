@@ -173,6 +173,18 @@ nav { background:#FEF9EE;border-bottom:1.5px solid #3D3528;padding:0 20px;displa
 /* ── CITY CARDS ── */
 
 /* ── MATCH SHOWCASE ── */
+/* placeholder bg + fade-in for dynamically loaded photos */
+.match-src, .match-tgt {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.match-pair { background: linear-gradient(135deg, #231d14 0%, #1a1510 100%); }
+/* placeholder text while loading */
+.match-pair::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(135deg, rgba(240,201,58,0.04) 0%, transparent 60%);
+}
 .match-showcase { background:#1A1510;padding:56px 24px; }
 @media(min-width:600px){ .match-showcase { padding:72px 48px; } }
 .match-scroll-wrap { overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -24px;padding:0 24px 4px; }
@@ -1947,7 +1959,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 <!-- HERO DARK -->
 <section class="hero">
-  <img class="hero-img" src="https://images.unsplash.com/photo-lOt7lVgN7o0?w=1800&q=85&fit=crop&auto=format" alt="Neighbourhood street" loading="eager" fetchpriority="high" crossorigin="anonymous">
+  <img class="hero-img" src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1800&q=85&fit=crop" data-hero-query="lively neighbourhood street market cafe people" alt="Neighbourhood street" loading="eager" fetchpriority="high" crossorigin="anonymous">
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">Neighbourhood intelligence · Free to start</div>
@@ -2358,55 +2370,55 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   <div class="match-scroll-wrap">
     <div class="match-grid">
 
-      <!-- Pair 1: Santos → Peckham -->
+      <!-- Pair 1: Shoreditch → Bairro Alto -->
       <div class="match-pair">
-        <img class="match-src" src="https://images.unsplash.com/photo-ZUWls_bDgAk?w=700&h=500&fit=crop&q=80" alt="Santos, São Paulo" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="https://images.unsplash.com/photo-LSCuMfZ39DQ?w=700&h=500&fit=crop&q=80" alt="Peckham, London" loading="lazy" crossorigin="anonymous">
+        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Shoreditch London street art" alt="Shoreditch, London" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Bairro Alto Lisbon street night" alt="Bairro Alto, Lisbon" loading="lazy" crossorigin="anonymous">
         <div class="match-divider"></div>
         <div class="match-grad"></div>
         <div class="match-info">
-          <div class="match-pair-names"><span>Santos</span><span class="match-arr">→</span><span>Peckham</span></div>
-          <div class="match-pair-cities">São Paulo → London</div>
-          <div class="match-pair-vibe">Bohemian · Food culture · Street art</div>
+          <div class="match-pair-names"><span>Shoreditch</span><span class="match-arr">→</span><span>Bairro Alto</span></div>
+          <div class="match-pair-cities">London → Lisbon · 91% match</div>
+          <div class="match-pair-vibe">Creative · Street art · Nightlife · Coffee</div>
         </div>
       </div>
 
-      <!-- Pair 2: Alfama → Trastevere -->
+      <!-- Pair 2: West Village → Monti -->
       <div class="match-pair">
-        <img class="match-src" src="https://images.unsplash.com/photo-pWljb16SL6w?w=700&h=500&fit=crop&q=80" alt="Alfama, Lisbon" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="https://images.unsplash.com/photo-TEoT2qU7dTg?w=700&h=500&fit=crop&q=80" alt="Trastevere, Rome" loading="lazy" crossorigin="anonymous">
+        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="West Village New York cobblestone cafe" alt="West Village, New York" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Monti Rome neighbourhood street cafe" alt="Monti, Rome" loading="lazy" crossorigin="anonymous">
         <div class="match-divider"></div>
         <div class="match-grad"></div>
         <div class="match-info">
-          <div class="match-pair-names"><span>Alfama</span><span class="match-arr">→</span><span>Trastevere</span></div>
-          <div class="match-pair-cities">Lisbon → Rome</div>
-          <div class="match-pair-vibe">Historic · Local crowd · Cobblestone</div>
+          <div class="match-pair-names"><span>West Village</span><span class="match-arr">→</span><span>Monti</span></div>
+          <div class="match-pair-cities">New York → Rome · 88% match</div>
+          <div class="match-pair-vibe">Charming · Boutique restaurants · Local crowd</div>
         </div>
       </div>
 
-      <!-- Pair 3: Le Marais → Eixample -->
+      <!-- Pair 3: Mitte → Eixample -->
       <div class="match-pair">
-        <img class="match-src" src="https://images.unsplash.com/photo-lokKjSGUKPk?w=700&h=500&fit=crop&q=80" alt="Le Marais, Paris" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="https://images.unsplash.com/photo-z96i6JomMdQ?w=700&h=500&fit=crop&q=80" alt="Eixample, Barcelona" loading="lazy" crossorigin="anonymous">
+        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Mitte Berlin street gallery design" alt="Mitte, Berlin" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Eixample Barcelona boulevard cafe" alt="Eixample, Barcelona" loading="lazy" crossorigin="anonymous">
         <div class="match-divider"></div>
         <div class="match-grad"></div>
         <div class="match-info">
-          <div class="match-pair-names"><span>Le Marais</span><span class="match-arr">→</span><span>Eixample</span></div>
-          <div class="match-pair-cities">Paris → Barcelona</div>
-          <div class="match-pair-vibe">Design · Foodie · Boutique culture</div>
+          <div class="match-pair-names"><span>Mitte</span><span class="match-arr">→</span><span>Eixample</span></div>
+          <div class="match-pair-cities">Berlin → Barcelona · 93% match</div>
+          <div class="match-pair-vibe">Design forward · Galleries · Foodie</div>
         </div>
       </div>
 
-      <!-- Pair 4: Kreuzberg → Williamsburg -->
+      <!-- Pair 4: Le Marais → Plateau-Mont-Royal -->
       <div class="match-pair">
-        <img class="match-src" src="https://images.unsplash.com/photo-scPq1QpSTLs?w=700&h=500&fit=crop&q=80" alt="Kreuzberg, Berlin" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="https://images.unsplash.com/photo-_PYQjzGbu2M?w=700&h=500&fit=crop&q=80" alt="Williamsburg, New York" loading="lazy" crossorigin="anonymous">
+        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Le Marais Paris street boutique" alt="Le Marais, Paris" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Plateau Mont Royal Montreal terrace cafe" alt="Plateau-Mont-Royal, Montreal" loading="lazy" crossorigin="anonymous">
         <div class="match-divider"></div>
         <div class="match-grad"></div>
         <div class="match-info">
-          <div class="match-pair-names"><span>Kreuzberg</span><span class="match-arr">→</span><span>Williamsburg</span></div>
-          <div class="match-pair-cities">Berlin → New York</div>
-          <div class="match-pair-vibe">Alternative · Creative · Digital nomad</div>
+          <div class="match-pair-names"><span>Le Marais</span><span class="match-arr">→</span><span>Le Plateau</span></div>
+          <div class="match-pair-cities">Paris → Montreal · 87% match</div>
+          <div class="match-pair-vibe">Bohemian · Terrace culture · Diverse food</div>
         </div>
       </div>
 
@@ -4832,6 +4844,72 @@ window.addEventListener('scroll', () => {
     }
   }
 });
+</script>
+
+<script>
+(function(){
+  var KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
+
+  function unsplashFetch(query, w, h, cb) {
+    var apiUrl = 'https://api.unsplash.com/photos/random?query='
+      + encodeURIComponent(query)
+      + '&orientation=landscape&client_id=' + KEY;
+    fetch(apiUrl)
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d && d.urls && d.urls.raw) {
+          cb(d.urls.raw + '&w=' + w + '&h=' + h + '&fit=crop&q=80&auto=format');
+        } else if (d && d.urls && d.urls.regular) {
+          cb(d.urls.regular);
+        }
+      })
+      .catch(function(){});
+  }
+
+  /* ── Hero ── */
+  var hero = document.querySelector('.hero-img[data-hero-query]');
+  if (hero) {
+    unsplashFetch(hero.getAttribute('data-hero-query'), 1800, 900, function(url) {
+      var img = new Image();
+      img.onload = function() { hero.src = url; };
+      img.src = url;
+    });
+  }
+
+  /* ── Match showcase — fires when section enters viewport ── */
+  function loadShowcase() {
+    var imgs = document.querySelectorAll('.match-pair img[data-query]');
+    var delay = 0;
+    imgs.forEach(function(img) {
+      (function(el, ms) {
+        setTimeout(function() {
+          unsplashFetch(el.getAttribute('data-query'), 700, 500, function(url) {
+            var tmp = new Image();
+            tmp.crossOrigin = 'anonymous';
+            tmp.onload = function() {
+              el.src = url;
+              el.style.opacity = '1';
+            };
+            tmp.src = url;
+          });
+        }, ms);
+      })(img, delay);
+      delay += 200;
+    });
+  }
+
+  var showcase = document.querySelector('.match-showcase');
+  if (showcase) {
+    if ('IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) { loadShowcase(); obs.disconnect(); }
+      }, { rootMargin: '400px' });
+      obs.observe(showcase);
+    } else {
+      setTimeout(loadShowcase, 500);
+    }
+  }
+})();
 </script>
 </body>
 </html>
