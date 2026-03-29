@@ -1425,17 +1425,18 @@ input, select, textarea, button { font-family:'DM Sans',sans-serif !important; }
 .why-card p { color:rgba(245,240,232,0.45) !important; }
 .why-card::before { display:none !important; }
 .why-card:hover { transform:translateY(-5px) !important; box-shadow:0 20px 56px rgba(0,0,0,0.4) !important; }
-.why-icon-svg { background:rgba(240,201,58,0.1) !important; border:1px solid rgba(240,201,58,0.25) !important; border-radius:0 !important; }
+.why-icon-svg { background:none !important; border:none !important; border-radius:0 !important; }
 /* yellow card (alternating) */
 .why-card-yl { background:#F0C93A !important; border:1px solid #D4A820 !important; }
-.why-card-yl h3 { color:#3D3528 !important; }
+.why-card-yl h3 { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; font-size:21px !important; }
 .why-card-yl p { color:#6B5E4A !important; }
-.why-card-yl .why-icon-svg { background:rgba(61,53,40,0.08) !important; border:1px solid rgba(61,53,40,0.18) !important; border-radius:0 !important; }
+.why-card-yl .why-icon-svg { background:none !important; border:none !important; border-radius:0 !important; }
 .why-card-yl:hover { box-shadow:0 20px 56px rgba(212,168,32,0.45) !important; }
 @media(max-width:600px){ .why-section { padding:60px 24px !important; } }
 
 /* ── Pricing section ── */
 section.pricing-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; padding:80px 48px !important; }
+#pricing-beta-card { border-radius:0 !important; box-shadow:none !important; }
 section.pricing-section .section-label { color:#9A8E7A !important; }
 section.pricing-section .section-label::before { background:#9A8E7A !important; }
 section.pricing-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
@@ -1459,7 +1460,7 @@ section.roadmap-section .phase-dot-future { background:#EDE0C4 !important; }
 section.roadmap-section .roadmap-item-icon,
 section.roadmap-section .roadmap-live .roadmap-item-icon,
 section.roadmap-section .roadmap-soon .roadmap-item-icon,
-section.roadmap-section .roadmap-future .roadmap-item-icon { background:rgba(61,53,40,0.06) !important; border:1px solid #EDE0C4 !important; border-radius:8px !important; color:#6B5E4A !important; }
+section.roadmap-section .roadmap-future .roadmap-item-icon { background:rgba(61,53,40,0.06) !important; border:1px solid #EDE0C4 !important; border-radius:0 !important; color:#6B5E4A !important; }
 section.roadmap-section .roadmap-item-title { color:#3D3528 !important; font-weight:600 !important; }
 section.roadmap-section .roadmap-item-desc { color:#6B5E4A !important; }
 section.roadmap-section .roadmap-grid { margin-top:40px !important; }
@@ -1628,7 +1629,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
           <div class="mmh-form-label">Your city</div>
           <select id="homeCity" class="mmh-form-select">
             <option value="">Select your city...</option>
-            <optgroup label="🇪🇺 Europe">
+            <optgroup label="Europe">
               <option value="Lisbon">Lisbon</option>
               <option value="Porto">Porto</option>
               <option value="London">London</option>
@@ -1651,7 +1652,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
               <option value="Milan">Milan</option>
               <option value="Brussels">Brussels</option>
             </optgroup>
-            <optgroup label="🌎 Americas">
+            <optgroup label="Americas">
               <option value="New York">New York</option>
               <option value="Los Angeles">Los Angeles</option>
               <option value="San Francisco">San Francisco</option>
@@ -1665,7 +1666,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
               <option value="São Paulo">São Paulo</option>
               <option value="Buenos Aires">Buenos Aires</option>
             </optgroup>
-            <optgroup label="🌏 Asia Pacific">
+            <optgroup label="Asia Pacific">
               <option value="Tokyo">Tokyo</option>
               <option value="Seoul">Seoul</option>
               <option value="Singapore">Singapore</option>
@@ -1676,7 +1677,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
               <option value="Shanghai">Shanghai</option>
               <option value="Bangkok">Bangkok</option>
             </optgroup>
-            <optgroup label="🌍 Africa &amp; Middle East">
+            <optgroup label="Africa &amp; Middle East">
               <option value="Cape Town">Cape Town</option>
               <option value="Marrakech">Marrakech</option>
             </optgroup>
@@ -1693,7 +1694,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
         <div class="mmh-form-label">Destination city</div>
         <select id="destCity" class="mmh-form-select" style="margin-top:4px">
           <option value="">Select destination...</option>
-          <optgroup label="🇪🇺 Europe">
+          <optgroup label="Europe">
             <option value="Lisbon">Lisbon</option>
             <option value="Porto">Porto</option>
             <option value="London">London</option>
@@ -1717,7 +1718,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
             <option value="Istanbul">Istanbul</option>
             <option value="Brussels">Brussels</option>
           </optgroup>
-          <optgroup label="🌎 Americas">
+          <optgroup label="Americas">
             <option value="New York">New York</option>
             <option value="Los Angeles">Los Angeles</option>
             <option value="San Francisco">San Francisco</option>
@@ -1732,7 +1733,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
             <option value="Rio de Janeiro">Rio de Janeiro</option>
             <option value="Buenos Aires">Buenos Aires</option>
           </optgroup>
-          <optgroup label="🌏 Asia Pacific">
+          <optgroup label="Asia Pacific">
             <option value="Tokyo">Tokyo</option>
             <option value="Seoul">Seoul</option>
             <option value="Singapore">Singapore</option>
@@ -1744,7 +1745,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
             <option value="Bangkok">Bangkok</option>
             <option value="Bali">Bali</option>
           </optgroup>
-          <optgroup label="🌍 Africa &amp; Middle East">
+          <optgroup label="Africa &amp; Middle East">
             <option value="Cape Town">Cape Town</option>
             <option value="Marrakech">Marrakech</option>
           </optgroup>
@@ -2080,13 +2081,13 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     <div class="why-card">
       <div class="why-icon-svg">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="14" stroke="#F0C93A" stroke-width="1.5"/>
-          <circle cx="16" cy="16" r="6" fill="rgba(240,201,58,0.12)" stroke="#F0C93A" stroke-width="1.5"/>
-          <circle cx="16" cy="16" r="2.5" fill="#F0C93A"/>
-          <line x1="16" y1="2" x2="16" y2="8" stroke="#F0C93A" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="16" y1="24" x2="16" y2="30" stroke="#F0C93A" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="2" y1="16" x2="8" y2="16" stroke="#F0C93A" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="24" y1="16" x2="30" y2="16" stroke="#F0C93A" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="14" stroke="rgba(255,255,255,0.85)" stroke-width="1.5"/>
+          <circle cx="16" cy="16" r="6" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.85)" stroke-width="1.5"/>
+          <circle cx="16" cy="16" r="2.5" fill="rgba(255,255,255,0.85)"/>
+          <line x1="16" y1="2" x2="16" y2="8" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="16" y1="24" x2="16" y2="30" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="2" y1="16" x2="8" y2="16" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="24" y1="16" x2="30" y2="16" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </div>
       <h3>Personality-first matching</h3>
@@ -2109,11 +2110,11 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     <div class="why-card">
       <div class="why-icon-svg">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path d="M4 22 L16 6 L28 22" stroke="#F0C93A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="rgba(240,201,58,0.12)"/>
-          <rect x="13" y="16" width="6" height="6" rx="1" stroke="#F0C93A" stroke-width="1.3" fill="rgba(240,201,58,0.12)"/>
-          <path d="M2 22 L30 22" stroke="#F0C93A" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="24" cy="10" r="3.5" fill="rgba(240,201,58,0.12)" stroke="#F0C93A" stroke-width="1.3"/>
-          <path d="M24 8.5 L24 10 L25 11" stroke="#F0C93A" stroke-width="1" stroke-linecap="round"/>
+          <path d="M4 22 L16 6 L28 22" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="rgba(255,255,255,0.06)"/>
+          <rect x="13" y="16" width="6" height="6" rx="1" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="rgba(255,255,255,0.06)"/>
+          <path d="M2 22 L30 22" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="24" cy="10" r="3.5" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.85)" stroke-width="1.3"/>
+          <path d="M24 8.5 L24 10 L25 11" stroke="rgba(255,255,255,0.85)" stroke-width="1" stroke-linecap="round"/>
         </svg>
       </div>
       <h3>Built by someone who actually moved</h3>
@@ -2136,9 +2137,9 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     <div class="why-card">
       <div class="why-icon-svg">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="12" stroke="#F0C93A" stroke-width="1.5" fill="rgba(240,201,58,0.12)"/>
-          <ellipse cx="16" cy="16" rx="5" ry="12" stroke="#F0C93A" stroke-width="1.2"/>
-          <path d="M4.5 11 L27.5 11 M4.5 21 L27.5 21" stroke="#F0C93A" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="12" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" fill="rgba(255,255,255,0.06)"/>
+          <ellipse cx="16" cy="16" rx="5" ry="12" stroke="rgba(255,255,255,0.85)" stroke-width="1.2"/>
+          <path d="M4.5 11 L27.5 11 M4.5 21 L27.5 21" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round"/>
         </svg>
       </div>
       <h3>30+ cities, growing weekly</h3>
@@ -2163,18 +2164,22 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   <div class="section-label">Pricing</div>
   <h2 class="section-title">Pricing <em>coming soon</em></h2>
   <p style="color:#6B5E4A; font-size:16px; margin-bottom:56px; max-width:520px;">We're still building. MatchMyHood is free to use while we're in beta — join the waitlist to be first to know when plans launch and lock in an early-bird rate.</p>
-  <div style="max-width:480px; margin:0 auto; background:#FEFADF; border:1.5px solid #EDE0C4; padding:48px 40px; text-align:center; border-radius:0;">
-    <div style="font-size:48px; margin-bottom:16px;">🗺️</div>
-    <h3 style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:#3D3528; margin-bottom:12px;">Free during beta</h3>
-    <p style="font-size:15px; color:#6B5E4A; line-height:1.7; margin-bottom:32px;">Unlimited neighbourhood matches, full maps, real amenity data — all free while we're in beta. Join the waitlist and we'll tell you first when paid plans go live.</p>
-    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:28px; text-align:left; max-width:300px; margin-left:auto; margin-right:auto;">
-      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#6B5E4A;"><span style="color:#D4A820; font-size:16px;">✓</span> Neighbourhood character matching</div>
-      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#6B5E4A;"><span style="color:#D4A820; font-size:16px;">✓</span> Interactive maps with real data</div>
-      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#6B5E4A;"><span style="color:#D4A820; font-size:16px;">✓</span> Top restaurants &amp; bars</div>
-      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#6B5E4A;"><span style="color:#D4A820; font-size:16px;">✓</span> Transit lines &amp; amenity counts</div>
-      <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:#6B5E4A;"><span style="color:#D4A820; font-size:16px;">★</span> Early-bird pricing for waitlist members</div>
+  <div id="pricing-beta-card" style="max-width:640px; background:white; border:1.5px solid #EDE0C4; border-radius:0; padding:0;">
+    <div style="background:#F0C93A; padding:24px 36px; border-bottom:1.5px solid #D4A820;">
+      <div style="font-family:'DM Sans',sans-serif; font-size:9px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#6B5E4A; margin-bottom:6px;">Current plan</div>
+      <div style="font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:600; color:#3D3528; line-height:1.0;">Free during beta</div>
     </div>
-    <a href="#newsletter" style="display:inline-block; background:#F0C93A; color:#3D3528; text-decoration:none; padding:14px 32px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; letter-spacing:2px; text-transform:uppercase; border:1.5px solid #D4A820; border-radius:0; transition:background 0.2s;" onmouseover="this.style.background='#D4A820'" onmouseout="this.style.background='#F0C93A'">Join the waitlist →</a>
+    <div style="padding:32px 36px;">
+      <p style="font-size:15px; color:#6B5E4A; line-height:1.75; margin-bottom:28px; max-width:480px;">Unlimited neighbourhood matches, full maps, real amenity data — all free while we're in beta. Join the waitlist to lock in early-bird pricing.</p>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:32px;">
+        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">✓</span> Neighbourhood character matching</div>
+        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">✓</span> Interactive maps with real data</div>
+        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">✓</span> Top restaurants &amp; bars</div>
+        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">✓</span> Transit lines &amp; amenity counts</div>
+        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#3D3528; font-weight:500; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">★</span> Early-bird pricing for waitlist members</div>
+      </div>
+      <a href="#newsletter" style="display:block; background:#F0C93A; color:#3D3528; text-decoration:none; padding:15px 32px; font-family:'DM Sans',sans-serif; font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; border:1.5px solid #D4A820; border-radius:0; text-align:center; transition:background 0.2s;" onmouseover="this.style.background='#D4A820'" onmouseout="this.style.background='#F0C93A'">Join the waitlist →</a>
+    </div>
   </div>
 </section>
 
@@ -2321,23 +2326,21 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     <h2 class="section-title" style="color:#3D3528;">Shape the future of <em style="color:#D4A820;font-style:italic;">MatchMyHood</em></h2>
     <div class="suggestions-grid">
 
-      <div class="suggestion-card">
-        <h3>🏙️ Suggest a city</h3>
+      <div class="suggestion-card" style="border-radius:0;box-shadow:none;border:1.5px solid #EDE0C4;background:white;">
         <p>Which city should we add next? Tell us where you're travelling and we'll prioritise it.</p>
         <form name="city-suggestion" method="POST" data-netlify="true" onsubmit="handleSuggestion(event,'city')">
           <input type="hidden" name="form-name" value="city-suggestion" />
-          <textarea class="suggestion-input" name="city" placeholder="e.g. Tokyo, Buenos Aires, Cape Town…" rows="3" required></textarea>
+          <textarea class="suggestion-input" style="border-radius:0;" name="city" placeholder="e.g. Tokyo, Buenos Aires, Cape Town…" rows="3" required></textarea>
           <button type="submit" class="suggestion-btn">Suggest a city →</button>
           <div class="suggestion-success" id="citySuccess">✓ Thanks! We'll add it to our roadmap.</div>
         </form>
       </div>
 
-      <div class="suggestion-card">
-        <h3>💡 Suggest a feature</h3>
+      <div class="suggestion-card" style="border-radius:0;box-shadow:none;border:1.5px solid #EDE0C4;background:white;">
         <p>What would make MatchMyHood more useful for you? We read every suggestion.</p>
         <form name="feature-suggestion" method="POST" data-netlify="true" onsubmit="handleSuggestion(event,'feature')">
           <input type="hidden" name="form-name" value="feature-suggestion" />
-          <textarea class="suggestion-input" name="feature" placeholder="e.g. Add restaurant maps, show public transport, compare neighbourhoods side by side…" rows="3" required></textarea>
+          <textarea class="suggestion-input" style="border-radius:0;" name="feature" placeholder="e.g. Add restaurant maps, show public transport, compare neighbourhoods side by side…" rows="3" required></textarea>
           <button type="submit" class="suggestion-btn">Send suggestion →</button>
           <div class="suggestion-success" id="featureSuccess">✓ Thanks! Your suggestion helps shape the roadmap.</div>
         </form>
