@@ -1499,10 +1499,72 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
 }
 
 /* Results area inherits dark bg from --earth already */
+
+/* ── VIBE OVERLAY ── */
+.vibe-overlay { position:fixed;inset:0;z-index:1000;background:#1A1510;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity 0.4s ease; }
+.vibe-overlay.open { opacity:1;pointer-events:all; }
+.vibe-overlay-inner { display:grid;grid-template-columns:40px 1fr;flex:1;overflow:hidden; }
+.vibe-axis { display:flex;flex-direction:column;justify-content:space-around;padding:60px 0 80px;border-right:1px solid rgba(245,240,232,0.06);align-items:center; }
+.vibe-axis-label { font-size:8px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(245,240,232,0.15);writing-mode:vertical-rl;transform:rotate(180deg); }
+.vibe-list-wrap { display:flex;flex-direction:column;overflow-y:auto;padding:0 28px; }
+@media(min-width:600px){ .vibe-list-wrap { padding:0 64px; } }
+.vibe-list-top { display:flex;align-items:center;justify-content:space-between;padding:32px 0 20px;border-bottom:1px solid rgba(245,240,232,0.06);flex-shrink:0; }
+.vibe-list-heading { font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.2); }
+.vibe-close-btn { font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.3);cursor:pointer;transition:color 0.2s;padding:8px 0; }
+.vibe-close-btn:hover { color:rgba(245,240,232,0.65); }
+.vibe-item { padding:16px 0;border-bottom:1px solid rgba(245,240,232,0.05);display:flex;align-items:baseline;justify-content:space-between;cursor:pointer;transition:all 0.22s;user-select:none; }
+.vibe-item:last-child { border-bottom:none; }
+.vibe-item-name { font-family:'Cormorant Garamond',serif;font-size:clamp(30px,6vw,52px);font-weight:400;color:rgba(245,240,232,0.13);line-height:1;transition:all 0.22s; }
+.vibe-item:hover .vibe-item-name { color:rgba(245,240,232,0.4); }
+.vibe-item.selected .vibe-item-name { color:#FAF7F2;font-weight:600; }
+.vibe-item-badge { font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#3D3528;background:#F0C93A;padding:4px 10px;opacity:0;transition:opacity 0.2s;flex-shrink:0;margin-left:12px; }
+.vibe-item.selected .vibe-item-badge { opacity:1; }
+.vibe-overlay-footer { padding:18px 28px 28px;border-top:1px solid rgba(245,240,232,0.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0; }
+@media(min-width:600px){ .vibe-overlay-footer { padding:20px 64px 32px; } }
+.vibe-footer-hint { font-size:12px;color:rgba(245,240,232,0.22); }
+.vibe-footer-hint span { color:#F0C93A;font-weight:600; }
+.vibe-footer-btn { background:#F0C93A;color:#3D3528;border:none;padding:13px 32px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer; }
 </style>
 </head>
 <body>
 
+
+
+<!-- VIBE OVERLAY -->
+<div class="vibe-overlay" id="vibeOverlay">
+  <div class="vibe-overlay-inner">
+    <div class="vibe-axis">
+      <div class="vibe-axis-label">Your vibe</div>
+      <div class="vibe-axis-label">Select</div>
+      <div class="vibe-axis-label">Multiple</div>
+    </div>
+    <div class="vibe-list-wrap">
+      <div class="vibe-list-top">
+        <div class="vibe-list-heading">What kind of neighbourhood feels like you?</div>
+        <div class="vibe-close-btn" onclick="closeVibeOverlay()">Close ✕</div>
+      </div>
+      <div>
+        <div class="vibe-item" data-vibe="Food &amp; Restaurants" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Foodie</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Wine &amp; Nightlife" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Wine &amp; Nightlife</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Music &amp; Arts" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Bohemian</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Culture &amp; Architecture" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Artsy</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Shopping &amp; Boutiques" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Markets &amp; shops</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Parks &amp; Outdoors" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Leafy &amp; quiet</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Cafés &amp; Chill" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Cafés &amp; Chill</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Digital Nomad" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Digital Nomad</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Family Friendly" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Family friendly</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Off the Beaten Track" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Local crowd</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="LGBT+ Friendly" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">LGBT+ friendly</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Senior Friendly" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Senior friendly</div><div class="vibe-item-badge">Selected</div></div>
+        <div class="vibe-item" data-vibe="Accessible" onclick="overlayVibeToggle(this)"><div class="vibe-item-name">Accessible</div><div class="vibe-item-badge">Selected</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="vibe-overlay-footer">
+    <div class="vibe-footer-hint"><span id="vibeCount">0</span> selected · tap to add more</div>
+    <button class="vibe-footer-btn" onclick="closeVibeOverlay()">Find my match →</button>
+  </div>
+</div>
 
 <!-- TOP BAR -->
 <div class="top-bar"><span>Neighbourhood intelligence · Free to start</span><a href="#newsletter">Get early access</a></div>
@@ -1693,7 +1755,7 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
       </div>
 
       <!-- Row 3: vibe trigger row -->
-      <div class="mmh-vibe-row" onclick="document.getElementById('vibePills').closest('.mmh-vibe-hidden').style.display='block';this.style.display='none'">
+      <div class="mmh-vibe-row" id="vibeRowTrigger" onclick="openVibeOverlay()">
         <div class="mmh-vibe-row-left">
           <div class="mmh-vibe-row-label">Your vibes</div>
           <div class="mmh-vibe-row-value" id="vibeRowDisplay">What kind of neighbourhood feels like you?</div>
@@ -1701,25 +1763,22 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
         <div class="mmh-vibe-row-arrow">→</div>
       </div>
 
-      <!-- Expanded vibe section (hidden until clicked) -->
-      <div class="mmh-vibe-hidden" id="vibeExpandSection">
-        <div style="padding:10px 16px 6px;background:#FEFADF;border-bottom:1px solid #EDE0C4;">
-          <div class="mmh-form-label" style="margin-bottom:8px">Your vibes (select all that apply)</div>
-          <div class="vibe-pills" id="vibePills" style="display:flex;flex-wrap:wrap;gap:6px;padding-bottom:8px;">
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Wine &amp; Nightlife">Wine &amp; Nightlife</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Shopping &amp; Boutiques">Shopping &amp; Boutiques</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Food &amp; Restaurants">Food &amp; Restaurants</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Parks &amp; Outdoors">Parks &amp; Outdoors</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Family Friendly">Family Friendly</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Digital Nomad">Digital Nomad</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Culture &amp; Architecture">Culture &amp; Architecture</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Music &amp; Arts">Music &amp; Arts</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Cafés &amp; Chill">Cafés &amp; Chill</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Off the Beaten Track">Off the Beaten Track</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="LGBT+ Friendly">LGBT+ Friendly</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Senior Friendly">Senior Friendly</span>
-            <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Accessible">Accessible</span>
-          </div>
+      <!-- Hidden real vibe pills container (kept for setIntent() compatibility) -->
+      <div style="display:none" id="vibeExpandSection">
+        <div class="vibe-pills" id="vibePills">
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Wine &amp; Nightlife">Wine &amp; Nightlife</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Shopping &amp; Boutiques">Shopping &amp; Boutiques</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Food &amp; Restaurants">Food &amp; Restaurants</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Parks &amp; Outdoors">Parks &amp; Outdoors</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Family Friendly">Family Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Digital Nomad">Digital Nomad</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Culture &amp; Architecture">Culture &amp; Architecture</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Music &amp; Arts">Music &amp; Arts</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Cafés &amp; Chill">Cafés &amp; Chill</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Off the Beaten Track">Off the Beaten Track</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="LGBT+ Friendly">LGBT+ Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Senior Friendly">Senior Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Accessible">Accessible</span>
         </div>
       </div>
 
@@ -2310,6 +2369,47 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+<script>
+/* ── VIBE OVERLAY BRIDGE ──
+   These functions are NEW — they do not modify toggleVibe / setIntent / runMatch.
+   They sync overlay selections directly into the existing activeVibes global array. */
+function openVibeOverlay() {
+  document.getElementById('vibeOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeVibeOverlay() {
+  document.getElementById('vibeOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  // Read selected items and sync into activeVibes
+  var selected = document.querySelectorAll('#vibeOverlay .vibe-item.selected');
+  activeVibes = [];
+  selected.forEach(function(el) {
+    var vibe = el.getAttribute('data-vibe');
+    if (vibe) activeVibes.push(vibe);
+  });
+  // Update vibe row display
+  var displayEl = document.getElementById('vibeRowDisplay');
+  if (displayEl) {
+    if (activeVibes.length > 0) {
+      var names = Array.from(selected).map(function(el){ return el.querySelector('.vibe-item-name').textContent; });
+      displayEl.textContent = names.join(' · ');
+      displayEl.classList.add('has-vibes');
+    } else {
+      displayEl.textContent = 'What kind of neighbourhood feels like you?';
+      displayEl.classList.remove('has-vibes');
+    }
+  }
+}
+function overlayVibeToggle(el) {
+  el.classList.toggle('selected');
+  var count = document.querySelectorAll('#vibeOverlay .vibe-item.selected').length;
+  var countEl = document.getElementById('vibeCount');
+  if (countEl) countEl.textContent = count;
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeVibeOverlay();
+});
+</script>
 <script>
 const UNSPLASH_KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidGlhZ283MDEiLCJhIjoiY21uNjBkbHIxMDBzcDJyc2I1czFrdWt1biJ9.v1XnI4B7BwOQDV17LE-nIg';
