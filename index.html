@@ -172,62 +172,49 @@ nav { background:#FEF9EE;border-bottom:1.5px solid #3D3528;padding:0 20px;displa
 
 /* ── CITY CARDS ── */
 
-/* ── MATCH SHOWCASE ── */
-/* placeholder bg + fade-in for dynamically loaded photos */
-.match-src, .match-tgt {
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-.match-pair { background: linear-gradient(135deg, #231d14 0%, #1a1510 100%); }
-/* placeholder text while loading */
-.match-pair::before {
-  content: '';
-  position: absolute; inset: 0; z-index: 0;
-  background: linear-gradient(135deg, rgba(240,201,58,0.04) 0%, transparent 60%);
-}
-.match-showcase { background:#1A1510;padding:56px 24px; }
+/* ── MATCH SHOWCASE (single crossfade) ── */
+.match-showcase { background:#1A1510; padding:56px 24px; }
 @media(min-width:600px){ .match-showcase { padding:72px 48px; } }
-.match-scroll-wrap { overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -24px;padding:0 24px 4px; }
-@media(min-width:700px){ .match-scroll-wrap { overflow-x:visible;margin:0;padding:0; } }
-.match-grid { display:grid;grid-template-columns:repeat(4,72vw);gap:3px;min-width:max-content; }
-@media(min-width:700px){ .match-grid { grid-template-columns:repeat(4,1fr);min-width:unset; } }
-.match-pair { position:relative;overflow:hidden;height:280px;cursor:pointer;background:#231d14; }
-@media(min-width:700px){ .match-pair { height:400px; } }
-.match-src,.match-tgt { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center; }
-.match-src { z-index:1;clip-path:inset(0 0 0 0);transition:clip-path 0.65s cubic-bezier(0.4,0,0.2,1); }
-.match-tgt { z-index:2;clip-path:inset(0 0 0 100%);transition:clip-path 0.65s cubic-bezier(0.4,0,0.2,1); }
-.match-divider { position:absolute;top:0;bottom:0;left:50%;width:3px;background:#F0C93A;z-index:3;transform:translateX(-50%) scaleY(0);transform-origin:top;opacity:0;transition:transform 0.4s 0.25s cubic-bezier(0.4,0,0.2,1),opacity 0.2s 0.25s; }
-.match-grad { position:absolute;inset:0;background:linear-gradient(to top,rgba(16,12,8,0.92) 0%,rgba(16,12,8,0.28) 55%,transparent 100%);z-index:4;pointer-events:none; }
-.match-info { position:absolute;bottom:0;left:0;right:0;padding:18px 18px 20px;z-index:5; }
-@media(min-width:600px){ .match-info { padding:22px 24px 28px; } }
-/* cities = prominent headline; names = small eyebrow */
-.match-pair-cities {
-  font-family:'Cormorant Garamond',serif;
-  font-size:22px;font-weight:600;color:#FAF7F2;
-  line-height:1.1;margin-bottom:5px;
-  display:flex;align-items:center;gap:8px;
-}
-@media(min-width:700px){ .match-pair-cities { font-size:28px; } }
-.match-arr { color:#F0C93A;font-style:normal; }
-.match-pair-names {
-  font-size:9px;font-weight:600;letter-spacing:1.8px;
-  text-transform:uppercase;color:rgba(245,240,232,0.38);
-  margin-bottom:5px;display:flex;align-items:center;gap:6px;
-}
-.match-pair-vibe { font-size:11px;color:rgba(245,240,232,0.5);transition:opacity 0.3s 0.3s; }
-/* desktop hover: split reveal */
-@media(hover:hover){
-  .match-pair:hover .match-src { clip-path:inset(0 50% 0 0); }
-  .match-pair:hover .match-tgt { clip-path:inset(0 0 0 50%); }
-  .match-pair:hover .match-divider { transform:translateX(-50%) scaleY(1);opacity:1; }
-}
-/* mobile: both photos always visible as static split */
-@media(hover:none){
-  .match-src { clip-path:inset(0 50% 0 0) !important;transition:none !important; }
-  .match-tgt { clip-path:inset(0 0 0 50%) !important;transition:none !important; }
-  .match-divider { transform:translateX(-50%) scaleY(1) !important;opacity:1 !important;transition:none !important; }
-  .match-pair-vibe { opacity:1; }
-}
+
+.showcase-card { position:relative; overflow:hidden; height:420px; background:#231d14; }
+@media(min-width:600px){ .showcase-card { height:560px; } }
+
+.sc-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; opacity:0; transition:opacity 1.4s ease; }
+.sc-src  { z-index:1; }
+.sc-tgt  { z-index:2; }
+
+.sc-overlay { position:absolute; inset:0; z-index:3; background:linear-gradient(to top,rgba(16,12,8,0.97) 0%,rgba(16,12,8,0.55) 45%,rgba(16,12,8,0.1) 100%); pointer-events:none; }
+
+/* top progress bar */
+.sc-progress { position:absolute; top:0; left:0; height:3px; background:#F0C93A; z-index:6; width:0%; }
+
+/* both content states sit at the same position */
+.sc-content { position:absolute; bottom:0; left:0; right:0; padding:28px 24px 32px; z-index:4; transition:opacity 0.8s ease; }
+@media(min-width:600px){ .sc-content { padding:44px 48px 52px; } }
+.sc-source { opacity:1; }
+.sc-match  { opacity:0; pointer-events:none; }
+
+/* activated: match state */
+.showcase-card.is-match .sc-tgt    { opacity:1; }
+.showcase-card.is-match .sc-source { opacity:0; pointer-events:none; }
+.showcase-card.is-match .sc-match  { opacity:1; pointer-events:auto; }
+/* source state */
+.showcase-card.is-source .sc-src   { opacity:1; }
+.showcase-card.is-source .sc-tgt   { opacity:0; }
+.showcase-card.is-source .sc-source { opacity:1; }
+.showcase-card.is-source .sc-match  { opacity:0; pointer-events:none; }
+
+.sc-eyebrow { font-size:9px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:rgba(245,240,232,0.32); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.sc-eyebrow::before { content:''; width:14px; height:1px; background:rgba(245,240,232,0.22); display:inline-block; }
+.sc-badge { display:inline-block; background:#F0C93A; color:#3D3528; font-size:11px; font-weight:600; letter-spacing:1px; padding:4px 12px; margin-bottom:10px; }
+.sc-name { font-family:'Cormorant Garamond',serif; font-size:clamp(38px,7vw,62px); font-weight:600; color:#FAF7F2; line-height:1.0; letter-spacing:-0.5px; margin-bottom:5px; }
+.sc-city { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:rgba(245,240,232,0.35); margin-bottom:14px; }
+.sc-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:20px; }
+.sc-tag { font-size:10px; font-weight:600; padding:4px 10px; background:#F0C93A; color:#3D3528; letter-spacing:0.3px; }
+.sc-stats { display:flex; gap:20px; flex-wrap:wrap; border-top:1px solid rgba(245,240,232,0.1); padding-top:16px; margin-top:4px; }
+@media(min-width:600px){ .sc-stats { gap:32px; } }
+.sc-stat-n { font-family:'Cormorant Garamond',serif; font-size:clamp(28px,4vw,42px); font-weight:600; color:#FAF7F2; line-height:1; }
+.sc-stat-l { font-size:9px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(245,240,232,0.32); margin-top:3px; }
 
 .city-section { background:#1A1510;padding:56px 24px 80px;border-top:1px solid rgba(255,255,255,0.05); }
 @media(min-width:600px){ .city-section { padding:80px 48px 100px; } }
@@ -2381,68 +2368,52 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </div>
 
-<!-- MATCH SHOWCASE — neighbourhood pairs -->
+<!-- MATCH SHOWCASE — single crossfade example -->
 <div class="match-showcase">
   <div class="strip-header">
-    <div class="strip-label">See it in action</div>
-    <div class="strip-count">Real matches · 30+ cities</div>
+    <div class="strip-label">See a real match</div>
+    <div class="strip-count">West Village · New York → Lisbon · Portugal</div>
   </div>
-  <div class="match-scroll-wrap">
-    <div class="match-grid">
+  <div class="showcase-card" id="showcase-card">
 
-      <!-- Pair 1: Shoreditch → Bairro Alto -->
-      <div class="match-pair">
-        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Shoreditch London street art" alt="Shoreditch, London" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Bairro Alto Lisbon street night" alt="Bairro Alto, Lisbon" loading="lazy" crossorigin="anonymous">
-        <div class="match-divider"></div>
-        <div class="match-grad"></div>
-        <div class="match-info">
-          <div class="match-pair-cities">London → Lisbon · 91% match</div>
-          <div class="match-pair-names"><span>Shoreditch</span><span class="match-arr">→</span><span>Bairro Alto</span></div>
-          <div class="match-pair-vibe">Creative · Street art · Nightlife · Coffee</div>
-        </div>
+    <img class="sc-photo sc-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="West Village New York cobblestone street cafe" alt="West Village, New York" loading="lazy" crossorigin="anonymous">
+    <img class="sc-photo sc-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Principe Real Lisbon street wine cafe" alt="Príncipe Real, Lisbon" loading="lazy" crossorigin="anonymous">
+    <div class="sc-overlay"></div>
+    <div class="sc-progress" id="sc-progress"></div>
+
+    <!-- Source state: West Village -->
+    <div class="sc-content sc-source">
+      <div class="sc-eyebrow">Your neighbourhood</div>
+      <div class="sc-name">West Village</div>
+      <div class="sc-city">New York · USA</div>
+      <div class="sc-tags">
+        <span class="sc-tag">Charming</span>
+        <span class="sc-tag">Boutique dining</span>
+        <span class="sc-tag">Tree-lined streets</span>
+        <span class="sc-tag">Wine culture</span>
       </div>
-
-      <!-- Pair 2: West Village → Monti -->
-      <div class="match-pair">
-        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="West Village New York cobblestone cafe" alt="West Village, New York" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Monti Rome neighbourhood street cafe" alt="Monti, Rome" loading="lazy" crossorigin="anonymous">
-        <div class="match-divider"></div>
-        <div class="match-grad"></div>
-        <div class="match-info">
-          <div class="match-pair-cities">New York → Rome · 88% match</div>
-          <div class="match-pair-names"><span>West Village</span><span class="match-arr">→</span><span>Monti</span></div>
-          <div class="match-pair-vibe">Charming · Boutique restaurants · Local crowd</div>
-        </div>
-      </div>
-
-      <!-- Pair 3: Mitte → Eixample -->
-      <div class="match-pair">
-        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Mitte Berlin street gallery design" alt="Mitte, Berlin" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Eixample Barcelona boulevard cafe" alt="Eixample, Barcelona" loading="lazy" crossorigin="anonymous">
-        <div class="match-divider"></div>
-        <div class="match-grad"></div>
-        <div class="match-info">
-          <div class="match-pair-cities">Berlin → Barcelona · 93% match</div>
-          <div class="match-pair-names"><span>Mitte</span><span class="match-arr">→</span><span>Eixample</span></div>
-          <div class="match-pair-vibe">Design forward · Galleries · Foodie</div>
-        </div>
-      </div>
-
-      <!-- Pair 4: Le Marais → Plateau-Mont-Royal -->
-      <div class="match-pair">
-        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Paris Marais street cafe" alt="Le Marais, Paris" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Montreal neighbourhood street" alt="Plateau-Mont-Royal, Montreal" loading="lazy" crossorigin="anonymous">
-        <div class="match-divider"></div>
-        <div class="match-grad"></div>
-        <div class="match-info">
-          <div class="match-pair-cities">Paris → Montreal · 87% match</div>
-          <div class="match-pair-names"><span>Le Marais</span><span class="match-arr">→</span><span>Le Plateau</span></div>
-          <div class="match-pair-vibe">Bohemian · Terrace culture · Diverse food</div>
-        </div>
-      </div>
-
     </div>
+
+    <!-- Match state: Príncipe Real -->
+    <div class="sc-content sc-match">
+      <span class="sc-badge">89% match</span>
+      <div class="sc-name">Príncipe Real</div>
+      <div class="sc-city">Lisbon · Portugal</div>
+      <div class="sc-tags">
+        <span class="sc-tag">Charming</span>
+        <span class="sc-tag">Wine bars</span>
+        <span class="sc-tag">Independent</span>
+        <span class="sc-tag">Foodie</span>
+      </div>
+      <div class="sc-stats">
+        <div><div class="sc-stat-n">47</div><div class="sc-stat-l">Restaurants</div></div>
+        <div><div class="sc-stat-n">23</div><div class="sc-stat-l">Wine bars</div></div>
+        <div><div class="sc-stat-n">16</div><div class="sc-stat-l">Cafes</div></div>
+        <div><div class="sc-stat-n">9</div><div class="sc-stat-l">Attractions</div></div>
+        <div><div class="sc-stat-n">6</div><div class="sc-stat-l">Parks</div></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -4909,26 +4880,30 @@ window.addEventListener('scroll', () => {
     }, 2000);
   }
 
-  /* ── Match showcase — fires when section enters viewport ── */
+  /* ── Match showcase: load 2 photos ── */
   function loadShowcase() {
-    var imgs = document.querySelectorAll('.match-pair img[data-query]');
-    var delay = 0;
-    imgs.forEach(function(img) {
-      (function(el, ms) {
-        setTimeout(function() {
-          unsplashFetch(el.getAttribute('data-query'), 700, 500, function(url) {
-            var tmp = new Image();
-            tmp.crossOrigin = 'anonymous';
-            tmp.onload = function() {
-              el.src = url;
-              el.style.opacity = '1';
-            };
-            tmp.src = url;
-          });
-        }, ms);
-      })(img, delay);
-      delay += 300;
-    });
+    var card = document.getElementById('showcase-card');
+    if (!card) return;
+    var src = card.querySelector('.sc-src');
+    var tgt = card.querySelector('.sc-tgt');
+    if (src && src.getAttribute('data-query')) {
+      unsplashFetch(src.getAttribute('data-query'), 1400, 800, function(url) {
+        var tmp = new Image();
+        tmp.crossOrigin = 'anonymous';
+        tmp.onload = function() { src.src = url; };
+        tmp.src = url;
+      });
+    }
+    setTimeout(function() {
+      if (tgt && tgt.getAttribute('data-query')) {
+        unsplashFetch(tgt.getAttribute('data-query'), 1400, 800, function(url) {
+          var tmp = new Image();
+          tmp.crossOrigin = 'anonymous';
+          tmp.onload = function() { tgt.src = url; };
+          tmp.src = url;
+        });
+      }
+    }, 400);
   }
 
   var showcase = document.querySelector('.match-showcase');
@@ -4942,6 +4917,47 @@ window.addEventListener('scroll', () => {
       setTimeout(loadShowcase, 500);
     }
   }
+})();
+</script>
+
+<script>
+(function(){
+  var card = document.getElementById('showcase-card');
+  var bar  = document.getElementById('sc-progress');
+  if (!card) return;
+
+  var SRC_DURATION  = 3200;   /* show source photo for 3.2s */
+  var MATCH_DURATION = 5500;  /* show match photo for 5.5s  */
+
+  function animateBar(ms) {
+    if (!bar) return;
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    /* double rAF ensures the transition resets before restarting */
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        bar.style.transition = 'width ' + (ms / 1000) + 's linear';
+        bar.style.width = '100%';
+      });
+    });
+  }
+
+  function showSource() {
+    card.classList.remove('is-match');
+    card.classList.add('is-source');
+    animateBar(SRC_DURATION);
+    setTimeout(showMatch, SRC_DURATION);
+  }
+
+  function showMatch() {
+    card.classList.remove('is-source');
+    card.classList.add('is-match');
+    animateBar(MATCH_DURATION);
+    setTimeout(showSource, MATCH_DURATION);
+  }
+
+  /* kick off after a short delay so photos have time to load */
+  setTimeout(showSource, 800);
 })();
 </script>
 </body>
