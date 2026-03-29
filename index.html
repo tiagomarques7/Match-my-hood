@@ -1419,17 +1419,25 @@ input, select, textarea, button { font-family:'DM Sans',sans-serif !important; }
 .why-section .section-label::before { background:rgba(245,240,232,0.2) !important; }
 .why-section .section-title { color:#FAF7F2 !important; font-family:'Cormorant Garamond',serif !important; }
 .why-section .section-title em { color:#F0C93A !important; }
+/* dark card (default) */
 .why-card { background:rgba(255,255,255,0.04) !important; border:1px solid rgba(255,255,255,0.08) !important; border-radius:0 !important; }
 .why-card h3 { color:#FAF7F2 !important; font-family:'Cormorant Garamond',serif !important; font-size:21px !important; }
 .why-card p { color:rgba(245,240,232,0.45) !important; }
 .why-card::before { display:none !important; }
 .why-card:hover { transform:translateY(-5px) !important; box-shadow:0 20px 56px rgba(0,0,0,0.4) !important; }
 .why-icon-svg { background:rgba(255,255,255,0.06) !important; border:1px solid rgba(245,240,232,0.1) !important; border-radius:10px !important; }
+/* yellow card (alternating) */
+.why-card-yl { background:#F0C93A !important; border:1px solid #D4A820 !important; }
+.why-card-yl h3 { color:#3D3528 !important; }
+.why-card-yl p { color:#6B5E4A !important; }
+.why-card-yl .why-icon-svg { background:rgba(61,53,40,0.08) !important; border:1px solid rgba(61,53,40,0.18) !important; border-radius:10px !important; }
+.why-card-yl:hover { box-shadow:0 20px 56px rgba(212,168,32,0.45) !important; }
 @media(max-width:600px){ .why-section { padding:60px 24px !important; } }
 
 /* ── Pricing section ── */
 section.pricing-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; padding:80px 48px !important; }
 section.pricing-section .section-label { color:#9A8E7A !important; }
+section.pricing-section .section-label::before { background:#9A8E7A !important; }
 section.pricing-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
 section.pricing-section .section-title em { color:#D4A820 !important; font-style:italic !important; }
 section.pricing-section p { color:#6B5E4A !important; }
@@ -1438,6 +1446,7 @@ section.pricing-section p { color:#6B5E4A !important; }
 /* ── Roadmap section ── */
 section.roadmap-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; padding:80px 48px !important; }
 section.roadmap-section .section-label { color:#9A8E7A !important; }
+section.roadmap-section .section-label::before { background:#9A8E7A !important; }
 section.roadmap-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
 section.roadmap-section .section-title em { color:#D4A820 !important; }
 section.roadmap-section .roadmap-col { background:white !important; border-radius:0 !important; }
@@ -1455,6 +1464,7 @@ section.roadmap-section .roadmap-item-title { color:#3D3528 !important; font-wei
 section.roadmap-section .roadmap-item-desc { color:#6B5E4A !important; }
 section.roadmap-section .roadmap-grid { margin-top:40px !important; }
 @media(max-width:900px){ section.roadmap-section .roadmap-col { border-radius:0 !important; } }
+@media(max-width:600px){ section.roadmap-section .roadmap-col, section.roadmap-section .roadmap-col:first-child, section.roadmap-section .roadmap-col:last-child { border-radius:0 !important; } }
 @media(max-width:600px){ section.roadmap-section { padding:60px 24px !important; } }
 
 /* ── Suggestions section ── */
@@ -2083,13 +2093,13 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
       <p>We don't just compare locations — we compare lifestyle DNA. Walkability, food scene, wine bar culture, nightlife energy, safety, cost, and green space all factor in.</p>
     </div>
 
-    <div class="why-card">
+    <div class="why-card why-card-yl">
       <div class="why-icon-svg">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path d="M8 6 C8 6 6 10 6 14 C6 19 10.5 23 16 23 C21.5 23 26 19 26 14 C26 10 24 6 24 6 Z" stroke="rgba(245,240,232,0.45)" stroke-width="1.5" fill="rgba(245,240,232,0.08)" stroke-linejoin="round"/>
-          <path d="M12 23 L11 28 M20 23 L21 28" stroke="rgba(245,240,232,0.45)" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M9 28 L23 28" stroke="rgba(245,240,232,0.45)" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M11 13 C12 11 14 10 16 10 C18 10 20 11 21 13" stroke="rgba(245,240,232,0.45)" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M8 6 C8 6 6 10 6 14 C6 19 10.5 23 16 23 C21.5 23 26 19 26 14 C26 10 24 6 24 6 Z" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" fill="rgba(61,53,40,0.08)" stroke-linejoin="round"/>
+          <path d="M12 23 L11 28 M20 23 L21 28" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M9 28 L23 28" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M11 13 C12 11 14 10 16 10 C18 10 20 11 21 13" stroke="rgba(61,53,40,0.6)" stroke-width="1.3" stroke-linecap="round"/>
         </svg>
       </div>
       <h3>Food & wine built in</h3>
@@ -2110,13 +2120,13 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
       <p>Founded by a Senior Distribution Specialist at Corendon Airlines who has lived in Ireland, Bolivia, Brazil, Italy, and the UK. MatchMyHood is the tool he spent hours wishing existed every time he landed somewhere new and had to figure out which neighbourhood actually felt like home.</p>
     </div>
 
-    <div class="why-card">
+    <div class="why-card why-card-yl">
       <div class="why-icon-svg">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <rect x="4" y="10" width="24" height="18" rx="3" stroke="rgba(245,240,232,0.45)" stroke-width="1.5" fill="rgba(245,240,232,0.08)"/>
-          <path d="M10 10 L10 7 C10 5.3 11.3 4 13 4 L19 4 C20.7 4 22 5.3 22 7 L22 10" stroke="rgba(245,240,232,0.45)" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="16" cy="19" r="3" fill="rgba(245,240,232,0.08)" stroke="rgba(245,240,232,0.45)" stroke-width="1.3"/>
-          <path d="M16 22 L16 25" stroke="rgba(245,240,232,0.45)" stroke-width="1.3" stroke-linecap="round"/>
+          <rect x="4" y="10" width="24" height="18" rx="3" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" fill="rgba(61,53,40,0.08)"/>
+          <path d="M10 10 L10 7 C10 5.3 11.3 4 13 4 L19 4 C20.7 4 22 5.3 22 7 L22 10" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="16" cy="19" r="3" fill="rgba(61,53,40,0.08)" stroke="rgba(61,53,40,0.6)" stroke-width="1.3"/>
+          <path d="M16 22 L16 25" stroke="rgba(61,53,40,0.6)" stroke-width="1.3" stroke-linecap="round"/>
         </svg>
       </div>
       <h3>Book where you match</h3>
@@ -2135,10 +2145,10 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
       <p>Europe, North America, Southeast Asia. We're adding new cities every week, starting with the destinations digital nomads and independent travellers love most.</p>
     </div>
 
-    <div class="why-card">
+    <div class="why-card why-card-yl">
       <div class="why-icon-svg">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path d="M16 4 L19.5 12 L28 13 L22 19 L23.5 28 L16 24 L8.5 28 L10 19 L4 13 L12.5 12 Z" stroke="rgba(245,240,232,0.45)" stroke-width="1.5" fill="rgba(245,240,232,0.08)" stroke-linejoin="round"/>
+          <path d="M16 4 L19.5 12 L28 13 L22 19 L23.5 28 L16 24 L8.5 28 L10 19 L4 13 L12.5 12 Z" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" fill="rgba(61,53,40,0.08)" stroke-linejoin="round"/>
         </svg>
       </div>
       <h3>Free to start</h3>
@@ -2153,7 +2163,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   <div class="section-label">Pricing</div>
   <h2 class="section-title">Pricing <em>coming soon</em></h2>
   <p style="color:#6B5E4A; font-size:16px; margin-bottom:56px; max-width:520px;">We're still building. MatchMyHood is free to use while we're in beta — join the waitlist to be first to know when plans launch and lock in an early-bird rate.</p>
-  <div style="max-width:480px; margin:0 auto; background:#FEFADF; border:1.5px solid #EDE0C4; padding:48px 40px; text-align:center;">
+  <div style="max-width:480px; margin:0 auto; background:#FEFADF; border:1.5px solid #EDE0C4; padding:48px 40px; text-align:center; border-radius:0;">
     <div style="font-size:48px; margin-bottom:16px;">🗺️</div>
     <h3 style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:#3D3528; margin-bottom:12px;">Free during beta</h3>
     <p style="font-size:15px; color:#6B5E4A; line-height:1.7; margin-bottom:32px;">Unlimited neighbourhood matches, full maps, real amenity data — all free while we're in beta. Join the waitlist and we'll tell you first when paid plans go live.</p>
