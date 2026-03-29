@@ -1705,6 +1705,126 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   color: rgba(245,240,232,0.7) !important;
 }
 
+/* ── SUBSECTIONS: editorial redesign ── */
+
+/* Why it matches — editorial pull-quote */
+.mmh-why-text {
+  background: none !important;
+  border: none !important;
+  border-left: 3px solid #F0C93A !important;
+  border-radius: 0 !important;
+  padding: 10px 20px !important;
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: 18px !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  color: #3D3528 !important;
+  line-height: 1.65 !important;
+  margin-bottom: 12px !important;
+}
+
+/* Must try — yellow strip */
+.must-try {
+  background: #FEFADF !important;
+  border: none !important;
+  border-left: 3px solid #F0C93A !important;
+  border-radius: 0 !important;
+  padding: 12px 16px !important;
+  color: #6B5E4A !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+.must-try strong {
+  display: block !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  color: #9A8E7A !important;
+  margin-bottom: 5px !important;
+}
+
+/* Stat tiles — yellow top-border architectural style */
+.mmh-stats-row { gap: 3px !important; margin-top: 16px !important; }
+.mmh-stat-tile {
+  background: white !important;
+  border: 1px solid #EDE0C4 !important;
+  border-top: 3px solid #F0C93A !important;
+  border-radius: 0 !important;
+  padding: 14px 16px !important;
+}
+.mmh-stat-label {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  color: #9A8E7A !important;
+  margin-bottom: 6px !important;
+}
+.mmh-stat-val {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #3D3528 !important;
+  line-height: 1.2 !important;
+}
+
+/* Amenity tiles — sharp grid, large CG numbers */
+.mmh-amenity-grid { gap: 3px !important; margin-bottom: 3px !important; }
+.mmh-amenity-grid-wide { gap: 3px !important; margin-bottom: 3px !important; }
+.mmh-a-tile {
+  background: white !important;
+  border: 1px solid #EDE0C4 !important;
+  border-radius: 0 !important;
+  padding: 16px 8px 14px !important;
+  text-align: center !important;
+  border-bottom: 3px solid transparent !important;
+  transition: background 0.2s, border-bottom-color 0.2s !important;
+}
+.mmh-a-tile:hover { background: #FEFADF !important; border-bottom-color: #F0C93A !important; }
+.mmh-a-icon { margin: 0 auto 6px !important; }
+.mmh-a-icon svg { filter: saturate(0) brightness(0.35) !important; opacity: 0.5 !important; }
+.mmh-a-count {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  color: #3D3528 !important;
+  line-height: 1 !important;
+}
+.mmh-a-label {
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  color: #9A8E7A !important;
+  margin-top: 5px !important;
+  line-height: 1.3 !important;
+}
+
+/* Station names — yellow rule strip */
+.mmh-station-names {
+  background: #FEFADF !important;
+  border: none !important;
+  border-left: 3px solid #F0C93A !important;
+  border-radius: 0 !important;
+  padding: 10px 14px !important;
+  font-size: 12px !important;
+  color: #6B5E4A !important;
+  margin-top: 12px !important;
+}
+
+/* City guide section — yellow replaces gold accent */
+.mmh-city-guide-sec { border-left: none !important; background: white !important; }
+.mmh-city-guide-sec .mmh-sec-head { background: transparent !important; }
+.mmh-city-guide-sec .mmh-sec-icon { background: rgba(240,201,58,0.1) !important; border: 1px solid rgba(240,201,58,0.25) !important; }
+.mmh-city-guide-sec .mmh-sec-title { color: #D4A820 !important; }
+
+/* Pick items — sharp, consistent */
+.picks-list { display: flex !important; flex-direction: column !important; gap: 3px !important; }
+.pick-photo { border-radius: 0 !important; width: 68px !important; height: 68px !important; }
+
 /* Map expand button */
 .map-expand-btn { background: rgba(255,255,255,0.9) !important; color: #3D3528 !important; border-radius: 0 !important; }
 
