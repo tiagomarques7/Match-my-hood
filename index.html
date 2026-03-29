@@ -171,6 +171,35 @@ nav { background:#FEF9EE;border-bottom:1.5px solid #3D3528;padding:0 20px;displa
 .photo-city { font-size:9px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:rgba(245,240,232,0.4);margin-top:3px; }
 
 /* ── CITY CARDS ── */
+
+/* ── MATCH SHOWCASE ── */
+.match-showcase { background:#1A1510;padding:56px 24px; }
+@media(min-width:600px){ .match-showcase { padding:72px 48px; } }
+.match-scroll-wrap { overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -24px;padding:0 24px 4px; }
+@media(min-width:700px){ .match-scroll-wrap { overflow-x:visible;margin:0;padding:0; } }
+.match-grid { display:grid;grid-template-columns:repeat(4,72vw);gap:3px;min-width:max-content; }
+@media(min-width:700px){ .match-grid { grid-template-columns:repeat(4,1fr);min-width:unset; } }
+.match-pair { position:relative;overflow:hidden;height:280px;cursor:pointer;background:#231d14; }
+@media(min-width:700px){ .match-pair { height:400px; } }
+.match-src,.match-tgt { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center; }
+.match-src { z-index:1;clip-path:inset(0 0 0 0);transition:clip-path 0.65s cubic-bezier(0.4,0,0.2,1); }
+.match-tgt { z-index:2;clip-path:inset(0 0 0 100%);transition:clip-path 0.65s cubic-bezier(0.4,0,0.2,1); }
+.match-divider { position:absolute;top:0;bottom:0;left:50%;width:3px;background:#F0C93A;z-index:3;transform:translateX(-50%) scaleY(0);transform-origin:top;opacity:0;transition:transform 0.4s 0.25s cubic-bezier(0.4,0,0.2,1),opacity 0.2s 0.25s; }
+.match-grad { position:absolute;inset:0;background:linear-gradient(to top,rgba(16,12,8,0.92) 0%,rgba(16,12,8,0.28) 55%,transparent 100%);z-index:4;pointer-events:none; }
+.match-info { position:absolute;bottom:0;left:0;right:0;padding:18px 18px 20px;z-index:5; }
+@media(min-width:600px){ .match-info { padding:22px 24px 28px; } }
+.match-pair-names { font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#FAF7F2;display:flex;align-items:center;gap:8px;margin-bottom:4px;line-height:1.1; }
+@media(min-width:700px){ .match-pair-names { font-size:26px; } }
+.match-arr { color:#F0C93A;font-style:normal; }
+.match-pair-cities { font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,240,232,0.32);margin-bottom:6px; }
+.match-pair-vibe { font-size:11px;color:rgba(245,240,232,0.5);transition:opacity 0.3s 0.3s; }
+@media(hover:hover){
+  .match-pair:hover .match-src { clip-path:inset(0 50% 0 0); }
+  .match-pair:hover .match-tgt { clip-path:inset(0 0 0 50%); }
+  .match-pair:hover .match-divider { transform:translateX(-50%) scaleY(1);opacity:1; }
+}
+@media(hover:none){ .match-pair-vibe { opacity:1; } }
+
 .city-section { background:#1A1510;padding:56px 24px 80px;border-top:1px solid rgba(255,255,255,0.05); }
 @media(min-width:600px){ .city-section { padding:80px 48px 100px; } }
 .sec-ey-light { font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.3);margin-bottom:12px;display:flex;align-items:center;gap:8px; }
@@ -1838,6 +1867,21 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   .mmh-sec-head { padding: 13px 20px !important; }
   .mmh-sec-inner { padding: 4px 20px 16px !important; }
   .mmh-hood-name { font-size: 30px !important; }
+  /* Amenity grid: 3 columns on mobile */
+  .mmh-amenity-grid { grid-template-columns: repeat(3,1fr) !important; }
+  .mmh-amenity-grid-wide { grid-template-columns: repeat(3,1fr) !important; }
+  .mmh-a-count { font-size: 22px !important; }
+  /* Stats row: stacked on very small screens */
+  .mmh-stats-row { grid-template-columns: repeat(3,1fr) !important; }
+  .mmh-stat-val { font-size: 15px !important; }
+  /* Pricing card mobile */
+  #pricing-beta-card { margin: 0 !important; }
+  #pricing-beta-card .match-info { padding: 14px 16px 18px !important; }
+  /* Suggestions */
+  .suggestions-grid { grid-template-columns: 1fr !important; }
+  /* Match showcase labels */
+  .match-pair-names { font-size: 16px !important; }
+  .match-pair { height: 240px !important; }
 }
 
 </style>
@@ -1903,7 +1947,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 <!-- HERO DARK -->
 <section class="hero">
-  <img class="hero-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=85" alt="Neighbourhood street" loading="eager" fetchpriority="high" crossorigin="anonymous">
+  <img class="hero-img" src="https://images.unsplash.com/photo-lOt7lVgN7o0?w=1800&q=85&fit=crop&auto=format" alt="Neighbourhood street" loading="eager" fetchpriority="high" crossorigin="anonymous">
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">Neighbourhood intelligence · Free to start</div>
@@ -2145,21 +2189,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 </div>
 
 <!-- PHOTO STRIP DARK -->
-<div class="photo-strip">
-  <div class="strip-header">
-    <div class="strip-label">Neighbourhoods we know</div>
-    <div class="strip-count">30+ cities · 500+ hoods</div>
-  </div>
-  <div class="photo-scroll">
-    <div class="photo-grid">
-      <div class="photo-cell"><img src="https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=600&q=80" alt="Príncipe Real" loading="lazy" crossorigin="anonymous"><div class="photo-grad"></div><div class="photo-label"><div class="photo-name">Príncipe Real</div><div class="photo-city">Lisbon</div></div></div>
-      <div class="photo-cell"><img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&q=80" alt="Dalston" loading="lazy" crossorigin="anonymous"><div class="photo-grad"></div><div class="photo-label"><div class="photo-name">Dalston</div><div class="photo-city">London</div></div></div>
-      <div class="photo-cell"><img src="https://images.unsplash.com/photo-1431274172761-fca41d930114?w=400&q=80" alt="Le Marais" loading="lazy" crossorigin="anonymous"><div class="photo-grad"></div><div class="photo-label"><div class="photo-name">Le Marais</div><div class="photo-city">Paris</div></div></div>
-      <div class="photo-cell"><img src="https://images.unsplash.com/photo-1599946347371-68eb71b16afc?w=400&q=80" alt="Kreuzberg" loading="lazy" crossorigin="anonymous"><div class="photo-grad"></div><div class="photo-label"><div class="photo-name">Kreuzberg</div><div class="photo-city">Berlin</div></div></div>
-    </div>
-  </div>
-</div>
-
 <!-- CITY CARDS DARK — ANIMATED, BLACK/YELLOW ALTERNATING -->
 <div class="city-section" id="cities">
   <div class="sec-ey-light">Cities we know</div>
@@ -2314,6 +2343,71 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
           </svg>
         </div>
         <div class="city-card-count">14 Neighbourhoods</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MATCH SHOWCASE — neighbourhood pairs -->
+<div class="match-showcase">
+  <div class="strip-header">
+    <div class="strip-label">See it in action</div>
+    <div class="strip-count">Real matches · 30+ cities</div>
+  </div>
+  <div class="match-scroll-wrap">
+    <div class="match-grid">
+
+      <!-- Pair 1: Santos → Peckham -->
+      <div class="match-pair">
+        <img class="match-src" src="https://images.unsplash.com/photo-ZUWls_bDgAk?w=700&h=500&fit=crop&q=80" alt="Santos, São Paulo" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="https://images.unsplash.com/photo-LSCuMfZ39DQ?w=700&h=500&fit=crop&q=80" alt="Peckham, London" loading="lazy" crossorigin="anonymous">
+        <div class="match-divider"></div>
+        <div class="match-grad"></div>
+        <div class="match-info">
+          <div class="match-pair-names"><span>Santos</span><span class="match-arr">→</span><span>Peckham</span></div>
+          <div class="match-pair-cities">São Paulo → London</div>
+          <div class="match-pair-vibe">Bohemian · Food culture · Street art</div>
+        </div>
+      </div>
+
+      <!-- Pair 2: Alfama → Trastevere -->
+      <div class="match-pair">
+        <img class="match-src" src="https://images.unsplash.com/photo-pWljb16SL6w?w=700&h=500&fit=crop&q=80" alt="Alfama, Lisbon" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="https://images.unsplash.com/photo-TEoT2qU7dTg?w=700&h=500&fit=crop&q=80" alt="Trastevere, Rome" loading="lazy" crossorigin="anonymous">
+        <div class="match-divider"></div>
+        <div class="match-grad"></div>
+        <div class="match-info">
+          <div class="match-pair-names"><span>Alfama</span><span class="match-arr">→</span><span>Trastevere</span></div>
+          <div class="match-pair-cities">Lisbon → Rome</div>
+          <div class="match-pair-vibe">Historic · Local crowd · Cobblestone</div>
+        </div>
+      </div>
+
+      <!-- Pair 3: Le Marais → Eixample -->
+      <div class="match-pair">
+        <img class="match-src" src="https://images.unsplash.com/photo-lokKjSGUKPk?w=700&h=500&fit=crop&q=80" alt="Le Marais, Paris" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="https://images.unsplash.com/photo-z96i6JomMdQ?w=700&h=500&fit=crop&q=80" alt="Eixample, Barcelona" loading="lazy" crossorigin="anonymous">
+        <div class="match-divider"></div>
+        <div class="match-grad"></div>
+        <div class="match-info">
+          <div class="match-pair-names"><span>Le Marais</span><span class="match-arr">→</span><span>Eixample</span></div>
+          <div class="match-pair-cities">Paris → Barcelona</div>
+          <div class="match-pair-vibe">Design · Foodie · Boutique culture</div>
+        </div>
+      </div>
+
+      <!-- Pair 4: Kreuzberg → Williamsburg -->
+      <div class="match-pair">
+        <img class="match-src" src="https://images.unsplash.com/photo-scPq1QpSTLs?w=700&h=500&fit=crop&q=80" alt="Kreuzberg, Berlin" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="https://images.unsplash.com/photo-_PYQjzGbu2M?w=700&h=500&fit=crop&q=80" alt="Williamsburg, New York" loading="lazy" crossorigin="anonymous">
+        <div class="match-divider"></div>
+        <div class="match-grad"></div>
+        <div class="match-info">
+          <div class="match-pair-names"><span>Kreuzberg</span><span class="match-arr">→</span><span>Williamsburg</span></div>
+          <div class="match-pair-cities">Berlin → New York</div>
+          <div class="match-pair-vibe">Alternative · Creative · Digital nomad</div>
+        </div>
       </div>
 
     </div>
