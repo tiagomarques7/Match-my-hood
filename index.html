@@ -1488,14 +1488,23 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
 }
 
 /* Suggestions section */
-.suggestions-section { background:#FEF9EE !important; }
+.suggestions-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; }
 .suggestions-section .section-label { color:#9A8E7A !important; }
-.suggestion-card { border-radius:0 !important; border:1.5px solid #EDE0C4 !important; }
+.suggestions-section .section-label::before { background:#9A8E7A !important; }
+.suggestions-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
+.suggestion-card { border-radius:0 !important; border:1.5px solid #EDE0C4 !important; background:white !important; box-shadow:none !important; }
+.suggestion-card h3 { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; font-size:20px !important; font-weight:600 !important; }
+.suggestion-card p { color:#6B5E4A !important; }
+.suggestion-input { border:1.5px solid #EDE0C4 !important; border-radius:0 !important; font-family:'DM Sans',sans-serif !important; color:#3D3528 !important; background:#FEF9EE !important; }
+.suggestion-input:focus { border-color:#D4A820 !important; outline:none !important; }
 .suggestion-btn {
   background:#F0C93A !important;
   color:#3D3528 !important;
   border-radius:0 !important;
   border:1.5px solid #D4A820 !important;
+  font-family:'DM Sans',sans-serif !important;
+  font-weight:600 !important;
+  letter-spacing:1px !important;
 }
 
 /* Results area inherits dark bg from --earth already */
@@ -2400,7 +2409,7 @@ input, select, textarea, button { font-family:'DM Sans',sans-serif !important; }
 <section class="suggestions-section">
   <div class="suggestions-inner">
     <div class="section-label">Help us grow</div>
-    <h2 class="section-title" style="color:var(--earth);">Shape the future of <em>MatchMyHood</em></h2>
+    <h2 class="section-title" style="color:#3D3528;">Shape the future of <em style="color:#D4A820;font-style:italic;">MatchMyHood</em></h2>
     <div class="suggestions-grid">
 
       <div class="suggestion-card">
