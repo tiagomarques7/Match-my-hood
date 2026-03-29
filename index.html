@@ -84,7 +84,7 @@ nav { background:#FEF9EE;border-bottom:1.5px solid #3D3528;padding:0 20px;displa
 /* ── HERO ── */
 .hero { position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden;background:#1A1510; }
 .hero::before { content:'';position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 80% 60% at 15% 85%, rgba(240,201,58,0.07) 0%, transparent 60%); }
-.hero-img { position:absolute;left:0;right:0;top:-15%;width:100%;height:130%;object-fit:cover;object-position:center 38%;display:block;will-change:transform; }
+.hero-img { position:absolute;left:0;right:0;top:-15%;width:100%;height:130%;object-fit:cover;object-position:center 38%;display:block;will-change:transform;opacity:0;transition:opacity 1.2s ease; }
 .hero-overlay { position:absolute;inset:0;background:linear-gradient(115deg,rgba(16,12,8,0.90) 0%,rgba(16,12,8,0.62) 48%,rgba(16,12,8,0.18) 100%); }
 .hero-content { position:relative;z-index:2;padding:0 24px 56px;width:100%; }
 @media(min-width:600px){ .hero-content { padding:0 64px 80px;max-width:640px; } }
@@ -200,17 +200,34 @@ nav { background:#FEF9EE;border-bottom:1.5px solid #3D3528;padding:0 20px;displa
 .match-grad { position:absolute;inset:0;background:linear-gradient(to top,rgba(16,12,8,0.92) 0%,rgba(16,12,8,0.28) 55%,transparent 100%);z-index:4;pointer-events:none; }
 .match-info { position:absolute;bottom:0;left:0;right:0;padding:18px 18px 20px;z-index:5; }
 @media(min-width:600px){ .match-info { padding:22px 24px 28px; } }
-.match-pair-names { font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#FAF7F2;display:flex;align-items:center;gap:8px;margin-bottom:4px;line-height:1.1; }
-@media(min-width:700px){ .match-pair-names { font-size:26px; } }
+/* cities = prominent headline; names = small eyebrow */
+.match-pair-cities {
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:600;color:#FAF7F2;
+  line-height:1.1;margin-bottom:5px;
+  display:flex;align-items:center;gap:8px;
+}
+@media(min-width:700px){ .match-pair-cities { font-size:28px; } }
 .match-arr { color:#F0C93A;font-style:normal; }
-.match-pair-cities { font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,240,232,0.32);margin-bottom:6px; }
+.match-pair-names {
+  font-size:9px;font-weight:600;letter-spacing:1.8px;
+  text-transform:uppercase;color:rgba(245,240,232,0.38);
+  margin-bottom:5px;display:flex;align-items:center;gap:6px;
+}
 .match-pair-vibe { font-size:11px;color:rgba(245,240,232,0.5);transition:opacity 0.3s 0.3s; }
+/* desktop hover: split reveal */
 @media(hover:hover){
   .match-pair:hover .match-src { clip-path:inset(0 50% 0 0); }
   .match-pair:hover .match-tgt { clip-path:inset(0 0 0 50%); }
   .match-pair:hover .match-divider { transform:translateX(-50%) scaleY(1);opacity:1; }
 }
-@media(hover:none){ .match-pair-vibe { opacity:1; } }
+/* mobile: both photos always visible as static split */
+@media(hover:none){
+  .match-src { clip-path:inset(0 50% 0 0) !important;transition:none !important; }
+  .match-tgt { clip-path:inset(0 0 0 50%) !important;transition:none !important; }
+  .match-divider { transform:translateX(-50%) scaleY(1) !important;opacity:1 !important;transition:none !important; }
+  .match-pair-vibe { opacity:1; }
+}
 
 .city-section { background:#1A1510;padding:56px 24px 80px;border-top:1px solid rgba(255,255,255,0.05); }
 @media(min-width:600px){ .city-section { padding:80px 48px 100px; } }
@@ -1873,6 +1890,9 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .loading-msg { color: rgba(245,240,232,0.45) !important; }
 .error-msg { background: rgba(240,201,58,0.08) !important; border-color: rgba(240,201,58,0.25) !important; color: rgba(245,240,232,0.6) !important; border-radius: 0 !important; }
 
+@media(max-width:700px) {
+  .hero-img { top:0 !important; height:100% !important; transform:none !important; }
+}
 @media(max-width:600px) {
   .results-area { padding: 24px 20px 48px !important; }
   .mmh-card-head { padding: 20px 20px 16px !important; }
@@ -1959,7 +1979,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 <!-- HERO DARK -->
 <section class="hero">
-  <img class="hero-img" src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1800&q=85&fit=crop" data-hero-query="lively neighbourhood street market cafe people" alt="Neighbourhood street" loading="eager" fetchpriority="high" crossorigin="anonymous">
+  <img class="hero-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-hero-query="lively neighbourhood street market cafe people" alt="Neighbourhood street" loading="eager" fetchpriority="high" crossorigin="anonymous">
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">Neighbourhood intelligence · Free to start</div>
@@ -2377,8 +2397,8 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
         <div class="match-divider"></div>
         <div class="match-grad"></div>
         <div class="match-info">
-          <div class="match-pair-names"><span>Shoreditch</span><span class="match-arr">→</span><span>Bairro Alto</span></div>
           <div class="match-pair-cities">London → Lisbon · 91% match</div>
+          <div class="match-pair-names"><span>Shoreditch</span><span class="match-arr">→</span><span>Bairro Alto</span></div>
           <div class="match-pair-vibe">Creative · Street art · Nightlife · Coffee</div>
         </div>
       </div>
@@ -2390,8 +2410,8 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
         <div class="match-divider"></div>
         <div class="match-grad"></div>
         <div class="match-info">
-          <div class="match-pair-names"><span>West Village</span><span class="match-arr">→</span><span>Monti</span></div>
           <div class="match-pair-cities">New York → Rome · 88% match</div>
+          <div class="match-pair-names"><span>West Village</span><span class="match-arr">→</span><span>Monti</span></div>
           <div class="match-pair-vibe">Charming · Boutique restaurants · Local crowd</div>
         </div>
       </div>
@@ -2403,21 +2423,21 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
         <div class="match-divider"></div>
         <div class="match-grad"></div>
         <div class="match-info">
-          <div class="match-pair-names"><span>Mitte</span><span class="match-arr">→</span><span>Eixample</span></div>
           <div class="match-pair-cities">Berlin → Barcelona · 93% match</div>
+          <div class="match-pair-names"><span>Mitte</span><span class="match-arr">→</span><span>Eixample</span></div>
           <div class="match-pair-vibe">Design forward · Galleries · Foodie</div>
         </div>
       </div>
 
       <!-- Pair 4: Le Marais → Plateau-Mont-Royal -->
       <div class="match-pair">
-        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Le Marais Paris street boutique" alt="Le Marais, Paris" loading="lazy" crossorigin="anonymous">
-        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Plateau Mont Royal Montreal terrace cafe" alt="Plateau-Mont-Royal, Montreal" loading="lazy" crossorigin="anonymous">
+        <img class="match-src" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Paris Marais street cafe" alt="Le Marais, Paris" loading="lazy" crossorigin="anonymous">
+        <img class="match-tgt" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-query="Montreal neighbourhood street" alt="Plateau-Mont-Royal, Montreal" loading="lazy" crossorigin="anonymous">
         <div class="match-divider"></div>
         <div class="match-grad"></div>
         <div class="match-info">
-          <div class="match-pair-names"><span>Le Marais</span><span class="match-arr">→</span><span>Le Plateau</span></div>
           <div class="match-pair-cities">Paris → Montreal · 87% match</div>
+          <div class="match-pair-names"><span>Le Marais</span><span class="match-arr">→</span><span>Le Plateau</span></div>
           <div class="match-pair-vibe">Bohemian · Terrace culture · Diverse food</div>
         </div>
       </div>
@@ -4866,14 +4886,27 @@ window.addEventListener('scroll', () => {
       .catch(function(){});
   }
 
-  /* ── Hero ── */
+  /* ── Hero: fetch photo, fade in when ready ── */
   var hero = document.querySelector('.hero-img[data-hero-query]');
   if (hero) {
-    unsplashFetch(hero.getAttribute('data-hero-query'), 1800, 900, function(url) {
+    function activateHero(url) {
       var img = new Image();
-      img.onload = function() { hero.src = url; };
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        hero.src = url;
+        hero.style.opacity = '1';
+      };
       img.src = url;
+    }
+    unsplashFetch(hero.getAttribute('data-hero-query'), 1800, 900, function(url) {
+      activateHero(url);
     });
+    /* fallback: after 2s show black-to-hero transition with whatever loaded */
+    setTimeout(function() {
+      if (parseFloat(getComputedStyle(hero).opacity) < 0.5 && hero.src !== '') {
+        hero.style.opacity = '1';
+      }
+    }, 2000);
   }
 
   /* ── Match showcase — fires when section enters viewport ── */
@@ -4894,7 +4927,7 @@ window.addEventListener('scroll', () => {
           });
         }, ms);
       })(img, delay);
-      delay += 200;
+      delay += 300;
     });
   }
 
