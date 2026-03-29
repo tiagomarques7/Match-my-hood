@@ -1500,7 +1500,93 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
 
 /* Results area inherits dark bg from --earth already */
 
-/* ── VIBE OVERLAY ── */
+/* ── Select dropdowns — font ── */
+.mmh-form-select { font-family:'DM Sans',sans-serif !important; font-size:15px !important; color:#3D3528 !important; }
+.mmh-form-select option,
+.mmh-form-select optgroup { font-family:'DM Sans',sans-serif !important; background:white !important; color:#3D3528 !important; }
+
+/* ── Why card icons — strip terracotta ── */
+.why-icon-svg {
+  background:rgba(255,255,255,0.06) !important;
+  border:1px solid rgba(245,240,232,0.1) !important;
+  border-radius:10px !important;
+}
+.why-icon-svg svg path,
+.why-icon-svg svg circle,
+.why-icon-svg svg rect,
+.why-icon-svg svg line,
+.why-icon-svg svg polyline,
+.why-icon-svg svg polygon {
+  stroke:rgba(245,240,232,0.4) !important;
+  fill:none !important;
+}
+.why-icon-svg svg circle[fill]:not([fill="none"]) { fill:rgba(245,240,232,0.1) !important; }
+
+/* ── Pricing section — new design ── */
+.pricing-section {
+  background:#FEF9EE !important;
+  border-top:1.5px solid #EDE0C4 !important;
+  padding:80px 48px !important;
+}
+.pricing-section .section-label { color:#9A8E7A !important; }
+.pricing-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
+.pricing-section .section-title em { color:#D4A820 !important; font-style:italic !important; }
+.pricing-section > p, .pricing-section p { color:#6B5E4A !important; }
+/* flatten all rounded containers inside pricing */
+.pricing-section [style*="border-radius"] { border-radius:0 !important; }
+/* strip terracotta links/buttons inside pricing */
+.pricing-section a[style*="background"], .pricing-section button {
+  background:#F0C93A !important;
+  color:#3D3528 !important;
+  border-radius:0 !important;
+  border:1.5px solid #D4A820 !important;
+}
+/* pricing card wrapper */
+.pricing-section > div[style], .pricing-section > div > div[style] {
+  background:#FEFADF !important;
+  border:1.5px solid #EDE0C4 !important;
+  border-radius:0 !important;
+}
+/* checkmark colour */
+.pricing-section [style*="color:var(--olive)"],
+.pricing-section [style*="color:var(--sage)"],
+.pricing-section [style*="color:var(--terracotta)"] { color:#D4A820 !important; }
+/* star icon */
+.pricing-section [style*="color:var(--gold)"] { color:#D4A820 !important; }
+
+/* ── Roadmap section — new design ── */
+.roadmap-section {
+  background:#FEF9EE !important;
+  border-top:1.5px solid #EDE0C4 !important;
+  padding:80px 48px !important;
+}
+.roadmap-section .section-label { color:#9A8E7A !important; }
+.roadmap-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
+.roadmap-section .section-title em { color:#D4A820 !important; }
+/* flatten roadmap grid cards */
+.roadmap-section [style*="border-radius"] { border-radius:0 !important; }
+/* live pill */
+.roadmap-section .roadmap-status-live,
+.roadmap-section [style*="background:rgba(90,125,76"] { background:#F0C93A !important; color:#3D3528 !important; border-radius:0 !important; }
+.roadmap-section .roadmap-status-coming { color:#9A8E7A !important; }
+.roadmap-section .roadmap-status-dot { background:#9A8E7A !important; }
+.roadmap-section .roadmap-item-icon { background:rgba(61,53,40,0.06) !important; border:1px solid #EDE0C4 !important; border-radius:8px !important; }
+.roadmap-section .roadmap-item-icon svg * { stroke:#6B5E4A !important; fill:none !important; }
+/* terracotta text → ink */
+.roadmap-section [style*="color:var(--terracotta)"],
+.roadmap-section [style*="color:var(--terracotta-light)"],
+.roadmap-section [style*="color:var(--sage)"] { color:#D4A820 !important; }
+
+/* ── Global: strip remaining terracotta from all post-results sections ── */
+.why-section ~ * .section-label { color:#9A8E7A; }
+.pricing-section em,
+.roadmap-section em,
+.suggestions-section em { color:#D4A820 !important; }
+@media(max-width:600px) {
+  .pricing-section { padding:60px 24px !important; }
+  .roadmap-section { padding:60px 24px !important; }
+  .why-section { padding:60px 24px !important; }
+}
 .vibe-overlay { position:fixed;inset:0;z-index:1000;background:#1A1510;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity 0.4s ease; }
 .vibe-overlay.open { opacity:1;pointer-events:all; }
 .vibe-overlay-inner { display:grid;grid-template-columns:40px 1fr;flex:1;overflow:hidden; }
@@ -2380,13 +2466,18 @@ function openVibeOverlay() {
 function closeVibeOverlay() {
   document.getElementById('vibeOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  // Read selected items and sync into activeVibes
+  // Read selected items and sync into activeVibes (in-place mutation avoids let/scope issues)
   var selected = document.querySelectorAll('#vibeOverlay .vibe-item.selected');
-  activeVibes = [];
-  selected.forEach(function(el) {
-    var vibe = el.getAttribute('data-vibe');
-    if (vibe) activeVibes.push(vibe);
-  });
+  try {
+    activeVibes.length = 0;
+    selected.forEach(function(el) {
+      var vibe = el.getAttribute('data-vibe');
+      if (vibe) activeVibes.push(vibe);
+    });
+  } catch(e) {
+    // Fallback: create window-level copy if let activeVibes not in scope yet
+    window._mmhVibesSync = Array.from(selected).map(function(el){ return el.getAttribute('data-vibe'); }).filter(Boolean);
+  }
   // Update vibe row display
   var displayEl = document.getElementById('vibeRowDisplay');
   if (displayEl) {
@@ -2694,10 +2785,12 @@ async function runMatch(isAlternative = false) {
 
   if (!homeCity || !homeHood || !destCity) {
     showError('Please fill in all three fields to find your match.');
+    isSearching = false;
     return;
   }
   if (homeCity === destCity) {
     showError("Your home city and destination are the same — pick a different destination!");
+    isSearching = false;
     return;
   }
 
