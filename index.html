@@ -11,6 +11,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YG0BGC28QZ"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-YG0BGC28QZ');</script>
 <style>
+
 /* ═══════════════════════════════════════════════════════════════
    MMH NEW DESIGN SYSTEM — v11
    NEW LANDING-PAGE CSS (nav, hero, search, marquee, photo strip,
@@ -1399,196 +1400,83 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
   .plan-select { width: 100%; padding: 12px 16px; border: 1.5px solid rgba(248,241,231,0.2); border-radius: 10px; background: rgba(255,255,255,0.08); color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 14px; margin-bottom: 12px; appearance: none; cursor: pointer; }
   .plan-select:focus { outline: none; border-color: var(--terracotta); }
   .plan-select option { background: var(--earth); color: var(--cream); }
-</style>
-</style>
-<style>
-/* ═══════════════════════════════════════════════════════
-   OVERRIDES — loaded last so they win
-   ═══════════════════════════════════════════════════════ */
 
-/* ── Vibe pills — new sharp yellow design ── */
-.vibe-pill {
-  display:inline-flex !important;
-  align-items:center !important;
-  gap:5px !important;
-  padding:6px 14px !important;
-  border-radius:0 !important;
-  border:1.5px solid #EDE0C4 !important;
-  background:#FEF9EE !important;
-  color:#6B5E4A !important;
-  font-size:12px !important;
-  font-family:'DM Sans',sans-serif !important;
-  cursor:pointer !important;
-  transition:all 0.2s !important;
-  user-select:none !important;
-  white-space:nowrap !important;
-}
-.vibe-pill:hover {
-  border-color:#D4A820 !important;
-  color:#3D3528 !important;
-  background:#FEFADF !important;
-}
-.vibe-pill.active {
-  background:#F0C93A !important;
-  border-color:#D4A820 !important;
-  color:#3D3528 !important;
-  font-weight:600 !important;
-}
+/* ═══════════════════════════════════════════════════════════
+   OVERRIDES — definitive, loaded last, no duplicates
+   ═══════════════════════════════════════════════════════════ */
 
-/* ── Post-results sections — dark/cream theme override ── */
-.why-section {
-  background:#1A1510 !important;
-  padding:80px 48px;
-}
-.why-section .section-label {
-  font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
-  color:rgba(245,240,232,0.3);margin-bottom:12px;
-  display:flex;align-items:center;gap:8px;
-}
-.why-section .section-label::before { content:'';display:inline-block;width:16px;height:1px;background:rgba(245,240,232,0.2); }
-.why-section .section-title {
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(28px,5vw,42px);
-  font-weight:600;color:#FAF7F2;
-  letter-spacing:-0.5px;line-height:1.1;margin-bottom:40px;
-}
-.why-section .section-title em { color:#F0C93A; }
-.why-card {
-  background:rgba(255,255,255,0.04) !important;
-  border:1px solid rgba(255,255,255,0.08) !important;
-  border-radius:0 !important;
-}
+/* ── Global form element font ── */
+input, select, textarea, button { font-family:'DM Sans',sans-serif !important; }
+
+/* ── Vibe pills ── */
+.vibe-pill { display:inline-flex !important; align-items:center !important; padding:6px 14px !important; border-radius:0 !important; border:1.5px solid #EDE0C4 !important; background:#FEF9EE !important; color:#6B5E4A !important; font-size:12px !important; font-family:'DM Sans',sans-serif !important; cursor:pointer !important; transition:all 0.2s !important; user-select:none !important; white-space:nowrap !important; }
+.vibe-pill:hover { border-color:#D4A820 !important; color:#3D3528 !important; background:#FEFADF !important; }
+.vibe-pill.active { background:#F0C93A !important; border-color:#D4A820 !important; color:#3D3528 !important; font-weight:600 !important; }
+
+/* ── Why section ── */
+.why-section { background:#1A1510 !important; padding:80px 48px !important; }
+.why-section .section-label { color:rgba(245,240,232,0.3) !important; }
+.why-section .section-label::before { background:rgba(245,240,232,0.2) !important; }
+.why-section .section-title { color:#FAF7F2 !important; font-family:'Cormorant Garamond',serif !important; }
+.why-section .section-title em { color:#F0C93A !important; }
+.why-card { background:rgba(255,255,255,0.04) !important; border:1px solid rgba(255,255,255,0.08) !important; border-radius:0 !important; }
 .why-card h3 { color:#FAF7F2 !important; font-family:'Cormorant Garamond',serif !important; font-size:21px !important; }
 .why-card p { color:rgba(245,240,232,0.45) !important; }
 .why-card::before { display:none !important; }
 .why-card:hover { transform:translateY(-5px) !important; box-shadow:0 20px 56px rgba(0,0,0,0.4) !important; }
-.why-icon-svg svg path, .why-icon-svg svg circle, .why-icon-svg svg rect, .why-icon-svg svg line {
-  stroke:rgba(245,240,232,0.5) !important;
-}
+.why-icon-svg { background:rgba(255,255,255,0.06) !important; border:1px solid rgba(245,240,232,0.1) !important; border-radius:10px !important; }
+@media(max-width:600px){ .why-section { padding:60px 24px !important; } }
 
-/* Pricing section */
-.pricing-section {
-  background:#FEF9EE !important;
-  border-top:1px solid #EDE0C4;
-}
-.pricing-section .section-label { color:#9A8E7A !important; }
-.pricing-section .section-title { color:#3D3528 !important; }
-.pricing-section .section-title em { color:#D4A820 !important; }
+/* ── Pricing section ── */
+section.pricing-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; padding:80px 48px !important; }
+section.pricing-section .section-label { color:#9A8E7A !important; }
+section.pricing-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
+section.pricing-section .section-title em { color:#D4A820 !important; font-style:italic !important; }
+section.pricing-section p { color:#6B5E4A !important; }
+@media(max-width:600px){ section.pricing-section { padding:60px 24px !important; } }
 
-/* Newsletter section — dark */
-.newsletter-section {
-  background:#1A1510 !important;
-}
-.newsletter-section::before, .newsletter-section::after { display:none !important; }
-.newsletter-inner h2 { font-family:'Cormorant Garamond',serif !important; }
-.newsletter-form button {
-  background:#F0C93A !important;
-  color:#3D3528 !important;
-  border-radius:0 !important;
-}
+/* ── Roadmap section ── */
+section.roadmap-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; padding:80px 48px !important; }
+section.roadmap-section .section-label { color:#9A8E7A !important; }
+section.roadmap-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
+section.roadmap-section .section-title em { color:#D4A820 !important; }
+section.roadmap-section .roadmap-col { background:white !important; border-radius:0 !important; }
+section.roadmap-section .roadmap-col:first-child { border-radius:0 !important; }
+section.roadmap-section .roadmap-col:last-child { border-radius:0 !important; }
+section.roadmap-section .roadmap-phase-label { color:#9A8E7A !important; border-bottom-color:#EDE0C4 !important; font-size:11px !important; letter-spacing:1.5px !important; }
+section.roadmap-section .phase-dot-live { background:#3D3528 !important; box-shadow:none !important; animation:none !important; }
+section.roadmap-section .phase-dot-soon { background:#D4A820 !important; }
+section.roadmap-section .phase-dot-future { background:#EDE0C4 !important; }
+section.roadmap-section .roadmap-item-icon,
+section.roadmap-section .roadmap-live .roadmap-item-icon,
+section.roadmap-section .roadmap-soon .roadmap-item-icon,
+section.roadmap-section .roadmap-future .roadmap-item-icon { background:rgba(61,53,40,0.06) !important; border:1px solid #EDE0C4 !important; border-radius:8px !important; color:#6B5E4A !important; }
+section.roadmap-section .roadmap-item-title { color:#3D3528 !important; font-weight:600 !important; }
+section.roadmap-section .roadmap-item-desc { color:#6B5E4A !important; }
+section.roadmap-section .roadmap-grid { margin-top:40px !important; }
+@media(max-width:900px){ section.roadmap-section .roadmap-col { border-radius:0 !important; } }
+@media(max-width:600px){ section.roadmap-section { padding:60px 24px !important; } }
 
-/* Suggestions section */
-.suggestions-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; }
-.suggestions-section .section-label { color:#9A8E7A !important; }
-.suggestions-section .section-label::before { background:#9A8E7A !important; }
-.suggestions-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
-.suggestion-card { border-radius:0 !important; border:1.5px solid #EDE0C4 !important; background:white !important; box-shadow:none !important; }
-.suggestion-card h3 { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; font-size:20px !important; font-weight:600 !important; }
-.suggestion-card p { color:#6B5E4A !important; }
-.suggestion-input { border:1.5px solid #EDE0C4 !important; border-radius:0 !important; font-family:'DM Sans',sans-serif !important; color:#3D3528 !important; background:#FEF9EE !important; }
-.suggestion-input:focus { border-color:#D4A820 !important; outline:none !important; }
-.suggestion-btn {
-  background:#F0C93A !important;
-  color:#3D3528 !important;
-  border-radius:0 !important;
-  border:1.5px solid #D4A820 !important;
-  font-family:'DM Sans',sans-serif !important;
-  font-weight:600 !important;
-  letter-spacing:1px !important;
-}
+/* ── Suggestions section ── */
+section.suggestions-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; }
+section.suggestions-section .section-label { color:#9A8E7A !important; }
+section.suggestions-section .section-label::before { background:#9A8E7A !important; }
+section.suggestions-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
+section.suggestions-section .suggestion-card { background:white !important; border-radius:0 !important; border:1.5px solid #EDE0C4 !important; box-shadow:none !important; }
+section.suggestions-section .suggestion-card h3 { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; font-size:20px !important; }
+section.suggestions-section .suggestion-card p { color:#6B5E4A !important; }
+section.suggestions-section .suggestion-input { border:1.5px solid #EDE0C4 !important; border-radius:0 !important; background:#FEF9EE !important; color:#3D3528 !important; font-family:'DM Sans',sans-serif !important; }
+section.suggestions-section .suggestion-input:focus { border-color:#D4A820 !important; outline:none !important; }
+section.suggestions-section .suggestion-btn { background:#F0C93A !important; color:#3D3528 !important; border-radius:0 !important; border:1.5px solid #D4A820 !important; font-family:'DM Sans',sans-serif !important; font-weight:600 !important; width:100% !important; }
+section.suggestions-section .suggestion-btn:hover { background:#D4A820 !important; }
 
-/* Results area inherits dark bg from --earth already */
+/* ── Newsletter section ── */
+section.newsletter-section { background:#1A1510 !important; }
+section.newsletter-section::before, section.newsletter-section::after { display:none !important; }
+section.newsletter-section .newsletter-inner h2 { font-family:'Cormorant Garamond',serif !important; }
+section.newsletter-section .newsletter-form button { background:#F0C93A !important; color:#3D3528 !important; border-radius:0 !important; }
 
-/* ── Select dropdowns — font ── */
-.mmh-form-select { font-family:'DM Sans',sans-serif !important; font-size:15px !important; color:#3D3528 !important; }
-.mmh-form-select option,
-.mmh-form-select optgroup { font-family:'DM Sans',sans-serif !important; background:white !important; color:#3D3528 !important; }
-
-/* ── Why card icons — strip terracotta ── */
-.why-icon-svg {
-  background:rgba(255,255,255,0.06) !important;
-  border:1px solid rgba(245,240,232,0.1) !important;
-  border-radius:10px !important;
-}
-.why-icon-svg svg path,
-.why-icon-svg svg circle,
-.why-icon-svg svg rect,
-.why-icon-svg svg line,
-.why-icon-svg svg polyline,
-.why-icon-svg svg polygon {
-  stroke:rgba(245,240,232,0.4) !important;
-  fill:none !important;
-}
-.why-icon-svg svg circle[fill]:not([fill="none"]) { fill:rgba(245,240,232,0.1) !important; }
-
-/* ── Pricing section — new design ── */
-.pricing-section {
-  background:#FEF9EE !important;
-  border-top:1.5px solid #EDE0C4 !important;
-  padding:80px 48px !important;
-}
-.pricing-section .section-label { color:#9A8E7A !important; }
-.pricing-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
-.pricing-section .section-title em { color:#D4A820 !important; font-style:italic !important; }
-.pricing-section > p, .pricing-section p { color:#6B5E4A !important; }
-/* flatten all rounded containers inside pricing */
-.pricing-section [style*="border-radius"] { border-radius:0 !important; }
-/* strip terracotta links/buttons inside pricing */
-.pricing-section a[style*="background"], .pricing-section button {
-  background:#F0C93A !important;
-  color:#3D3528 !important;
-  border-radius:0 !important;
-  border:1.5px solid #D4A820 !important;
-}
-/* pricing card wrapper */
-.pricing-section > div[style], .pricing-section > div > div[style] {
-  background:#FEFADF !important;
-  border:1.5px solid #EDE0C4 !important;
-  border-radius:0 !important;
-}
-/* checkmark colour */
-.pricing-section [style*="color:var(--olive)"],
-.pricing-section [style*="color:var(--sage)"],
-.pricing-section [style*="color:var(--terracotta)"] { color:#D4A820 !important; }
-/* star icon */
-.pricing-section [style*="color:var(--gold)"] { color:#D4A820 !important; }
-
-/* ── Global form element font (browsers don't inherit this by default) ── */
-input, select, textarea, button { font-family:'DM Sans',sans-serif !important; }
-
-/* ── Roadmap section — precise class targeting ── */
-.roadmap-section { background:#FEF9EE !important; border-top:1.5px solid #EDE0C4 !important; padding:80px 48px !important; }
-.roadmap-section .section-label { color:#9A8E7A !important; }
-.roadmap-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
-.roadmap-section .section-title em { color:#D4A820 !important; }
-/* flatten rounded cards */
-.roadmap-section .roadmap-grid,
-.roadmap-section .roadmap-col { border-radius:0 !important; }
-/* phase labels */
-.roadmap-section .roadmap-phase-label { font-size:10px !important; font-weight:600 !important; letter-spacing:1.5px !important; text-transform:uppercase !important; color:#9A8E7A !important; }
-.roadmap-section .phase-dot-live { background:#3D3528 !important; }
-.roadmap-section .phase-dot-soon { background:#D4A820 !important; }
-.roadmap-section .phase-dot { width:8px !important; height:8px !important; border-radius:50% !important; display:inline-block !important; margin-right:6px !important; }
-/* item icons — strip terracotta */
-.roadmap-section .roadmap-item-icon { background:rgba(61,53,40,0.06) !important; border-color:#EDE0C4 !important; border-radius:8px !important; color:#6B5E4A !important; }
-/* SVG fill attributes are presentation attrs — CSS wins with !important */
-.roadmap-section .roadmap-item-icon svg [fill]:not([fill="none"]) { fill:rgba(61,53,40,0.08) !important; }
-.roadmap-section .roadmap-item-icon svg [stroke="currentColor"] { color:#6B5E4A !important; }
-/* item text */
-.roadmap-section .roadmap-item-title { color:#3D3528 !important; font-weight:600 !important; }
-.roadmap-section .roadmap-item-desc { color:#6B5E4A !important; }
-/* mobile */
-@media(max-width:600px) { .roadmap-section { padding:60px 24px !important; } }
+/* ── VIBE OVERLAY ── */
 .vibe-overlay { position:fixed;inset:0;z-index:1000;background:#1A1510;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity 0.4s ease; }
 .vibe-overlay.open { opacity:1;pointer-events:all; }
 .vibe-overlay-inner { display:grid;grid-template-columns:40px 1fr;flex:1;overflow:hidden; }
@@ -1612,7 +1500,18 @@ input, select, textarea, button { font-family:'DM Sans',sans-serif !important; }
 .vibe-footer-hint { font-size:12px;color:rgba(245,240,232,0.22); }
 .vibe-footer-hint span { color:#F0C93A;font-weight:600; }
 .vibe-footer-btn { background:#F0C93A;color:#3D3528;border:none;padding:13px 32px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer; }
+
+/* ── Loading / error in new form context ── */
+.loading-msg { display:none;text-align:center;padding:32px 24px;color:#6B5E4A;font-size:15px; }
+.loading-msg.visible { display:block; }
+.loading-dots::after { content:'...'; }
+.error-msg { display:none;padding:16px 20px;background:#FDF3C4;border:1.5px solid #D4A820;color:#6B5E4A;font-size:14px;margin-top:12px; }
+.error-msg.visible { display:block; }
+
 </style>
+
+
+
 </head>
 <body>
 
