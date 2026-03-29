@@ -1540,6 +1540,186 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .error-msg { display:none;padding:16px 20px;background:#FDF3C4;border:1.5px solid #D4A820;color:#6B5E4A;font-size:14px;margin-top:12px; }
 .error-msg.visible { display:block; }
 
+
+/* ══════════════════════════════════════════
+   RESULTS SECTION — Option C: Dark header / Cream body
+   CSS-only. No JS changes.
+══════════════════════════════════════════ */
+
+/* Redefine tokens for dark results context */
+.results-area {
+  background: #1A1510;
+  padding: 40px 40px 56px;
+  /* flip all CSS vars to dark palette */
+  --text-primary: #FAF7F2;
+  --text-secondary: rgba(245,240,232,0.45);
+  --text-muted: rgba(245,240,232,0.28);
+  --sage: #F0C93A;
+  --sage-light: #F0C93A;
+  --sage-dark: #D4A820;
+  --sage-bg: rgba(240,201,58,0.1);
+  --sage-border: rgba(240,201,58,0.18);
+  --warm-white-card: rgba(255,255,255,0.05);
+  --gold: #F0C93A;
+  --gold-bg: rgba(240,201,58,0.08);
+  --terracotta: #D4A820;
+  --terracotta-dark: #D4A820;
+}
+
+/* Reset tokens for cream body content */
+.results-area .mmh-sec-inner {
+  padding: 4px 28px 18px !important;
+  --text-primary: #3D3528;
+  --text-secondary: #6B5E4A;
+  --text-muted: #9A8E7A;
+  --sage: #D4A820;
+  --sage-light: #D4A820;
+  --sage-dark: #9A8E7A;
+  --sage-bg: rgba(61,53,40,0.06);
+  --sage-border: #EDE0C4;
+  --gold: #D4A820;
+  --gold-bg: rgba(212,168,32,0.08);
+  --terracotta: #D4A820;
+  --terracotta-dark: #9A8E7A;
+}
+
+/* Card wrap — tight gap like other alternating sections */
+.result-card-wrap { margin-bottom: 3px !important; }
+
+/* Card outer */
+.mmh-card {
+  background: white !important;
+  border: 1px solid rgba(245,240,232,0.1) !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  margin-bottom: 0 !important;
+}
+
+/* Photo zone — dark */
+.mmh-card-photo-placeholder {
+  background: #231d14 !important;
+  background-image: none !important;
+  color: rgba(245,240,232,0.18) !important;
+}
+
+/* ── DARK HEADER ── */
+.mmh-card-head {
+  background: #231d14 !important;
+  border-bottom: 1px solid rgba(245,240,232,0.08) !important;
+  padding: 24px 28px 20px !important;
+}
+.mmh-hood-name {
+  font-size: 38px !important;
+  color: #FAF7F2 !important;
+  letter-spacing: -0.5px !important;
+  line-height: 1.0 !important;
+}
+.mmh-city-label { color: rgba(245,240,232,0.3) !important; }
+.mmh-tagline { color: rgba(245,240,232,0.4) !important; font-style: italic !important; }
+
+/* Score badge — yellow square on dark */
+.mmh-score-badge {
+  background: #F0C93A !important;
+  border: none !important;
+  border-radius: 0 !important;
+  width: 58px !important;
+  height: 58px !important;
+}
+.mmh-score-n { color: #3D3528 !important; font-size: 22px !important; }
+.mmh-score-s { color: #6B5E4A !important; }
+
+/* Vibe tags — yellow sharp pills on dark header */
+.mmh-vtag {
+  background: #F0C93A !important;
+  color: #3D3528 !important;
+  border-radius: 0 !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+  border: none !important;
+}
+
+/* ── CREAM BODY ── */
+.mmh-sec { background: white !important; border-top: 1px solid #EDE0C4 !important; }
+.mmh-sec-head { padding: 13px 28px !important; }
+.mmh-sec-head:hover { background: #FEFADF !important; }
+.mmh-sec-title { color: #3D3528 !important; }
+.mmh-sec-preview { color: #9A8E7A !important; }
+.mmh-sec-icon { background: rgba(61,53,40,0.06) !important; border-radius: 0 !important; }
+.mmh-sec-icon svg { filter: saturate(0) brightness(0.5) !important; }
+.mmh-chev { color: #D4A820 !important; }
+.mmh-sec-body.open { background: white !important; }
+.mmh-section-sub-label { color: #9A8E7A !important; }
+
+/* Why it matches block */
+.mmh-why-text {
+  background: rgba(61,53,40,0.04) !important;
+  border-left-color: #D4A820 !important;
+  border-radius: 0 !important;
+  color: #6B5E4A !important;
+}
+.must-try {
+  background: rgba(61,53,40,0.04) !important;
+  border-radius: 0 !important;
+  border-color: rgba(61,53,40,0.15) !important;
+  color: #6B5E4A !important;
+}
+.must-try strong { color: #3D3528 !important; }
+
+/* Pick items (restaurants, bars) */
+.pick-item { background: white !important; border: 1.5px solid #EDE0C4 !important; border-radius: 0 !important; }
+.pick-num { color: #D4A820 !important; }
+.pick-name { color: #3D3528 !important; }
+.pick-desc { color: #6B5E4A !important; }
+.pick-link { color: #D4A820 !important; }
+.pick-link:hover { color: #9A8E7A !important; }
+.pick-photo { border-radius: 0 !important; }
+.pick-open.open { background: rgba(61,53,40,0.06) !important; color: #3D3528 !important; border-radius: 0 !important; }
+.pick-open.closed { background: rgba(212,168,32,0.08) !important; color: #9A8E7A !important; border-radius: 0 !important; }
+
+/* Map layer pills */
+.map-layer-pill { background: white !important; border: 1.5px solid #EDE0C4 !important; border-radius: 0 !important; color: #9A8E7A !important; }
+.map-layer-pill:hover { border-color: #D4A820 !important; color: #3D3528 !important; }
+.map-layer-pill.active { background: #F0C93A !important; border-color: #D4A820 !important; color: #3D3528 !important; font-weight: 600 !important; }
+
+/* Booking buttons */
+.booking-btn-hotel { background: #3D3528 !important; color: #FEF9EE !important; border-radius: 0 !important; border: none !important; }
+.booking-btn-hotel:hover { background: #1A1510 !important; transform: none !important; }
+.booking-btn-airbnb { background: transparent !important; color: #3D3528 !important; border: 1.5px solid #EDE0C4 !important; border-radius: 0 !important; }
+.booking-btn-airbnb:hover { border-color: #3D3528 !important; transform: none !important; }
+
+/* Alt match button */
+.mmh-alt-btn {
+  background: transparent !important;
+  border: 1.5px solid rgba(245,240,232,0.14) !important;
+  border-radius: 0 !important;
+  color: rgba(245,240,232,0.35) !important;
+  margin-top: 3px !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+.mmh-alt-btn:hover {
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(245,240,232,0.3) !important;
+  color: rgba(245,240,232,0.7) !important;
+}
+
+/* Map expand button */
+.map-expand-btn { background: rgba(255,255,255,0.9) !important; color: #3D3528 !important; border-radius: 0 !important; }
+
+/* Loading / error states on dark bg */
+.loading-msg { color: rgba(245,240,232,0.45) !important; }
+.error-msg { background: rgba(240,201,58,0.08) !important; border-color: rgba(240,201,58,0.25) !important; color: rgba(245,240,232,0.6) !important; border-radius: 0 !important; }
+
+@media(max-width:600px) {
+  .results-area { padding: 24px 20px 48px !important; }
+  .mmh-card-head { padding: 20px 20px 16px !important; }
+  .mmh-sec-head { padding: 13px 20px !important; }
+  .mmh-sec-inner { padding: 4px 20px 16px !important; }
+  .mmh-hood-name { font-size: 30px !important; }
+}
+
 </style>
 
 
