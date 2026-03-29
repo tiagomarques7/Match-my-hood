@@ -277,11 +277,8 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
    (unchanged from previous version — do not edit)
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── VIBE PILLS — new design (bridge for existing JS) ── */
+/* ── VIBE PILLS — new design placeholder (overridden below after functional CSS) ── */
 .vibe-pills { display:flex;flex-wrap:wrap;gap:6px; }
-.vibe-pill { display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:1.5px solid #EDE0C4;background:#FEF9EE;color:#6B5E4A;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;user-select:none;white-space:nowrap; }
-.vibe-pill:hover { border-color:#D4A820;color:#3D3528;background:#FEFADF; }
-.vibe-pill.active { background:#F0C93A;border-color:#D4A820;color:#3D3528;font-weight:600; }
 
 /* loading / error styling for new cream bg context */
 .loading-msg { display:none;text-align:center;padding:32px 24px;color:#6B5E4A;font-size:15px; }
@@ -289,7 +286,7 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
 .loading-dots::after { content:'...';animation:spin 1s linear infinite; }
 .error-msg { display:none;padding:16px 20px;background:#FDF3C4;border:1.5px solid #D4A820;color:#6B5E4A;font-size:14px;margin-top:12px; }
 .error-msg.visible { display:block; }
-/* end new CSS */
+/* end new CSS - vibe pill + post-results overrides added AFTER functional CSS below */
   .results-area {
     margin-top: 32px;
     text-align: left;
@@ -1404,6 +1401,105 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
   .plan-select option { background: var(--earth); color: var(--cream); }
 </style>
 </style>
+<style>
+/* ═══════════════════════════════════════════════════════
+   OVERRIDES — loaded last so they win
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Vibe pills — new sharp yellow design ── */
+.vibe-pill {
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  padding:6px 14px !important;
+  border-radius:0 !important;
+  border:1.5px solid #EDE0C4 !important;
+  background:#FEF9EE !important;
+  color:#6B5E4A !important;
+  font-size:12px !important;
+  font-family:'DM Sans',sans-serif !important;
+  cursor:pointer !important;
+  transition:all 0.2s !important;
+  user-select:none !important;
+  white-space:nowrap !important;
+}
+.vibe-pill:hover {
+  border-color:#D4A820 !important;
+  color:#3D3528 !important;
+  background:#FEFADF !important;
+}
+.vibe-pill.active {
+  background:#F0C93A !important;
+  border-color:#D4A820 !important;
+  color:#3D3528 !important;
+  font-weight:600 !important;
+}
+
+/* ── Post-results sections — dark/cream theme override ── */
+.why-section {
+  background:#1A1510 !important;
+  padding:80px 48px;
+}
+.why-section .section-label {
+  font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(245,240,232,0.3);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.why-section .section-label::before { content:'';display:inline-block;width:16px;height:1px;background:rgba(245,240,232,0.2); }
+.why-section .section-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(28px,5vw,42px);
+  font-weight:600;color:#FAF7F2;
+  letter-spacing:-0.5px;line-height:1.1;margin-bottom:40px;
+}
+.why-section .section-title em { color:#F0C93A; }
+.why-card {
+  background:rgba(255,255,255,0.04) !important;
+  border:1px solid rgba(255,255,255,0.08) !important;
+  border-radius:0 !important;
+}
+.why-card h3 { color:#FAF7F2 !important; font-family:'Cormorant Garamond',serif !important; font-size:21px !important; }
+.why-card p { color:rgba(245,240,232,0.45) !important; }
+.why-card::before { display:none !important; }
+.why-card:hover { transform:translateY(-5px) !important; box-shadow:0 20px 56px rgba(0,0,0,0.4) !important; }
+.why-icon-svg svg path, .why-icon-svg svg circle, .why-icon-svg svg rect, .why-icon-svg svg line {
+  stroke:rgba(245,240,232,0.5) !important;
+}
+
+/* Pricing section */
+.pricing-section {
+  background:#FEF9EE !important;
+  border-top:1px solid #EDE0C4;
+}
+.pricing-section .section-label { color:#9A8E7A !important; }
+.pricing-section .section-title { color:#3D3528 !important; }
+.pricing-section .section-title em { color:#D4A820 !important; }
+
+/* Newsletter section — dark */
+.newsletter-section {
+  background:#1A1510 !important;
+}
+.newsletter-section::before, .newsletter-section::after { display:none !important; }
+.newsletter-inner h2 { font-family:'Cormorant Garamond',serif !important; }
+.newsletter-form button {
+  background:#F0C93A !important;
+  color:#3D3528 !important;
+  border-radius:0 !important;
+}
+
+/* Suggestions section */
+.suggestions-section { background:#FEF9EE !important; }
+.suggestions-section .section-label { color:#9A8E7A !important; }
+.suggestion-card { border-radius:0 !important; border:1.5px solid #EDE0C4 !important; }
+.suggestion-btn {
+  background:#F0C93A !important;
+  color:#3D3528 !important;
+  border-radius:0 !important;
+  border:1.5px solid #D4A820 !important;
+}
+
+/* Results area inherits dark bg from --earth already */
+</style>
 </head>
 <body>
 
@@ -1439,6 +1535,26 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
   </div>
   <div class="hero-scroll"><span>Scroll</span><div class="hero-scroll-line"></div></div>
 </section>
+
+<script>
+(function(){
+  var heroImg = document.querySelector('.hero-img');
+  if (!heroImg || window.innerWidth <= 700) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (!ticking) {
+      requestAnimationFrame(function(){
+        var scrolled = window.pageYOffset;
+        if (scrolled < window.innerHeight * 1.5) {
+          heroImg.style.transform = 'translateY(' + (scrolled * 0.32) + 'px)';
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+})();
+</script>
 
 <!-- SEARCH / MATCH SECTION -->
 <section class="search-section-landing" id="match">
