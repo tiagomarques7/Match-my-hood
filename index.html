@@ -4455,7 +4455,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
               ${m.busOnly ? (m.nearestBus?.join(' · ') || '') : (m.nearestMetro?.join(' · ') || '')}
               ${m.busOnly ? '<div style="font-size:10px;color:var(--text-muted);margin-top:3px;">No metro/train/tram within 800m</div>' : ''}
             </div>
-            ${metroLink && (m.nearestMetro?.length || m.busOnly) ? `<div class="mmh-metro-map-link-wrap"><a href="${metroLink.url}" target="_blank" class="mmh-metro-map-link">↗ ${metroLink.name} map</a></div>` : ''}
+            ${metroLink ? `<div class="mmh-metro-map-link-wrap"><a href="${metroLink.url}" target="_blank" class="mmh-metro-map-link">↗ ${metroLink.name} map</a></div>` : ''}
             <div id="transit-wrap-${i}" style="display:none;">
               <div id="transit-${i}"></div>
             </div>
