@@ -1949,6 +1949,10 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   margin-top: 12px !important;
   display: block !important;
 }
+/* When metro link follows, remove bottom padding so they connect flush */
+.mmh-station-names:has(+ .mmh-metro-map-link-wrap) {
+  padding-bottom: 4px !important;
+}
 
 /* Bus-only state: JS adds .mmh-bus-only */
 .mmh-station-names.mmh-bus-only {
@@ -2009,23 +2013,26 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   display: block !important;
 }
 
-/* Metro map link — sits below the dark station names box */
+/* Metro map link — footer of the dark station names box */
 .mmh-metro-map-link-wrap {
-  text-align: right;
-  margin-top: 4px;
+  background: #1A1510 !important;
+  border-top: 1px solid rgba(240,201,58,0.18) !important;
+  padding: 10px 20px 14px !important;
+  margin-top: 0 !important;
+  text-align: right !important;
 }
 .mmh-metro-map-link {
   font-family: 'DM Sans', sans-serif !important;
   font-size: 10px !important;
-  font-weight: 600 !important;
-  letter-spacing: 1px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
   text-transform: uppercase !important;
-  color: #D4A820 !important;
+  color: #F0C93A !important;
   text-decoration: none !important;
-  opacity: 0.8;
+  opacity: 0.85;
   transition: opacity 0.2s;
 }
-.mmh-metro-map-link:hover { opacity: 1; color: #F0C93A !important; }
+.mmh-metro-map-link:hover { opacity: 1 !important; }
 
 /* Metro-present state */
 .mmh-station-names:not(.mmh-bus-only)::before {
