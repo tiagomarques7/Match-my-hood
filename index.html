@@ -3238,7 +3238,7 @@ section.newsletter-section { position: relative; overflow: hidden; }
 
 <!-- NEWSLETTER -->
 <section class="newsletter-section" id="newsletter">
-  <img class="newsletter-parallax-img" src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1600&q=80" alt="" aria-hidden="true" loading="lazy">
+  <img class="newsletter-parallax-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" aria-hidden="true">
   <div class="newsletter-inner">
     <h2>The neighbourhood you'll love is out there</h2>
     <p>Join the waitlist. Get early access, our weekly Neighbourhood of the Week email, and a founding member discount when we launch.</p>
@@ -6215,28 +6215,56 @@ window.addEventListener('scroll', () => {
 
 
 <script>
-/* Split section photo loader — uses same Unsplash key as hero */
+/* Split photo loader — staggered to avoid demo key rate limits
+   Visit loads at +900ms, mirrors to newsletter parallax once ready.
+   Move loads at +1400ms. */
 (function(){
   var KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
-  document.querySelectorAll('.split-photo-img[data-query]').forEach(function(img){
-    var query = img.getAttribute('data-query');
-    var url = 'https://api.unsplash.com/photos/random?query='
-      + encodeURIComponent(query)
-      + '&orientation=landscape&client_id=' + KEY;
-    fetch(url)
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        var src = (d && d.urls) ? (d.urls.raw
-          ? d.urls.raw + '&w=1000&h=700&fit=crop&q=80&auto=format'
-          : d.urls.regular) : null;
-        if (!src) return;
+
+  function loadSplitImg(img, delay, onLoaded) {
+    setTimeout(function(){
+      var query = img.getAttribute('data-query');
+      var apiUrl = 'https://api.unsplash.com/photos/random?query='
+        + encodeURIComponent(query)
+        + '&orientation=landscape&client_id=' + KEY;
+      fetch(apiUrl)
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var src = (d && d.urls) ? (d.urls.raw
+            ? d.urls.raw + '&w=1200&h=800&fit=crop&q=80&auto=format'
+            : d.urls.regular) : null;
+          if (!src) return;
+          var tmp = new Image();
+          tmp.crossOrigin = 'anonymous';
+          tmp.onload = function(){
+            img.src = src;
+            img.style.opacity = '1';
+            if (onLoaded) onLoaded(src);
+          };
+          tmp.src = src;
+        })
+        .catch(function(){});
+    }, delay);
+  }
+
+  var imgs = document.querySelectorAll('.split-photo-img[data-query]');
+  var visitImg = imgs[0];  // Visit — neighbourly cafe
+  var moveImg  = imgs[1];  // Move  — street market park
+
+  // Visit: load at 900ms, then mirror to newsletter parallax
+  if (visitImg) {
+    loadSplitImg(visitImg, 900, function(src){
+      var nlParallax = document.querySelector('.newsletter-parallax-img');
+      if (nlParallax) {
         var tmp = new Image();
-        tmp.crossOrigin = 'anonymous';
-        tmp.onload = function(){ img.src = src; img.style.opacity = '1'; };
+        tmp.onload = function(){ nlParallax.src = src; };
         tmp.src = src;
-      })
-      .catch(function(){});
-  });
+      }
+    });
+  }
+
+  // Move: load at 1400ms
+  if (moveImg) loadSplitImg(moveImg, 1400);
 })();
 </script>
 
