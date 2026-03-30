@@ -1922,30 +1922,24 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 }
 
 /* Bus-only state: JS adds .mmh-bus-only */
-/* Hide raw text nodes (bus names arrive as divs via renderResults) */
 .mmh-station-names.mmh-bus-only {
   font-size: 0 !important;
   color: transparent !important;
 }
-/* Show div children — bus names + sub-label */
+/* Hide all children by default — bus names not needed, map shows them */
 .mmh-station-names.mmh-bus-only > * {
-  display: block !important;
-  font-size: 15px !important;
-  font-weight: 700 !important;
-  color: #F0C93A !important;
-  line-height: 1.6 !important;
-  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  display: none !important;
 }
-/* ::before — NO METRO statement, slightly smaller */
+/* ::before — NO METRO statement, white */
 .mmh-station-names.mmh-bus-only::before {
   content: 'NO METRO & TRAIN WITHIN 800M';
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 17px;
   font-weight: 700;
   font-style: normal;
-  color: rgba(250,247,242,0.7);
+  color: #FAF7F2;
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(240,201,58,0.18);
   letter-spacing: 0.5px;
@@ -1962,24 +1956,16 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   font-size: 20px !important;
   font-weight: 700 !important;
   color: #F0C93A !important;
-  line-height: 1.4 !important;
-  margin-bottom: 4px !important;
+  line-height: 1.5 !important;
+  margin-top: 4px !important;
 }
 .mmh-metro-dist {
   font-size: 13px !important;
   font-weight: 500 !important;
   color: rgba(240,201,58,0.6) !important;
 }
-/* Last child div: was "No metro/train/tram within 800m" → renamed via ::before */
-/* Guard: only apply when it's NOT the only child (two divs = enrichment arrived) */
-.mmh-station-names.mmh-bus-only > div:last-child:not(:only-child) {
-  font-size: 0 !important;
-  color: transparent !important;
-  margin-top: 10px !important;
-  padding-top: 10px !important;
-  border-top: 1px solid rgba(240,201,58,0.18) !important;
-}
-.mmh-station-names.mmh-bus-only > div:last-child:not(:only-child)::before {
+/* "Nearest metro / train stations" label — shown when fallback slot exists */
+.mmh-station-names.mmh-bus-only:has(.mmh-metro-fallback)::after {
   content: 'Nearest metro / train stations';
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 18px;
@@ -1987,6 +1973,11 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   font-weight: 700;
   color: #F0C93A;
   display: block;
+  margin-bottom: 8px;
+}
+/* Fallback slot visible even though > * hidden */
+.mmh-station-names.mmh-bus-only .mmh-metro-fallback {
+  display: block !important;
 }
 
 /* Metro-present state */
@@ -6001,7 +5992,7 @@ window.addEventListener('scroll', () => {
 
 })();
 
-/* ── XHR intercept: capture nearestMetroFallback from /api/match response ── */
+/* ── XHR intercept: capture nearestMetroFallback from /api/amenities response ── */
 (function(){
   window._mmhMetroFallback = window._mmhMetroFallback || {};
 
@@ -6014,7 +6005,7 @@ window.addEventListener('scroll', () => {
   };
 
   XMLHttpRequest.prototype.send = function(body) {
-    if (this._mmhApiUrl && this._mmhApiUrl.includes('/api/match')) {
+    if (this._mmhApiUrl && this._mmhApiUrl.includes('/api/amenities')) {
       var xhr = this;
       xhr.addEventListener('load', function() {
         try {
@@ -6023,6 +6014,19 @@ window.addEventListener('scroll', () => {
           matches.forEach(function(m, i) {
             if (m.nearestMetroFallback) {
               window._mmhMetroFallback[i] = m.nearestMetroFallback;
+              /* If box already rendered, inject the fallback slot now */
+              var box = document.querySelector('.mmh-station-names[id="station-names-' + i + '"]');
+              if (box && box.classList.contains('mmh-bus-only') && !box.querySelector('.mmh-metro-fallback')) {
+                var stations = m.nearestMetroFallback.split(',').slice(0, 2);
+                var slot = document.createElement('div');
+                slot.className = 'mmh-metro-fallback';
+                slot.innerHTML = stations.map(function(s) {
+                  var p = s.trim().split('|');
+                  return '<strong>' + p[0] + '</strong>' + (p[1] ? '&nbsp;<span class="mmh-metro-dist">— ' + p[1] + '</span>' : '');
+                }).join('<br>');
+                var lastChild = box.lastElementChild;
+                box.insertBefore(slot, lastChild || null);
+              }
             }
           });
         } catch(e) {}
