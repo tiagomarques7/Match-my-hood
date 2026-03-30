@@ -1330,10 +1330,15 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
   .map-3d-toggle.active { background: var(--sage); border-color: var(--sage); color: white; font-weight: 600; }
   .mapboxgl-ctrl.mapboxgl-ctrl-3d { background: none; box-shadow: none; margin: 0; margin-top: 8px; }
   .result-map.fullscreen .mapboxgl-ctrl-top-right { display: none; }
-  .mapboxgl-popup-content { background: #FEFDFB !important; color: var(--text-primary) !important; border-radius: 14px !important; padding: 0 !important; box-shadow: 0 8px 32px rgba(44,56,39,0.16), 0 2px 8px rgba(44,56,39,0.08) !important; border: 1px solid rgba(90,125,76,0.12) !important; overflow: hidden !important; }
-  .mapboxgl-popup-tip { border-top-color: #FEFDFB !important; filter: drop-shadow(0 2px 4px rgba(44,56,39,0.1)); }
-  .mapboxgl-popup-close-button { color: var(--text-muted) !important; font-size: 18px !important; padding: 6px 10px !important; line-height: 1 !important; top: 4px !important; right: 4px !important; background: transparent !important; border-radius: 6px !important; }
-  .mapboxgl-popup-close-button:hover { background: rgba(90,125,76,0.08) !important; color: var(--sage) !important; }
+  .mapboxgl-popup-content { background: #FEF9EE !important; color: #1A1510 !important; border-radius: 0 !important; padding: 0 !important; box-shadow: 0 4px 24px rgba(26,21,16,0.18) !important; border: 1.5px solid #EDE0C4 !important; overflow: hidden !important; min-width: 200px !important; }
+  .mapboxgl-popup-tip { border-top-color: #FEF9EE !important; }
+  .mapboxgl-popup-close-button { color: #9A8E7A !important; font-size: 16px !important; padding: 6px 10px !important; line-height: 1 !important; top: 4px !important; right: 4px !important; background: transparent !important; border-radius: 0 !important; }
+  .mapboxgl-popup-close-button:hover { background: rgba(240,201,58,0.12) !important; color: #1A1510 !important; }
+  /* Hide the complex mmh-popup — keep the simpler single popup (Image 3 format) */
+  .mapboxgl-popup.mmh-popup { display: none !important; }
+  /* Style the simple popup to match brand */
+  .mapboxgl-popup:not(.mmh-popup) .mapboxgl-popup-content div[style*="Cormorant Garamond"] { font-family: 'Cormorant Garamond', Georgia, serif !important; font-size: 18px !important; font-weight: 600 !important; color: #1A1510 !important; }
+  .mapboxgl-popup:not(.mmh-popup) a[style*="color:#4E7A40"] { color: #3D3528 !important; font-weight: 600 !important; border-bottom: 1px solid #EDE0C4 !important; padding-bottom: 1px !important; }
   .mapboxgl-ctrl-group { background: white !important; border: 1px solid var(--sage-border) !important; }
   .mapboxgl-ctrl-group button { background: transparent !important; }
 
@@ -1944,8 +1949,17 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   display: none !important;
 }
 
-/* Legacy elements from old JS — always hidden */
-.mmh-no-metro, .mmh-bus-routes, .mmh-transport-label { display: none !important; }
+/* Tile closed: truncate long titles to 2 lines max */
+.mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-title {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+/* City guide tile eyebrow: shorten text shown on tile */
+.mmh-city-guide-sec:not(.tile-open) .tile-eyebrow::after { content: ''; }
+
+
 
 
 /* City guide section — yellow replaces gold accent */
@@ -2112,52 +2126,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-tile-grid .mmh-sec.tile-open .mmh-chev { display: inline-block !important; }
 /* Station names always visible when section open */
 .mmh-tile-grid .mmh-sec.tile-open .mmh-station-names { display: block !important; }
-
-/* Station tile yellow accent */
-.mmh-a-tile[data-key="stations"] { border-bottom: 3px solid #F0C93A !important; background: #FEF9EE !important; }
-.mmh-a-tile[data-key="stations"] .mmh-a-label { color: #D4A820 !important; font-weight: 700 !important; }
-.mmh-a-tile[data-key="stations"] .mmh-a-count { color: #1A1510 !important; }
-
-/* Station names transport box */
-.mmh-station-names {
-  background: #1A1510 !important;
-  border-radius: 0 !important;
-  border: none !important;
-  padding: 16px 18px !important;
-  margin-top: 10px !important;
-  display: block !important;
-  font-size: 0 !important; /* hides bus route text nodes — child elements override individually */
-}
-/* ::before header always shows (explicit font-size overrides parent's 0) */
-.mmh-station-names::before {
-  font-size: 8px !important;
-  font-weight: 700 !important;
-  letter-spacing: 2.5px !important;
-  text-transform: uppercase !important;
-  color: #F0C93A !important;
-  display: block !important;
-  margin-bottom: 10px !important;
-}
-/* "No metro/train/tram" div: make text transparent, replace via ::after */
-.mmh-station-names > div[style*="rgba(248,241,231,0.3)"],
-.mmh-station-names > div[style*="rgba(248,241,231, 0.3)"] {
-  color: transparent !important;
-  font-size: 13px !important;
-  position: relative !important;
-  min-height: 1.3em !important;
-}
-.mmh-station-names > div[style*="rgba(248,241,231,0.3)"]::after,
-.mmh-station-names > div[style*="rgba(248,241,231, 0.3)"]::after {
-  content: 'No metro/train stations within 800m' !important;
-  position: absolute !important;
-  left: 0 !important; top: 0 !important;
-  color: rgba(250,247,242,0.55) !important;
-  font-size: 11px !important;
-  letter-spacing: 0.3px !important;
-  white-space: nowrap !important;
-}
-/* Restore other divs (transport label) */
-/* station-names div/span styles handled by .mmh-no-metro and .mmh-bus-routes */
 
 
 /* Landmark circle number → CG numeral */
@@ -5553,15 +5521,32 @@ window.addEventListener('scroll', () => {
       }
     });
 
-    /* ── Station names box — add .mmh-bus-only class, CSS handles the rest ── */
+    /* ── Force-hide non-class station-names via JS (beats inline display:block) ── */
+    card.querySelectorAll('[id^="station-names-"]').forEach(function(el) {
+      if (el.classList.contains('mmh-station-names')) return;
+      var rawContent = el.textContent
+        .replace(/no metro.*?800m\.?/gi, '')
+        .replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]/g, '')
+        .replace(/\s+/g, ' ').trim();
+      el.style.setProperty('display', 'none', 'important');
+      /* Sync content to .mmh-station-names if empty */
+      var classBox = card.querySelector('.mmh-station-names');
+      if (classBox && rawContent && rawContent.length > 2) {
+        var existingText = classBox.textContent.replace(/nearest.*stations/gi,'').trim();
+        if (!existingText) {
+          classBox.insertBefore(document.createTextNode(rawContent), classBox.firstChild);
+        }
+      }
+    });
+
+    /* ── Station names box — add .mmh-bus-only class ── */
     card.querySelectorAll('.mmh-station-names').forEach(function(box) {
       if (box.dataset.stationClassed) return;
       box.dataset.stationClassed = '1';
-      /* Only mark bus-only when we have positive evidence — never on empty boxes */
       var txt = box.textContent;
-      var hasNoMetroMsg = box.querySelector('div[style*="rgba(248"]') || /no metro|tram within/i.test(txt);
-      var hasBusIntersections = /maguire|saint-viateur|fairmount|saint-urbain|\/\s*maguire/i.test(txt);
-      if (txt.trim() && (hasNoMetroMsg || hasBusIntersections)) {
+      var hasNoMetro = box.querySelector('div[style*="rgba(248"]') || /no metro|tram within/i.test(txt);
+      var hasBusNames = /maguire|saint-viateur|fairmount|saint-urbain/i.test(txt);
+      if (txt.trim() && (hasNoMetro || hasBusNames)) {
         box.classList.add('mmh-bus-only');
       }
     });
@@ -5824,6 +5809,21 @@ window.addEventListener('scroll', () => {
     });
 
   }, 400);
+})();
+</script>
+<script>
+/* ── Popup dedup: close all existing popups before adding a new one ── */
+(function(){
+  function patchPopup() {
+    if (!window.mapboxgl) { setTimeout(patchPopup, 200); return; }
+    var origAddTo = mapboxgl.Popup.prototype.addTo;
+    mapboxgl.Popup.prototype.addTo = function(map) {
+      /* Remove any open popups first */
+      document.querySelectorAll('.mapboxgl-popup').forEach(function(p){ p.remove(); });
+      return origAddTo.call(this, map);
+    };
+  }
+  patchPopup();
 })();
 </script>
 </body>
