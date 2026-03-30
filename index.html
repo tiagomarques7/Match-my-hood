@@ -1739,17 +1739,20 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 /* Alt match button */
 .mmh-alt-btn {
-  background: transparent !important;
-  border: 1.5px solid rgba(245,240,232,0.14) !important;
+  background: #F0C93A !important;
+  border: none !important;
   border-radius: 0 !important;
-  color: rgba(245,240,232,0.35) !important;
+  color: #1A1510 !important;
   margin-top: 3px !important;
   font-family: 'DM Sans', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
 }
 .mmh-alt-btn:hover {
-  background: rgba(255,255,255,0.04) !important;
-  border-color: rgba(245,240,232,0.3) !important;
-  color: rgba(245,240,232,0.7) !important;
+  background: #D4A820 !important;
+  color: #1A1510 !important;
 }
 
 /* ── SUBSECTIONS: editorial redesign ── */
@@ -2170,6 +2173,83 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-pc-box.pro .mmh-pc-title { color: #D4A820 !important; }
 /* City guide picks */
 .picks-list { gap: 3px !important; }
+/* ── Results footer: Share + Waitlist ── */
+.results-footer > div {
+  background: #1A1510 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-top: 3px solid #F0C93A !important;
+  padding: 20px 24px !important;
+  margin-top: 3px !important;
+}
+.results-footer p {
+  color: rgba(250,247,242,0.45) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 12px !important;
+}
+.results-footer button, .results-footer a[href="#newsletter"] {
+  background: #F0C93A !important; color: #1A1510 !important;
+  border: none !important; border-radius: 0 !important;
+  font-weight: 700 !important; font-size: 10px !important;
+  letter-spacing: 1.5px !important; text-transform: uppercase !important;
+  padding: 12px 24px !important; display: inline-block !important;
+}
+.results-footer button:hover, .results-footer a[href="#newsletter"]:hover {
+  background: #D4A820 !important; color: #1A1510 !important;
+}
+
+/* ── Hide Closed/Open status on recommendations ── */
+.pick-open { display: none !important; }
+
+/* ── Metro tile: CSS lock shows "0" and "METRO & TRAIN" regardless of async fetch ── */
+.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-count {
+  visibility: hidden !important;
+  position: relative !important;
+  height: 1.2em !important;
+}
+.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-count::after {
+  content: '0' !important;
+  visibility: visible !important;
+  position: absolute !important;
+  left: 50% !important; top: 0 !important;
+  transform: translateX(-50%) !important;
+  color: #1A1510 !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+}
+.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-label {
+  visibility: hidden !important;
+  position: relative !important;
+}
+.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-label::after {
+  content: 'METRO & TRAIN' !important;
+  visibility: visible !important;
+  position: absolute !important;
+  left: 50% !important; top: 0 !important;
+  transform: translateX(-50%) !important;
+  color: #D4A820 !important;
+  font-size: 10px !important; font-weight: 700 !important;
+  letter-spacing: 1px !important; white-space: nowrap !important;
+}
+
+/* ── Open-state section number in tile header ── */
+.tile-open-num {
+  display: none !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 20px !important; font-weight: 600 !important;
+  color: #F0C93A !important; min-width: 28px !important;
+  line-height: 1 !important; flex-shrink: 0 !important;
+}
+.mmh-tile-grid .mmh-sec.tile-open .tile-open-num { display: inline-block !important; }
+
+/* ── City guide transport line text: strip colour vars ── */
+.mmh-sec-body span[style*="color:var(--text-secondary)"],
+.mmh-sec-body span[style*="color: var(--text-secondary)"] { color: #9A8E7A !important; }
+.mmh-sec-body span[style*="color:var(--text-muted)"],
+.mmh-sec-body span[style*="color: var(--text-muted)"] { color: #9A8E7A !important; }
+
 /* City guide: Book ahead badge */
 .pick-item [style*="rgba(184,148,72"] {
   background: #F0C93A !important; color: #1A1510 !important;
@@ -5440,12 +5520,19 @@ window.addEventListener('scroll', () => {
           }
         });
 
-        /* Transport row: replace emoji, style as muted */
-        row.querySelectorAll('[style*="gap:4px"]').forEach(function(el) {
+        /* Transport row: strip emoji, restyle as muted */
+        row.querySelectorAll('[style*="gap:4px"],[style*="gap:10px"]').forEach(function(el) {
           if (el.dataset.transportFixed) return;
           el.dataset.transportFixed = '1';
-          var txt = el.textContent.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]/g,'').replace(/\s+/g,' ').trim();
-          el.textContent = txt;
+          /* Walk text nodes to strip emoji without losing child elements */
+          var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+          var tnodes = [], tn;
+          while ((tn = tw.nextNode())) tnodes.push(tn);
+          tnodes.forEach(function(tn) {
+            tn.nodeValue = tn.nodeValue
+              .replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]/g, '')
+              .replace(/\s+/g, ' ').trim();
+          });
           el.style.cssText = 'font-size:11px;color:#9A8E7A;display:flex;align-items:center;gap:4px;margin-bottom:5px;';
         });
 
@@ -5493,6 +5580,13 @@ window.addEventListener('scroll', () => {
       ghost.className = 'tile-num-ghost';
       ghost.textContent = (idx < 9 ? '0' : '') + (idx + 1);
       head.appendChild(ghost);
+
+      /* number visible when expanded — sits inside mmh-sec-left next to icon */
+      var openNum = document.createElement('span');
+      openNum.className = 'tile-open-num';
+      openNum.textContent = (idx < 9 ? '0' : '') + (idx + 1);
+      var secLeft = head.querySelector('.mmh-sec-left');
+      if (secLeft) secLeft.insertBefore(openNum, secLeft.firstChild);
 
       /* eyebrow — derived from title, always accurate */
       var ey = document.createElement('span');
