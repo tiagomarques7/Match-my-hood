@@ -1930,28 +1930,45 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 /* Show div children — bus names + sub-label */
 .mmh-station-names.mmh-bus-only > * {
   display: block !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #FAF7F2 !important;
-  line-height: 1.7 !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #F0C93A !important;
+  line-height: 1.6 !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
 }
-/* ::before — prominent NO METRO statement */
+/* ::before — NO METRO statement, slightly smaller */
 .mmh-station-names.mmh-bus-only::before {
   content: 'NO METRO & TRAIN WITHIN 800M';
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 700;
   font-style: normal;
-  color: #FAF7F2;
+  color: rgba(250,247,242,0.7);
   display: block;
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(240,201,58,0.18);
-  letter-spacing: 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 /* ::after — removed */
 .mmh-station-names.mmh-bus-only::after {
   content: none;
+}
+/* Nearest metro fallback slot (populated when server sends data-metro-fallback) */
+.mmh-metro-fallback {
+  display: block !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #F0C93A !important;
+  line-height: 1.4 !important;
+  margin-bottom: 4px !important;
+}
+.mmh-metro-dist {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(240,201,58,0.6) !important;
 }
 /* Last child div: was "No metro/train/tram within 800m" → renamed via ::before */
 /* Guard: only apply when it's NOT the only child (two divs = enrichment arrived) */
@@ -2280,20 +2297,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 /* ── Hide Closed/Open status on recommendations ── */
 .pick-open { display: none !important; }
 
-/* ── Metro tile: font-size:0 hides actual text, ::before always shows "0" ── */
-.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-count {
-  font-size: 0 !important;
-  color: transparent !important;
-}
-.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-count::before {
-  content: '0' !important;
-  display: block !important;
-  font-family: 'Cormorant Garamond', Georgia, serif !important;
-  font-size: 32px !important;
-  font-weight: 600 !important;
-  color: #1A1510 !important;
-  line-height: 1 !important;
-}
+/* ── Bus Stops tile: label override only, count shows actual value ── */
 .mmh-a-tile[data-mmh-tiled="1"] .mmh-a-label {
   font-size: 0 !important;
   color: transparent !important;
@@ -5551,15 +5555,7 @@ window.addEventListener('scroll', () => {
         tile.dataset.mmhTiled = '1';
         tile.setAttribute('data-mmh-tiled','1');
         tile.setAttribute('data-key','stations');
-        cntEl.textContent = '0';
-        /* Lock against async overwrite */
-        var locked = false;
-        new MutationObserver(function() {
-          if (locked || cntEl.textContent === '0') return;
-          locked = true;
-          cntEl.textContent = '0';
-          setTimeout(function(){ locked = false; }, 60);
-        }).observe(cntEl, {childList:true, subtree:true, characterData:true});
+        /* Count left to renderResults — it sets actual busCount */
       }
     });
 
@@ -5831,14 +5827,7 @@ window.addEventListener('scroll', () => {
         tile.dataset.mmhTiled = '1';
         tile.setAttribute('data-mmh-tiled', '1');
         tile.setAttribute('data-key', 'stations');
-        var cntEl = tile.querySelector('.mmh-a-count');
-        if (cntEl && !cntEl._stationLocked) {
-          cntEl._stationLocked = true;
-          cntEl.textContent = '0';
-          new MutationObserver(function() {
-            if (cntEl.textContent !== '0') cntEl.textContent = '0';
-          }).observe(cntEl, {childList: true, subtree: true, characterData: true});
-        }
+        /* Count left to renderResults */
       }
       if (t === 'parks') {
         tile.dataset.parksFixed = '1';
@@ -5958,19 +5947,33 @@ window.addEventListener('scroll', () => {
   function applyBusOnly(box) {
     if (box.classList.contains('mmh-bus-only')) return; /* already done */
     var txt = box.textContent || '';
-    /* "No metro/train/tram within 800m" or "No metro/train within 800m" */
     if (!/no metro/i.test(txt)) return;
 
     box.classList.add('mmh-bus-only');
 
-    /* Also update the stations tile in the same card */
+    /* Nearest-metro slot — populated from data-metro-fallback attribute.
+       This attribute will be set by a future server.js update that expands
+       the Overpass metro search radius for busOnly hoods.
+       Format: "StationName|1.2km,StationName2|1.5km" */
+    var fallback = box.getAttribute('data-metro-fallback');
+    if (fallback && !box.querySelector('.mmh-metro-fallback')) {
+      var stations = fallback.split(',').slice(0, 2);
+      var slot = document.createElement('div');
+      slot.className = 'mmh-metro-fallback';
+      slot.innerHTML = stations.map(function(s) {
+        var p = s.trim().split('|');
+        return '<strong>' + p[0] + '</strong>' + (p[1] ? '&nbsp;<span class="mmh-metro-dist">— ' + p[1] + '</span>' : '');
+      }).join('<br>');
+      var lastChild = box.lastElementChild;
+      box.insertBefore(slot, lastChild || null);
+    }
+
+    /* Update stations tile */
     var card = box.closest('.mmh-card') || box.closest('[id^="result-card"]') || box.parentElement;
     if (!card) return;
-    /* Find station count element — id ends with "-stations" */
     var cntEl = card.querySelector('[id$="-stations"]');
     if (!cntEl) return;
     var tile = cntEl.parentElement;
-    /* Walk up to find .mmh-a-tile ancestor */
     while (tile && !tile.classList.contains('mmh-a-tile')) tile = tile.parentElement;
     if (tile) {
       tile.setAttribute('data-mmh-tiled', '1');
