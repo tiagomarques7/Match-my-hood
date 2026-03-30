@@ -2557,6 +2557,22 @@ section.newsletter-section { position: relative; overflow: hidden; }
   .mmh-search-form { border-width: 1.5px; }
 }
 
+/* ══ Pros/cons box fixes ══
+   Higher specificity for border-radius (beats line 1450).
+   Inline-style colour overrides for icon and text. */
+.mmh-sec-inner .mmh-pc-box,
+.mmh-sec-body  .mmh-pc-box { border-radius: 0 !important; }
+
+/* ! icon: inline color:var(--terracotta) → gold */
+.mmh-pc-box.con span[style*="color:var(--terracotta)"],
+.mmh-pc-box.con span[style*="color: var(--terracotta)"] { color: #D4A820 !important; }
+
+/* con item text: old terracotta → ink-mid */
+.mmh-pc-box.con div[style*="color:#7A3C20"] { color: #6B5E4A !important; }
+
+/* pro item text: old sage → ink */
+.mmh-pc-box.pro div[style*="color:#3D5E32"] { color: #3D3528 !important; }
+
 </style>
 
 
