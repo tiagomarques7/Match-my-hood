@@ -1914,10 +1914,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   border-top: 1px solid rgba(240,201,58,0.15) !important;
   display: block !important;
 }
-/* Hide all original content — JS rebuilds it */
-.mmh-station-names > *:not(.mmh-no-metro):not(.mmh-bus-routes):not(.mmh-transport-label) {
-  display: none !important;
-}
+/* JS rebuilds content — no CSS hide needed */
 
 
 /* City guide section — yellow replaces gold accent */
@@ -5552,11 +5549,14 @@ window.addEventListener('scroll', () => {
       if (box.dataset.sbDone) return;
       /* Collect raw text before clearing */
       var rawText = box.textContent.replace(/nearest.*stations/gi,'').replace(/nearest metro.*/gi,'').trim();
-      if (!rawText) return; /* content not loaded yet */
+      if (!rawText) return; /* content not loaded yet — retry on next timer */
       box.dataset.sbDone = '1';
 
-      /* Clear original content entirely */
-      box.innerHTML = '';
+      /* Hide original children via JS (not CSS, to avoid empty flash) */
+      Array.from(box.childNodes).forEach(function(n) {
+        if (n.nodeType === 1) n.style.display = 'none';
+        if (n.nodeType === 3) n.nodeValue = '';
+      });
 
       /* Headline: "No metro / train nearby" */
       var headline = document.createElement('span');
