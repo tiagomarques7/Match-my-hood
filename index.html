@@ -1896,6 +1896,22 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   margin-top: 4px !important;
   letter-spacing: 0.5px !important;
 }
+/* Replace "tram" text with CSS — covers all timing scenarios */
+.mmh-station-names div[style*="rgba(248,241,231,0.3)"],
+.mmh-station-names div[style*="rgba(248,241,231, 0.3)"] {
+  color: transparent !important;
+  position: relative !important;
+  height: 1.4em !important;
+}
+.mmh-station-names div[style*="rgba(248,241,231,0.3)"]::after,
+.mmh-station-names div[style*="rgba(248,241,231, 0.3)"]::after {
+  content: 'No metro/train within 800m';
+  position: absolute !important;
+  left: 0 !important; top: 0 !important;
+  color: rgba(250,247,242,0.38) !important;
+  font-size: 10px !important;
+  white-space: nowrap !important;
+}
 
 /* City guide section — yellow replaces gold accent */
 .mmh-city-guide-sec { border-left: none !important; background: white !important; }
@@ -1948,7 +1964,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 /* ── Station names box ── */
 .mmh-station-names::before {
-  content: 'Metro & Train Stations';
+  content: 'Nearest Metro & Train Stations';
   display: block !important;
   font-size: 8px !important;
   font-weight: 700 !important;
@@ -5365,7 +5381,19 @@ window.addEventListener('scroll', () => {
         tile.setAttribute('data-mmh-tiled','1');
         tile.setAttribute('data-key','stations');
         lbl.textContent = 'METRO & TRAIN';
-        if (cnt) cnt.textContent = '0';
+        if (cnt) {
+          cnt.textContent = '0';
+          /* Lock count at 0 — async fetch will try to overwrite with bus count */
+          var cntLocked = false;
+          new MutationObserver(function() {
+            if (cntLocked) return;
+            if (cnt.textContent !== '0') {
+              cntLocked = true;
+              cnt.textContent = '0';
+              setTimeout(function(){ cntLocked = false; }, 50);
+            }
+          }).observe(cnt, {childList: true, subtree: true, characterData: true});
+        }
       }
       if (t === 'parks') {
         lbl.textContent = 'GREEN AREAS';
