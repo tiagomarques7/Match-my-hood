@@ -1918,17 +1918,30 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 /* Metro-present state: show station names cleanly */
 .mmh-station-names:not(.mmh-bus-only) {
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-weight: 600 !important;
   color: #FAF7F2 !important;
+  line-height: 1.6 !important;
+}
+.mmh-station-names:not(.mmh-bus-only)::before {
+  content: 'Nearest Metro & Train Stations';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 600;
+  color: #F0C93A;
+  display: block;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(240,201,58,0.18);
 }
 .mmh-station-names:not(.mmh-bus-only) > div {
   font-size: 9px !important;
   font-weight: 700 !important;
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
-  color: #F0C93A !important;
-  margin-top: 8px !important;
+  color: rgba(250,247,242,0.35) !important;
+  margin-top: 6px !important;
 }
 
 /* Legacy elements from old JS — hidden */
@@ -5548,14 +5561,14 @@ window.addEventListener('scroll', () => {
     /* ── Station names box — add .mmh-bus-only class, CSS handles the rest ── */
     card.querySelectorAll('.mmh-station-names').forEach(function(box) {
       if (box.dataset.stationClassed) return;
-      /* Check if bus-only: has "no metro" message or bus intersection names */
+      box.dataset.stationClassed = '1';
+      /* Only mark bus-only when we have positive evidence — never on empty boxes */
       var txt = box.textContent;
-      var isBusOnly = /no metro|\/tram|tram within|maguire|saint-viateur|fairmount|saint-urbain/i.test(txt)
-                   || (!txt.trim() && true); /* empty = force bus-only label */
-      if (isBusOnly || box.querySelector('div[style*="rgba(248"]')) {
+      var hasNoMetroMsg = box.querySelector('div[style*="rgba(248"]') || /no metro|tram within/i.test(txt);
+      var hasBusIntersections = /maguire|saint-viateur|fairmount|saint-urbain|\/\s*maguire/i.test(txt);
+      if (txt.trim() && (hasNoMetroMsg || hasBusIntersections)) {
         box.classList.add('mmh-bus-only');
       }
-      box.dataset.stationClassed = '1';
     });
   }
 
@@ -5652,13 +5665,16 @@ window.addEventListener('scroll', () => {
     secs[0].parentNode.insertBefore(grid, secs[0]);
     secs.forEach(function(s){ grid.appendChild(s); });
 
-    /* Mark station tile immediately — don't wait for fixAmenityTiles */
+    /* Mark station tile — data-key always, data-mmh-tiled only when bus-only */
     card.querySelectorAll('[id*="-stations"]').forEach(function(cnt) {
       var tile = cnt.closest('.mmh-a-tile');
-      if (tile && !tile.dataset.mmhTiled) {
+      if (!tile || tile.dataset.mmhTiled) return;
+      tile.setAttribute('data-key','stations'); /* always style as stations tile */
+      var lbl = tile.querySelector('.mmh-a-label');
+      if (lbl && /bus/i.test(lbl.textContent)) {
+        /* Bus-only: lock display to 0 via CSS */
         tile.dataset.mmhTiled = '1';
         tile.setAttribute('data-mmh-tiled','1');
-        tile.setAttribute('data-key','stations');
       }
     });
 
