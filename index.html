@@ -1884,14 +1884,14 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   margin-top: 12px !important;
   display: block !important;
 }
-/* "No metro/train" headline — injected by JS as .mmh-no-metro */
+/* "No metro / train nearby" — large prominent headline */
 .mmh-no-metro {
   font-family: 'Cormorant Garamond', Georgia, serif !important;
-  font-size: 22px !important;
+  font-size: 32px !important;
   font-weight: 600 !important;
   color: #FAF7F2 !important;
-  line-height: 1.2 !important;
-  margin-bottom: 8px !important;
+  line-height: 1.1 !important;
+  margin-bottom: 10px !important;
   display: block !important;
 }
 /* Bus routes fine print */
@@ -1902,15 +1902,17 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   margin-bottom: 12px !important;
   display: block !important;
 }
-/* "NEAREST METRO & TRAIN STATIONS" yellow footer label */
+/* "Nearest Metro & Train Stations" — Cormorant Garamond, yellow, prominent */
 .mmh-transport-label {
-  font-size: 8px !important;
-  font-weight: 700 !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  font-style: italic !important;
+  letter-spacing: 0.3px !important;
+  text-transform: none !important;
   color: #F0C93A !important;
-  margin-top: 10px !important;
-  padding-top: 10px !important;
+  margin-top: 14px !important;
+  padding-top: 12px !important;
   border-top: 1px solid rgba(240,201,58,0.15) !important;
   display: block !important;
 }
@@ -1966,15 +1968,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 /* Description */
 .mmh-sec-inner [style*="font-size:12px;color:var(--text-secondary)"] { color: #6B5E4A !important; line-height: 1.55 !important; }
 
-/* ── Station names box ── */
-/* mmh-transport-label — yellow bottom label in station box */
-.mmh-transport-label {
-  font-size: 8px !important;
-  font-weight: 700 !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
-  color: #F0C93A !important;
-}
+/* mmh-transport-label — see main station box definition above */
 /* Transport emoji in station text — give it space */
 .mmh-station-names [id*="station-names-text"] {
   font-size: 12px !important;
@@ -2089,13 +2083,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-tile-grid .mmh-sec.tile-open .mmh-chev { display: inline-block !important; }
 /* Station names always visible when section open */
 .mmh-tile-grid .mmh-sec.tile-open .mmh-station-names { display: block !important; }
-/* Transport box: NEAREST METRO & TRAIN label */
-.mmh-transport-label {
-  font-size: 8px !important; font-weight: 700 !important;
-  letter-spacing: 2px !important; text-transform: uppercase !important;
-  color: #F0C93A !important; margin-bottom: 10px !important;
-  display: block !important;
-}
+
 /* Station tile yellow accent */
 .mmh-a-tile[data-key="stations"] { border-bottom: 3px solid #F0C93A !important; background: #FEF9EE !important; }
 .mmh-a-tile[data-key="stations"] .mmh-a-label { color: #D4A820 !important; font-weight: 700 !important; }
@@ -2140,16 +2128,8 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   white-space: nowrap !important;
 }
 /* Restore other divs (transport label) */
-.mmh-station-names div, .mmh-station-names span { font-size: 12px !important; color: rgba(250,247,242,0.6) !important; }
-.mmh-transport-label {
-  font-size: 8px !important;
-  font-weight: 700 !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
-  color: #F0C93A !important;
-  margin-bottom: 8px !important;
-  display: block !important;
-}
+/* station-names div/span styles handled by .mmh-no-metro and .mmh-bus-routes */
+
 
 /* Landmark circle number → CG numeral */
 [data-ln-styled] {
