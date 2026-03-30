@@ -2930,7 +2930,7 @@ section.newsletter-section { position: relative; overflow: hidden; }
 <!-- SPLIT VISIT / MOVE -->
 <div>
   <div class="split-row">
-    <div class="split-photo"><img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80" alt="Visit" loading="lazy" crossorigin="anonymous"><div class="split-photo-cap"><span>Visiting?</span><small>Find where to stay</small></div></div>
+    <div class="split-photo"><img class="split-photo-img" data-query="outdoor cafe terrace neighbourhood street europe people" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Visit" loading="lazy" crossorigin="anonymous" style="opacity:0;transition:opacity 0.9s ease;"><div class="split-photo-cap"><span>Visiting?</span><small>Find where to stay</small></div></div>
     <div class="split-text yl-bg">
       <div class="split-ey">Visit mode</div>
       <h3 class="split-h">Stop staying in the <em>wrong part of town</em></h3>
@@ -2945,7 +2945,7 @@ section.newsletter-section { position: relative; overflow: hidden; }
       <p class="split-body-lt">Real amenity counts, rent search links, walkability and safety feel. Not generated — curated and validated.</p>
       <a class="btn-cr" href="#match" onclick="event.preventDefault();setIntent('move');document.getElementById('match').scrollIntoView({behavior:'smooth'})">Find where to live</a>
     </div>
-    <div class="split-photo" style="order:1"><img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=80" alt="Move" loading="lazy" crossorigin="anonymous"><div class="split-photo-cap"><span>Moving?</span><small>Find where to live</small></div></div>
+    <div class="split-photo" style="order:1"><img class="split-photo-img" data-query="street market neighbourhood park community morning welcoming" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Move" loading="lazy" crossorigin="anonymous" style="opacity:0;transition:opacity 0.9s ease;"><div class="split-photo-cap"><span>Moving?</span><small>Find where to live</small></div></div>
   </div>
 </div>
 
@@ -6210,6 +6210,33 @@ window.addEventListener('scroll', () => {
   }, { passive: true });
 
   update();
+})();
+</script>
+
+
+<script>
+/* Split section photo loader — uses same Unsplash key as hero */
+(function(){
+  var KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
+  document.querySelectorAll('.split-photo-img[data-query]').forEach(function(img){
+    var query = img.getAttribute('data-query');
+    var url = 'https://api.unsplash.com/photos/random?query='
+      + encodeURIComponent(query)
+      + '&orientation=landscape&client_id=' + KEY;
+    fetch(url)
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var src = (d && d.urls) ? (d.urls.raw
+          ? d.urls.raw + '&w=1000&h=700&fit=crop&q=80&auto=format'
+          : d.urls.regular) : null;
+        if (!src) return;
+        var tmp = new Image();
+        tmp.crossOrigin = 'anonymous';
+        tmp.onload = function(){ img.src = src; img.style.opacity = '1'; };
+        tmp.src = src;
+      })
+      .catch(function(){});
+  });
 })();
 </script>
 
