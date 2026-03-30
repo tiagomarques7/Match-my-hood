@@ -1971,10 +1971,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   text-transform: none !important;
   letter-spacing: 0 !important;
 }
-/* Hide the "no metro" child div if it exists in a metro box */
-.mmh-station-names:not(.mmh-bus-only) > div {
-  display: none !important;
-}
+/* div children inside .mmh-station-names are allowed — renderResults wraps content in <div> */
 
 /* Tile closed: truncate long titles to 2 lines max */
 .mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-title {
@@ -5548,12 +5545,10 @@ window.addEventListener('scroll', () => {
       }
     });
 
-    /* ── Force-hide ALL non-class station-names — move to hidden bin ── */
+    /* ── Hard-delete no-class station-names duplicates from card ── */
     card.querySelectorAll('[id^="station-names-"]').forEach(function(el) {
       if (el.classList.contains('mmh-station-names')) return;
-      var bin = document.getElementById('mmh-hidden-bin');
-      if (bin && !bin.contains(el)) bin.appendChild(el);
-      el.style.setProperty('display','none','important');
+      if (el.parentNode) el.parentNode.removeChild(el);
     });
 
     /* ── Station names box — add .mmh-bus-only class ── */
@@ -5844,61 +5839,69 @@ window.addEventListener('scroll', () => {
 <script>
 /* Popup dedup: CSS-only — .mmh-popup hidden, only simple popup shows */
 
-/* ── Station names: synchronous bin — moves elements BEFORE next paint ── */
+/* ── Station names: getElementById intercept + hard delete ──────────────────
+   ROOT CAUSE: renderResults calls getElementById('station-names-0') and finds
+   the no-class duplicate BEFORE the correct .mmh-station-names element (DOM order).
+   It sets innerHTML + display:block on the wrong element, making it visible.
+
+   FIX:
+   1. Override getElementById so 'station-names-N' returns .mmh-station-names.
+      renderResults now writes content into the correct dark box.
+   2. Hard-delete the no-class duplicates — nothing left to show.
+─────────────────────────────────────────────────────────────────────────── */
 (function(){
-  /* Off-screen bin. getElementById still finds elements inside it. */
-  var bin = document.getElementById('mmh-hidden-bin');
-  if (!bin) {
-    bin = document.createElement('div');
-    bin.id = 'mmh-hidden-bin';
-    bin.setAttribute('aria-hidden','true');
-    bin.style.cssText='position:fixed;left:-99999px;top:-99999px;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;';
-    document.body.appendChild(bin);
-  }
 
-  function moveIfBad(el) {
-    if (!el || el.nodeType !== 1) return;
-    if (bin.contains(el)) return;
-    /* Non-class station-names element — move it */
-    if (/^station-names-/.test(el.id) && !el.classList.contains('mmh-station-names')) {
-      bin.appendChild(el);
-      return;
+  var _orig = document.getElementById.bind(document);
+
+  /* Override: redirect bare station-names-{N} lookups to the correct element */
+  document.getElementById = function(id) {
+    if (id && /^station-names-\d+$/.test(id)) {
+      /* querySelector is not affected by our override — safe to use here */
+      var correct = document.querySelector('.mmh-station-names[id="' + id + '"]');
+      if (correct) return correct;
     }
-    /* Recurse into children added in bulk (e.g. card innerHTML swap) */
-    var bad = el.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)');
-    for (var i = 0; i < bad.length; i++) {
-      if (!bin.contains(bad[i])) bin.appendChild(bad[i]);
+    return _orig(id);
+  };
+
+  /* Hard-delete any no-class station-names element from the DOM */
+  function deleteGhosts() {
+    var ghosts = document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)');
+    for (var i = 0; i < ghosts.length; i++) {
+      var g = ghosts[i];
+      if (g.parentNode) g.parentNode.removeChild(g);
     }
   }
 
-  /* ── Synchronous observer on resultsArea ── runs as microtask, before paint */
-  var area = document.getElementById('resultsArea');
+  deleteGhosts();
+
+  /* Watch resultsArea synchronously for newly injected ghosts */
+  var area = _orig('resultsArea');
   if (area) {
     new MutationObserver(function(mutations) {
       for (var i = 0; i < mutations.length; i++) {
         var added = mutations[i].addedNodes;
         for (var j = 0; j < added.length; j++) {
-          moveIfBad(added[j]);
+          var n = added[j];
+          if (n.nodeType !== 1) continue;
+          if (/^station-names-\d+$/.test(n.id || '') && !n.classList.contains('mmh-station-names')) {
+            if (n.parentNode) n.parentNode.removeChild(n);
+          } else if (n.querySelectorAll) {
+            var inner = n.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)');
+            for (var k = 0; k < inner.length; k++) {
+              if (inner[k].parentNode) inner[k].parentNode.removeChild(inner[k]);
+            }
+          }
         }
       }
     }).observe(area, { childList: true, subtree: true });
   }
 
-  /* ── Also sweep any elements already in the DOM ── */
-  function fullSweep() {
-    var bad = document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)');
-    for (var i = 0; i < bad.length; i++) {
-      if (!bin.contains(bad[i])) bin.appendChild(bad[i]);
-    }
-  }
-
-  fullSweep(); /* immediate */
-
-  /* Safety net interval for 30s after load */
+  /* Safety interval — 30s */
   var _c = 0, _iv = setInterval(function(){
-    fullSweep();
+    deleteGhosts();
     if (++_c > 60) clearInterval(_iv);
   }, 500);
+
 })();
 
 /* ── 3D layer fix: capture every Mapbox map + lift layers on pitch ── */
