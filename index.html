@@ -1973,6 +1973,9 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 }
 /* div children inside .mmh-station-names are allowed — renderResults wraps content in <div> */
 
+/* Hide legacy transit-wrap — superseded by .mmh-station-names dark box */
+[id^="transit-wrap-"] { display: none !important; }
+
 /* Tile closed: truncate long titles to 2 lines max */
 .mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-title {
   display: -webkit-box !important;
