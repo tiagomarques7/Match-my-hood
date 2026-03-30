@@ -2625,207 +2625,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   <div class="hero-scroll"><span>Scroll</span><div class="hero-scroll-line"></div></div>
 </section>
 
-<script>
-(function(){
-  var heroImg = document.querySelector('.hero-img');
-  if (!heroImg || window.innerWidth <= 700) return;
-  var ticking = false;
-  window.addEventListener('scroll', function(){
-    if (!ticking) {
-      requestAnimationFrame(function(){
-        var scrolled = window.pageYOffset;
-        if (scrolled < window.innerHeight * 1.5) {
-          heroImg.style.transform = 'translateY(' + (scrolled * 0.32) + 'px)';
-        }
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
-})();
-</script>
-
-<!-- SEARCH / MATCH SECTION -->
-<section class="search-section-landing" id="match">
-  <div class="search-inner-landing">
-    <div class="search-eyebrow">Try it now — free</div>
-    <h2 class="search-title">Find your <em>neighbourhood match</em></h2>
-
-    <div class="mmh-search-form">
-      <!-- Row 1: home city + neighbourhood -->
-      <div class="mmh-form-row">
-        <div class="mmh-form-group">
-          <div class="mmh-form-label">Your city</div>
-          <select id="homeCity" class="mmh-form-select">
-            <option value="">Select your city...</option>
-            <optgroup label="Europe">
-              <option value="Lisbon">Lisbon</option>
-              <option value="Porto">Porto</option>
-              <option value="London">London</option>
-              <option value="Paris">Paris</option>
-              <option value="Barcelona">Barcelona</option>
-              <option value="Madrid">Madrid</option>
-              <option value="Amsterdam">Amsterdam</option>
-              <option value="Rome">Rome</option>
-              <option value="Berlin">Berlin</option>
-              <option value="Vienna">Vienna</option>
-              <option value="Munich">Munich</option>
-              <option value="Düsseldorf">Düsseldorf</option>
-              <option value="Frankfurt">Frankfurt</option>
-              <option value="Copenhagen">Copenhagen</option>
-              <option value="Stockholm">Stockholm</option>
-              <option value="Prague">Prague</option>
-              <option value="Budapest">Budapest</option>
-              <option value="Seville">Seville</option>
-              <option value="Florence">Florence</option>
-              <option value="Milan">Milan</option>
-              <option value="Brussels">Brussels</option>
-            </optgroup>
-            <optgroup label="Americas">
-              <option value="New York">New York</option>
-              <option value="Los Angeles">Los Angeles</option>
-              <option value="San Francisco">San Francisco</option>
-              <option value="Chicago">Chicago</option>
-              <option value="Miami">Miami</option>
-              <option value="Boston">Boston</option>
-              <option value="Washington DC">Washington DC</option>
-              <option value="Toronto">Toronto</option>
-              <option value="Montreal">Montreal</option>
-              <option value="Mexico City">Mexico City</option>
-              <option value="São Paulo">São Paulo</option>
-              <option value="Buenos Aires">Buenos Aires</option>
-            </optgroup>
-            <optgroup label="Asia Pacific">
-              <option value="Tokyo">Tokyo</option>
-              <option value="Seoul">Seoul</option>
-              <option value="Singapore">Singapore</option>
-              <option value="Dubai">Dubai</option>
-              <option value="Sydney">Sydney</option>
-              <option value="Melbourne">Melbourne</option>
-              <option value="Beijing">Beijing</option>
-              <option value="Shanghai">Shanghai</option>
-              <option value="Bangkok">Bangkok</option>
-            </optgroup>
-            <optgroup label="Africa &amp; Middle East">
-              <option value="Cape Town">Cape Town</option>
-              <option value="Marrakech">Marrakech</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="mmh-form-group">
-          <div class="mmh-form-label">Your neighbourhood</div>
-          <input id="homeHood" class="mmh-form-input" type="text" placeholder="e.g. Príncipe Real, Shoreditch…" />
-        </div>
-      </div>
-
-      <!-- Row 2: destination city -->
-      <div class="mmh-dest-row">
-        <div class="mmh-form-label">Destination city</div>
-        <select id="destCity" class="mmh-form-select" style="margin-top:4px">
-          <option value="">Select destination...</option>
-          <optgroup label="Europe">
-            <option value="Lisbon">Lisbon</option>
-            <option value="Porto">Porto</option>
-            <option value="London">London</option>
-            <option value="Paris">Paris</option>
-            <option value="Barcelona">Barcelona</option>
-            <option value="Madrid">Madrid</option>
-            <option value="Amsterdam">Amsterdam</option>
-            <option value="Rome">Rome</option>
-            <option value="Berlin">Berlin</option>
-            <option value="Vienna">Vienna</option>
-            <option value="Munich">Munich</option>
-            <option value="Düsseldorf">Düsseldorf</option>
-            <option value="Frankfurt">Frankfurt</option>
-            <option value="Copenhagen">Copenhagen</option>
-            <option value="Stockholm">Stockholm</option>
-            <option value="Prague">Prague</option>
-            <option value="Budapest">Budapest</option>
-            <option value="Seville">Seville</option>
-            <option value="Florence">Florence</option>
-            <option value="Milan">Milan</option>
-            <option value="Istanbul">Istanbul</option>
-            <option value="Brussels">Brussels</option>
-          </optgroup>
-          <optgroup label="Americas">
-            <option value="New York">New York</option>
-            <option value="Los Angeles">Los Angeles</option>
-            <option value="San Francisco">San Francisco</option>
-            <option value="Chicago">Chicago</option>
-            <option value="Miami">Miami</option>
-            <option value="Boston">Boston</option>
-            <option value="Washington DC">Washington DC</option>
-            <option value="Toronto">Toronto</option>
-            <option value="Montreal">Montreal</option>
-            <option value="Mexico City">Mexico City</option>
-            <option value="São Paulo">São Paulo</option>
-            <option value="Rio de Janeiro">Rio de Janeiro</option>
-            <option value="Buenos Aires">Buenos Aires</option>
-          </optgroup>
-          <optgroup label="Asia Pacific">
-            <option value="Tokyo">Tokyo</option>
-            <option value="Seoul">Seoul</option>
-            <option value="Singapore">Singapore</option>
-            <option value="Dubai">Dubai</option>
-            <option value="Sydney">Sydney</option>
-            <option value="Melbourne">Melbourne</option>
-            <option value="Beijing">Beijing</option>
-            <option value="Shanghai">Shanghai</option>
-            <option value="Bangkok">Bangkok</option>
-            <option value="Bali">Bali</option>
-          </optgroup>
-          <optgroup label="Africa &amp; Middle East">
-            <option value="Cape Town">Cape Town</option>
-            <option value="Marrakech">Marrakech</option>
-          </optgroup>
-        </select>
-      </div>
-
-      <!-- Row 3: vibe trigger row -->
-      <div class="mmh-vibe-row" id="vibeRowTrigger" onclick="openVibeOverlay()">
-        <div class="mmh-vibe-row-left">
-          <div class="mmh-vibe-row-label">Your vibes</div>
-          <div class="mmh-vibe-row-value" id="vibeRowDisplay">What kind of neighbourhood feels like you?</div>
-        </div>
-        <div class="mmh-vibe-row-arrow">→</div>
-      </div>
-
-      <!-- Hidden real vibe pills container (kept for setIntent() compatibility) -->
-      <div style="display:none" id="vibeExpandSection">
-        <div class="vibe-pills" id="vibePills">
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Wine &amp; Nightlife">Wine &amp; Nightlife</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Shopping &amp; Boutiques">Shopping &amp; Boutiques</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Food &amp; Restaurants">Food &amp; Restaurants</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Parks &amp; Outdoors">Parks &amp; Outdoors</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Family Friendly">Family Friendly</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Digital Nomad">Digital Nomad</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Culture &amp; Architecture">Culture &amp; Architecture</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Music &amp; Arts">Music &amp; Arts</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Cafés &amp; Chill">Cafés &amp; Chill</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Off the Beaten Track">Off the Beaten Track</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="LGBT+ Friendly">LGBT+ Friendly</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Senior Friendly">Senior Friendly</span>
-          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Accessible">Accessible</span>
-        </div>
-      </div>
-
-      <!-- Actions row -->
-      <div class="mmh-actions-row">
-        <button class="mmh-btn-submit" id="matchBtn" onclick="runMatch()">
-          <span id="btnText">Find my match</span>
-        </button>
-        <button class="mmh-btn-browse" onclick="document.getElementById('cities').scrollIntoView({behavior:'smooth'})">Browse cities</button>
-      </div>
-    </div>
-
-    <div class="loading-msg" id="loadingMsg">
-      <span class="loading-dots">Finding your neighbourhood match</span>
-    </div>
-    <div class="error-msg" id="errorMsg"></div>
-
-  </div>
-</section>
-
 <!-- MARQUEE YELLOW -->
 <div class="marquee-strip">
   <div class="marquee-inner">
@@ -3013,6 +2812,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </div>
 
+
 <!-- MATCH SHOWCASE — single crossfade example -->
 <div class="match-showcase">
   <div class="strip-header">
@@ -3062,6 +2862,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </div>
 
+
 <!-- HOW IT WORKS -->
 <div class="how-section-new" id="how">
   <div class="sec-ey">How it works</div>
@@ -3094,6 +2895,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </div>
 
+
 <!-- SPLIT VISIT / MOVE -->
 <div>
   <div class="split-row">
@@ -3116,18 +2918,187 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </div>
 
-<!-- CTA YELLOW -->
-<div class="cta-block">
-  <div class="cta-inner">
-    <div class="cta-logo">MATCHMYHOOD</div>
-    <div class="cta-tagline">"Find your neighbourhood. Anywhere in the world."</div>
-    <div class="cta-btns">
-      <a class="btn-dk" href="#match" onclick="event.preventDefault();document.getElementById('match').scrollIntoView({behavior:'smooth'})">Match my hood — free</a>
-      <a class="btn-ik" href="#cities" onclick="event.preventDefault();document.getElementById('cities').scrollIntoView({behavior:'smooth'})">Browse all cities</a>
-    </div>
-  </div>
-</div>
 
+<!-- SEARCH / MATCH SECTION -->
+<section class="search-section-landing" id="match">
+  <div class="search-inner-landing">
+    <div class="search-eyebrow">Try it now — free</div>
+    <h2 class="search-title">Find your <em>neighbourhood match</em></h2>
+
+    <div class="mmh-search-form">
+      <!-- Row 1: home city + neighbourhood -->
+      <div class="mmh-form-row">
+        <div class="mmh-form-group">
+          <div class="mmh-form-label">Your city</div>
+          <select id="homeCity" class="mmh-form-select">
+            <option value="">Select your city...</option>
+            <optgroup label="Europe">
+              <option value="Lisbon">Lisbon</option>
+              <option value="Porto">Porto</option>
+              <option value="London">London</option>
+              <option value="Paris">Paris</option>
+              <option value="Barcelona">Barcelona</option>
+              <option value="Madrid">Madrid</option>
+              <option value="Amsterdam">Amsterdam</option>
+              <option value="Rome">Rome</option>
+              <option value="Berlin">Berlin</option>
+              <option value="Vienna">Vienna</option>
+              <option value="Munich">Munich</option>
+              <option value="Düsseldorf">Düsseldorf</option>
+              <option value="Frankfurt">Frankfurt</option>
+              <option value="Copenhagen">Copenhagen</option>
+              <option value="Stockholm">Stockholm</option>
+              <option value="Prague">Prague</option>
+              <option value="Budapest">Budapest</option>
+              <option value="Seville">Seville</option>
+              <option value="Florence">Florence</option>
+              <option value="Milan">Milan</option>
+              <option value="Brussels">Brussels</option>
+            </optgroup>
+            <optgroup label="Americas">
+              <option value="New York">New York</option>
+              <option value="Los Angeles">Los Angeles</option>
+              <option value="San Francisco">San Francisco</option>
+              <option value="Chicago">Chicago</option>
+              <option value="Miami">Miami</option>
+              <option value="Boston">Boston</option>
+              <option value="Washington DC">Washington DC</option>
+              <option value="Toronto">Toronto</option>
+              <option value="Montreal">Montreal</option>
+              <option value="Mexico City">Mexico City</option>
+              <option value="São Paulo">São Paulo</option>
+              <option value="Buenos Aires">Buenos Aires</option>
+            </optgroup>
+            <optgroup label="Asia Pacific">
+              <option value="Tokyo">Tokyo</option>
+              <option value="Seoul">Seoul</option>
+              <option value="Singapore">Singapore</option>
+              <option value="Dubai">Dubai</option>
+              <option value="Sydney">Sydney</option>
+              <option value="Melbourne">Melbourne</option>
+              <option value="Beijing">Beijing</option>
+              <option value="Shanghai">Shanghai</option>
+              <option value="Bangkok">Bangkok</option>
+            </optgroup>
+            <optgroup label="Africa &amp; Middle East">
+              <option value="Cape Town">Cape Town</option>
+              <option value="Marrakech">Marrakech</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="mmh-form-group">
+          <div class="mmh-form-label">Your neighbourhood</div>
+          <input id="homeHood" class="mmh-form-input" type="text" placeholder="e.g. Príncipe Real, Shoreditch…" />
+        </div>
+      </div>
+
+      <!-- Row 2: destination city -->
+      <div class="mmh-dest-row">
+        <div class="mmh-form-label">Destination city</div>
+        <select id="destCity" class="mmh-form-select" style="margin-top:4px">
+          <option value="">Select destination...</option>
+          <optgroup label="Europe">
+            <option value="Lisbon">Lisbon</option>
+            <option value="Porto">Porto</option>
+            <option value="London">London</option>
+            <option value="Paris">Paris</option>
+            <option value="Barcelona">Barcelona</option>
+            <option value="Madrid">Madrid</option>
+            <option value="Amsterdam">Amsterdam</option>
+            <option value="Rome">Rome</option>
+            <option value="Berlin">Berlin</option>
+            <option value="Vienna">Vienna</option>
+            <option value="Munich">Munich</option>
+            <option value="Düsseldorf">Düsseldorf</option>
+            <option value="Frankfurt">Frankfurt</option>
+            <option value="Copenhagen">Copenhagen</option>
+            <option value="Stockholm">Stockholm</option>
+            <option value="Prague">Prague</option>
+            <option value="Budapest">Budapest</option>
+            <option value="Seville">Seville</option>
+            <option value="Florence">Florence</option>
+            <option value="Milan">Milan</option>
+            <option value="Istanbul">Istanbul</option>
+            <option value="Brussels">Brussels</option>
+          </optgroup>
+          <optgroup label="Americas">
+            <option value="New York">New York</option>
+            <option value="Los Angeles">Los Angeles</option>
+            <option value="San Francisco">San Francisco</option>
+            <option value="Chicago">Chicago</option>
+            <option value="Miami">Miami</option>
+            <option value="Boston">Boston</option>
+            <option value="Washington DC">Washington DC</option>
+            <option value="Toronto">Toronto</option>
+            <option value="Montreal">Montreal</option>
+            <option value="Mexico City">Mexico City</option>
+            <option value="São Paulo">São Paulo</option>
+            <option value="Rio de Janeiro">Rio de Janeiro</option>
+            <option value="Buenos Aires">Buenos Aires</option>
+          </optgroup>
+          <optgroup label="Asia Pacific">
+            <option value="Tokyo">Tokyo</option>
+            <option value="Seoul">Seoul</option>
+            <option value="Singapore">Singapore</option>
+            <option value="Dubai">Dubai</option>
+            <option value="Sydney">Sydney</option>
+            <option value="Melbourne">Melbourne</option>
+            <option value="Beijing">Beijing</option>
+            <option value="Shanghai">Shanghai</option>
+            <option value="Bangkok">Bangkok</option>
+            <option value="Bali">Bali</option>
+          </optgroup>
+          <optgroup label="Africa &amp; Middle East">
+            <option value="Cape Town">Cape Town</option>
+            <option value="Marrakech">Marrakech</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <!-- Row 3: vibe trigger row -->
+      <div class="mmh-vibe-row" id="vibeRowTrigger" onclick="openVibeOverlay()">
+        <div class="mmh-vibe-row-left">
+          <div class="mmh-vibe-row-label">Your vibes</div>
+          <div class="mmh-vibe-row-value" id="vibeRowDisplay">What kind of neighbourhood feels like you?</div>
+        </div>
+        <div class="mmh-vibe-row-arrow">→</div>
+      </div>
+
+      <!-- Hidden real vibe pills container (kept for setIntent() compatibility) -->
+      <div style="display:none" id="vibeExpandSection">
+        <div class="vibe-pills" id="vibePills">
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Wine &amp; Nightlife">Wine &amp; Nightlife</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Shopping &amp; Boutiques">Shopping &amp; Boutiques</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Food &amp; Restaurants">Food &amp; Restaurants</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Parks &amp; Outdoors">Parks &amp; Outdoors</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Family Friendly">Family Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Digital Nomad">Digital Nomad</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Culture &amp; Architecture">Culture &amp; Architecture</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Music &amp; Arts">Music &amp; Arts</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Cafés &amp; Chill">Cafés &amp; Chill</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Off the Beaten Track">Off the Beaten Track</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="LGBT+ Friendly">LGBT+ Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Senior Friendly">Senior Friendly</span>
+          <span class="vibe-pill" onclick="toggleVibe(this)" data-vibe="Accessible">Accessible</span>
+        </div>
+      </div>
+
+      <!-- Actions row -->
+      <div class="mmh-actions-row">
+        <button class="mmh-btn-submit" id="matchBtn" onclick="runMatch()">
+          <span id="btnText">Find my match</span>
+        </button>
+        <button class="mmh-btn-browse" onclick="document.getElementById('cities').scrollIntoView({behavior:'smooth'})">Browse cities</button>
+      </div>
+    </div>
+
+    <div class="loading-msg" id="loadingMsg">
+      <span class="loading-dots">Finding your neighbourhood match</span>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+
+  </div>
+</section>
 
 <section class="search-section" id="results" style="padding-top:0; background: var(--earth);">
   <div class="search-inner" style="max-width:900px;">
@@ -3135,92 +3106,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </section>
 
-<!-- WHY MATCHMYHOOD -->
-<section class="why-section">
-  <div class="section-label">Why MatchMyHood</div>
-  <h2 class="section-title">Stop landing in the <em>wrong part</em> of town</h2>
-  <div class="why-grid">
-
-    <div class="why-card">
-      <div class="why-icon-svg">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="14" stroke="rgba(255,255,255,0.85)" stroke-width="1.5"/>
-          <circle cx="16" cy="16" r="6" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.85)" stroke-width="1.5"/>
-          <circle cx="16" cy="16" r="2.5" fill="rgba(255,255,255,0.85)"/>
-          <line x1="16" y1="2" x2="16" y2="8" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="16" y1="24" x2="16" y2="30" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="2" y1="16" x2="8" y2="16" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="24" y1="16" x2="30" y2="16" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <h3>Personality-first matching</h3>
-      <p>We don't just compare locations — we compare lifestyle DNA. Walkability, food scene, wine bar culture, nightlife energy, safety, cost, and green space all factor in.</p>
-    </div>
-
-    <div class="why-card why-card-yl">
-      <div class="why-icon-svg">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path d="M8 6 C8 6 6 10 6 14 C6 19 10.5 23 16 23 C21.5 23 26 19 26 14 C26 10 24 6 24 6 Z" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" fill="rgba(61,53,40,0.08)" stroke-linejoin="round"/>
-          <path d="M12 23 L11 28 M20 23 L21 28" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M9 28 L23 28" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M11 13 C12 11 14 10 16 10 C18 10 20 11 21 13" stroke="rgba(61,53,40,0.6)" stroke-width="1.3" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <h3>Food & wine built in</h3>
-      <p>Every matched neighbourhood comes with curated restaurant picks and wine bar recommendations. Because where you eat defines where you stay.</p>
-    </div>
-
-    <div class="why-card">
-      <div class="why-icon-svg">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path d="M4 22 L16 6 L28 22" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="rgba(255,255,255,0.06)"/>
-          <rect x="13" y="16" width="6" height="6" rx="1" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" fill="rgba(255,255,255,0.06)"/>
-          <path d="M2 22 L30 22" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="24" cy="10" r="3.5" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.85)" stroke-width="1.3"/>
-          <path d="M24 8.5 L24 10 L25 11" stroke="rgba(255,255,255,0.85)" stroke-width="1" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <h3>Built by someone who actually moved</h3>
-      <p>Founded by a Senior Distribution Specialist at Corendon Airlines who has lived in Ireland, Bolivia, Brazil, Italy, and the UK. MatchMyHood is the tool he spent hours wishing existed every time he landed somewhere new and had to figure out which neighbourhood actually felt like home.</p>
-    </div>
-
-    <div class="why-card why-card-yl">
-      <div class="why-icon-svg">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <rect x="4" y="10" width="24" height="18" rx="3" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" fill="rgba(61,53,40,0.08)"/>
-          <path d="M10 10 L10 7 C10 5.3 11.3 4 13 4 L19 4 C20.7 4 22 5.3 22 7 L22 10" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="16" cy="19" r="3" fill="rgba(61,53,40,0.08)" stroke="rgba(61,53,40,0.6)" stroke-width="1.3"/>
-          <path d="M16 22 L16 25" stroke="rgba(61,53,40,0.6)" stroke-width="1.3" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <h3>Book where you match</h3>
-      <p>Direct links to Booking.com filtered by your matched neighbourhood. No more scrolling through 400 properties without knowing which part of the city is right for you.</p>
-    </div>
-
-    <div class="why-card">
-      <div class="why-icon-svg">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="12" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" fill="rgba(255,255,255,0.06)"/>
-          <ellipse cx="16" cy="16" rx="5" ry="12" stroke="rgba(255,255,255,0.85)" stroke-width="1.2"/>
-          <path d="M4.5 11 L27.5 11 M4.5 21 L27.5 21" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <h3>30+ cities, growing weekly</h3>
-      <p>Europe, North America, Southeast Asia. We're adding new cities every week, starting with the destinations digital nomads and independent travellers love most.</p>
-    </div>
-
-    <div class="why-card why-card-yl">
-      <div class="why-icon-svg">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-          <path d="M16 4 L19.5 12 L28 13 L22 19 L23.5 28 L16 24 L8.5 28 L10 19 L4 13 L12.5 12 Z" stroke="rgba(61,53,40,0.6)" stroke-width="1.5" fill="rgba(61,53,40,0.08)" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <h3>Free to start</h3>
-      <p>3 matches per month, free forever. Upgrade to Explorer for unlimited matches, food crawl builder, and our weekly Neighbourhood of the Week newsletter.</p>
-    </div>
-
-  </div>
-</section>
 
 <!-- PRICING -->
 <section class="pricing-section" id="pricing">
@@ -3245,6 +3130,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     </div>
   </div>
 </section>
+
 
 <!-- ROADMAP -->
 <section class="roadmap-section" id="roadmap">
@@ -3320,6 +3206,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 </section>
 
+
 <!-- NEWSLETTER -->
 <section class="newsletter-section" id="newsletter">
   <div class="newsletter-inner">
@@ -3337,6 +3224,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     <p style="font-size:12px; color:rgba(248,241,231,0.3); margin-top:16px;">No spam. Unsubscribe anytime. We hate tourist traps as much as you do.</p>
   </div>
 </section>
+
 
 <!-- SUGGESTIONS -->
 <section class="suggestions-section">
@@ -3371,6 +3259,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </section>
 
+
 <!-- FOOTER -->
 
 <!-- FOOTER -->
@@ -3389,91 +3278,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   <div class="footer-copy-new">© 2026 MatchMyHood</div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-<script>
-/* ── VIBE OVERLAY BRIDGE ──
-   These functions are NEW — they do not modify toggleVibe / setIntent / runMatch.
-   They sync overlay selections directly into the existing activeVibes global array. */
-function openVibeOverlay() {
-  document.getElementById('vibeOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeVibeOverlay() {
-  document.getElementById('vibeOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-  // Read selected items and sync into activeVibes (in-place mutation avoids let/scope issues)
-  var selected = document.querySelectorAll('#vibeOverlay .vibe-item.selected');
-  try {
-    activeVibes.length = 0;
-    selected.forEach(function(el) {
-      var vibe = el.getAttribute('data-vibe');
-      if (vibe) activeVibes.push(vibe);
-    });
-  } catch(e) {
-    // Fallback: create window-level copy if let activeVibes not in scope yet
-    window._mmhVibesSync = Array.from(selected).map(function(el){ return el.getAttribute('data-vibe'); }).filter(Boolean);
-  }
-  // Update vibe row display
-  var displayEl = document.getElementById('vibeRowDisplay');
-  if (displayEl) {
-    if (activeVibes.length > 0) {
-      var names = Array.from(selected).map(function(el){ return el.querySelector('.vibe-item-name').textContent; });
-      displayEl.textContent = names.join(' · ');
-      displayEl.classList.add('has-vibes');
-    } else {
-      displayEl.textContent = 'What kind of neighbourhood feels like you?';
-      displayEl.classList.remove('has-vibes');
-    }
-  }
-}
-function overlayVibeToggle(el) {
-  el.classList.toggle('selected');
-  var count = document.querySelectorAll('#vibeOverlay .vibe-item.selected').length;
-  var countEl = document.getElementById('vibeCount');
-  if (countEl) countEl.textContent = count;
-}
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeVibeOverlay();
-});
-</script>
-<script>
-const UNSPLASH_KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
-const MAPBOX_TOKEN = 'pk.eyJ1IjoidGlhZ283MDEiLCJhIjoiY21uNjBkbHIxMDBzcDJyc2I1czFrdWt1biJ9.v1XnI4B7BwOQDV17LE-nIg';
-
-const METRO_LINKS = {
-  "Lisbon":        { name: "Metro de Lisboa", url: "https://www.metrolisboa.pt/en/travel/diagrams-and-maps/" },
-  "Porto":         { name: "Metro do Porto", url: "https://en.metrodoporto.pt/pages/364" },
-  "London":        { name: "London Underground", url: "https://tfl.gov.uk/maps/track/tube" },
-  "Paris":         { name: "RATP Paris Métro", url: "https://www.ratp.fr/en/plans-lignes/plans-metro" },
-  "Barcelona":     { name: "Metro Barcelona", url: "https://www.tmb.cat/en/barcelona-metro/map" },
-  "Madrid":        { name: "Metro Madrid", url: "https://www.metromadrid.es/en/travel-on-metro/metro-map" },
-  "Amsterdam":     { name: "GVB Metro Map", url: "https://en.gvb.nl/en/travel-information/journey-planner/route-maps" },
-  "Rome":          { name: "Roma Metropolitana", url: "https://www.atac.roma.it/en/page/metro-rail-connections-and-night-buses" },
-  "Milan":         { name: "ATM Milano Metro", url: "https://www.atm.it/en/ViaggiaConNoi/Pagine/mappa_rete.aspx" },
-  "Berlin":        { name: "BVG Berlin U-Bahn", url: "https://www.bvg.de/en/connections/bvg-maps/tube-map" },
-  "Munich":        { name: "MVV München U-Bahn", url: "https://www.mvv-muenchen.de/en/maps-stations/maps/index.html" },
-  "Vienna":        { name: "Wiener Linien U-Bahn", url: "https://www.wienerlinien.at/en/netzplan.html" },
-  "Copenhagen":    { name: "Copenhagen Metro", url: "https://www.m.dk/en/find-your-route/metro-map/" },
-  "Stockholm":     { name: "SL Tunnelbana", url: "https://sl.se/en/in-english/maps--timetables/" },
-  "Prague":        { name: "Prague Metro", url: "https://www.dpp.cz/en/travelling/network-maps" },
-  "Budapest":      { name: "BKK Budapest Metro", url: "https://bkk.hu/en/maps-and-timetables/maps/" },
-  "Brussels":      { name: "STIB Metro Brussels", url: "https://www.stib-mivb.be/article.html?l=en&_guid=9bc60d5c-6a3d-35a0-3e40-27c2d7dde2b4" },
-  "Istanbul":      { name: "İstanbul Metro", url: "https://www.metro.istanbul/en/haritalar" },
-  "New York":      { name: "MTA NYC Subway", url: "https://new.mta.info/maps" },
-  "Los Angeles":   { name: "LA Metro Rail", url: "https://www.metro.net/riding/maps/" },
-  "San Francisco": { name: "BART Map", url: "https://www.bart.gov/sites/default/files/docs/system-map.pdf" },
-  "Chicago":       { name: "CTA L Map", url: "https://www.transitchicago.com/maps/" },
-  "Washington DC": { name: "WMATA Metro Map", url: "https://www.wmata.com/schedules/maps/" },
-  "Boston":        { name: "MBTA T Map", url: "https://www.mbta.com/maps" },
-  "Toronto":       { name: "TTC Subway Map", url: "https://www.ttc.ca/routes-and-schedules/subway-map" },
-  "Montreal":      { name: "STM Métro", url: "https://www.stm.info/en/info/networks/metro/map" },
-  "Mexico City":   { name: "Metro CDMX", url: "https://metro.cdmx.gob.mx/red-del-metro" },
-  "São Paulo":     { name: "Metrô SP", url: "https://www.metro.sp.gov.br/sua-viagem/mapa-da-rede-metro-cptm.aspx" },
-  "Buenos Aires":  { name: "Subte Buenos Aires", url: "https://www.buenosaires.gob.ar/subte/mapa-de-la-red" },
-  "Tokyo":         { name: "Tokyo Metro Map", url: "https://www.tokyometro.jp/en/subwaymap/" },
-  "Seoul":         { name: "Seoul Metro Map", url: "https://www.seoulmetro.co.kr/en/cyberStation.do" },
-  "Singapore":     { name: "MRT Network Map", url: "https://www.lta.gov.sg/content/ltagov/en/getting_around/public_transport/mrt_and_lrt_trains/system_map.html" },
-  "Dubai":         { name: "Dubai Metro Map", url: "https://dubai.ae/en/information-and-services/transport/dubai-metro" },
   "Sydney":        { name: "Sydney Metro Map", url: "https://transportnsw.info/routes/maps" },
   "Melbourne":     { name: "Melbourne Metro", url: "https://www.ptv.vic.gov.au/more/travelling-on-the-network/maps/" },
   "Bangkok":       { name: "BTS/MRT Bangkok", url: "https://www.bangkokmasstransit.com/" },
