@@ -1874,47 +1874,51 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 }
 
 /* Transport section — prominent, always shown */
+/* ══ STATION NAMES BOX — complete redesign ══ */
 .mmh-station-names {
   background: #1A1510 !important;
   border: none !important;
-  border-left: none !important;
   border-top: 3px solid #F0C93A !important;
   border-radius: 0 !important;
-  padding: 14px 16px !important;
+  padding: 18px 20px 16px !important;
   margin-top: 12px !important;
   display: block !important;
 }
-.mmh-station-names > *:first-child,
-.mmh-station-names {
-  font-size: 12px !important;
-  color: #FAF7F2 !important;
+/* "No metro/train" headline — injected by JS as .mmh-no-metro */
+.mmh-no-metro {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 22px !important;
   font-weight: 600 !important;
-  letter-spacing: 0.3px !important;
+  color: #FAF7F2 !important;
+  line-height: 1.2 !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+/* Bus routes fine print */
+.mmh-bus-routes {
+  font-size: 10px !important;
+  color: rgba(250,247,242,0.35) !important;
   line-height: 1.6 !important;
+  margin-bottom: 12px !important;
+  display: block !important;
 }
-.mmh-station-names div {
-  font-size: 10px !important;
-  color: rgba(250,247,242,0.45) !important;
-  font-weight: 400 !important;
-  margin-top: 4px !important;
-  letter-spacing: 0.5px !important;
+/* "NEAREST METRO & TRAIN STATIONS" yellow footer label */
+.mmh-transport-label {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: #F0C93A !important;
+  margin-top: 10px !important;
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(240,201,58,0.15) !important;
+  display: block !important;
 }
-/* Replace "tram" text with CSS — covers all timing scenarios */
-.mmh-station-names div[style*="rgba(248,241,231,0.3)"],
-.mmh-station-names div[style*="rgba(248,241,231, 0.3)"] {
-  color: transparent !important;
-  position: relative !important;
-  height: 1.4em !important;
+/* Hide all original content — JS rebuilds it */
+.mmh-station-names > *:not(.mmh-no-metro):not(.mmh-bus-routes):not(.mmh-transport-label) {
+  display: none !important;
 }
-.mmh-station-names div[style*="rgba(248,241,231,0.3)"]::after,
-.mmh-station-names div[style*="rgba(248,241,231, 0.3)"]::after {
-  content: 'No metro/train within 800m';
-  position: absolute !important;
-  left: 0 !important; top: 0 !important;
-  color: rgba(250,247,242,0.38) !important;
-  font-size: 10px !important;
-  white-space: nowrap !important;
-}
+
 
 /* City guide section — yellow replaces gold accent */
 .mmh-city-guide-sec { border-left: none !important; background: white !important; }
@@ -1966,15 +1970,13 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-sec-inner [style*="font-size:12px;color:var(--text-secondary)"] { color: #6B5E4A !important; line-height: 1.55 !important; }
 
 /* ── Station names box ── */
-.mmh-station-names::before {
-  content: 'Nearest Metro & Train Stations';
-  display: block !important;
+/* mmh-transport-label — yellow bottom label in station box */
+.mmh-transport-label {
   font-size: 8px !important;
   font-weight: 700 !important;
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
   color: #F0C93A !important;
-  margin-bottom: 8px !important;
 }
 /* Transport emoji in station text — give it space */
 .mmh-station-names [id*="station-names-text"] {
@@ -2110,8 +2112,38 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   padding: 16px 18px !important;
   margin-top: 10px !important;
   display: block !important;
+  font-size: 0 !important; /* hides bus route text nodes — child elements override individually */
 }
-.mmh-station-names div, .mmh-station-names span { color: rgba(250,247,242,0.6) !important; }
+/* ::before header always shows (explicit font-size overrides parent's 0) */
+.mmh-station-names::before {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: #F0C93A !important;
+  display: block !important;
+  margin-bottom: 10px !important;
+}
+/* "No metro/train/tram" div: make text transparent, replace via ::after */
+.mmh-station-names > div[style*="rgba(248,241,231,0.3)"],
+.mmh-station-names > div[style*="rgba(248,241,231, 0.3)"] {
+  color: transparent !important;
+  font-size: 13px !important;
+  position: relative !important;
+  min-height: 1.3em !important;
+}
+.mmh-station-names > div[style*="rgba(248,241,231,0.3)"]::after,
+.mmh-station-names > div[style*="rgba(248,241,231, 0.3)"]::after {
+  content: 'No metro/train stations within 800m' !important;
+  position: absolute !important;
+  left: 0 !important; top: 0 !important;
+  color: rgba(250,247,242,0.55) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.3px !important;
+  white-space: nowrap !important;
+}
+/* Restore other divs (transport label) */
+.mmh-station-names div, .mmh-station-names span { font-size: 12px !important; color: rgba(250,247,242,0.6) !important; }
 .mmh-transport-label {
   font-size: 8px !important;
   font-weight: 700 !important;
@@ -2139,6 +2171,26 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   border-radius: 0 !important; font-size: 9px !important;
   font-weight: 700 !important; letter-spacing: 0.5px !important;
   padding: 3px 8px !important;
+}
+
+/* CSS-only fallback: always rename stations tile label via :has() selector */
+.mmh-a-tile:has([id$="-stations"]) {
+  border-bottom: 3px solid #F0C93A !important;
+  background: #FEF9EE !important;
+}
+.mmh-a-tile:has([id$="-stations"]) .mmh-a-label {
+  visibility: hidden !important;
+  position: relative !important;
+}
+.mmh-a-tile:has([id$="-stations"]) .mmh-a-label::after {
+  content: 'METRO & TRAIN' !important;
+  visibility: visible !important;
+  position: absolute !important;
+  left: 50% !important; top: 0 !important;
+  transform: translateX(-50%) !important;
+  color: #D4A820 !important;
+  font-size: 10px !important; font-weight: 700 !important;
+  letter-spacing: 1px !important; white-space: nowrap !important;
 }
 
 /* Permanently closed: hidden */
@@ -2204,34 +2256,47 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 /* ── Hide Closed/Open status on recommendations ── */
 .pick-open { display: none !important; }
 
-/* ── Metro tile: CSS lock shows "0" and "METRO & TRAIN" regardless of async fetch ── */
+/* ── Metro tile: font-size:0 hides actual text, ::before always shows "0" ── */
 .mmh-a-tile[data-mmh-tiled="1"] .mmh-a-count {
-  visibility: hidden !important;
-  position: relative !important;
-  height: 1.2em !important;
+  font-size: 0 !important;
+  color: transparent !important;
 }
-.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-count::after {
+.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-count::before {
   content: '0' !important;
-  visibility: visible !important;
-  position: absolute !important;
-  left: 50% !important; top: 0 !important;
-  transform: translateX(-50%) !important;
-  color: #1A1510 !important;
+  display: block !important;
   font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 32px !important;
+  font-weight: 600 !important;
+  color: #1A1510 !important;
+  line-height: 1 !important;
 }
 .mmh-a-tile[data-mmh-tiled="1"] .mmh-a-label {
-  visibility: hidden !important;
+  font-size: 0 !important;
+  color: transparent !important;
+}
+.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-label::before {
+  content: 'METRO & TRAIN' !important;
+  display: block !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #D4A820 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+}
+/* CSS-only fallback: always rename "Bus stops" label via ID sibling selector */
+[id$="-stations"] + .mmh-a-label {
+  font-size: 0 !important;
+  color: transparent !important;
   position: relative !important;
 }
-.mmh-a-tile[data-mmh-tiled="1"] .mmh-a-label::after {
+[id$="-stations"] + .mmh-a-label::before {
   content: 'METRO & TRAIN' !important;
-  visibility: visible !important;
-  position: absolute !important;
-  left: 50% !important; top: 0 !important;
-  transform: translateX(-50%) !important;
+  display: block !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
   color: #D4A820 !important;
-  font-size: 10px !important; font-weight: 700 !important;
-  letter-spacing: 1px !important; white-space: nowrap !important;
+  letter-spacing: 1px !important;
+  white-space: nowrap !important;
 }
 
 /* ── Open-state section number in tile header ── */
@@ -5450,47 +5515,77 @@ window.addEventListener('scroll', () => {
     });
   }
 
-  /* Fix amenity tiles: rename busOnly "Bus stops" → "Metro & Train" at 0 */
+  /* Fix amenity tiles — ID-based, most reliable */
   function fixAmenityTiles(card) {
-    card.querySelectorAll('.mmh-a-tile:not([data-mmh-tiled])').forEach(function(tile) {
+    /* ── Station tile: use ID suffix to find the count element ── */
+    card.querySelectorAll('[id$="-stations"]').forEach(function(cntEl) {
+      var tile = cntEl.closest('.mmh-a-tile');
+      if (!tile || tile.dataset.mmhTiled) return;
       var lbl = tile.querySelector('.mmh-a-label');
-      var cnt = tile.querySelector('.mmh-a-count');
-      if (!lbl) return;
-      var t = lbl.textContent.trim().toLowerCase();
-      if (t === 'bus stops' || t === 'bus stop') {
+      var isBusOnly = lbl && /bus/i.test(lbl.textContent);
+      if (isBusOnly) {
+        tile.dataset.mmhTiled = '1';
         tile.setAttribute('data-mmh-tiled','1');
         tile.setAttribute('data-key','stations');
-        lbl.textContent = 'METRO & TRAIN';
-        if (cnt) {
-          cnt.textContent = '0';
-          /* Lock count at 0 — async fetch will try to overwrite with bus count */
-          var cntLocked = false;
-          new MutationObserver(function() {
-            if (cntLocked) return;
-            if (cnt.textContent !== '0') {
-              cntLocked = true;
-              cnt.textContent = '0';
-              setTimeout(function(){ cntLocked = false; }, 50);
-            }
-          }).observe(cnt, {childList: true, subtree: true, characterData: true});
-        }
+        cntEl.textContent = '0';
+        /* Lock against async overwrite */
+        var locked = false;
+        new MutationObserver(function() {
+          if (locked || cntEl.textContent === '0') return;
+          locked = true;
+          cntEl.textContent = '0';
+          setTimeout(function(){ locked = false; }, 60);
+        }).observe(cntEl, {childList:true, subtree:true, characterData:true});
       }
-      if (t === 'parks') {
+    });
+
+    /* ── Parks → Green areas ── */
+    card.querySelectorAll('.mmh-a-label:not([data-parks-fixed])').forEach(function(lbl) {
+      if (/^parks$/i.test(lbl.textContent.trim())) {
+        lbl.dataset.parksFixed = '1';
         lbl.textContent = 'GREEN AREAS';
       }
     });
 
-    /* Add NEAREST METRO & TRAIN label to transport box */
-    card.querySelectorAll('.mmh-station-names:not([data-mmh-labelled])').forEach(function(box) {
-      box.setAttribute('data-mmh-labelled','1');
-      var lbl = document.createElement('div');
+    /* ── Station names box — clean rebuild ── */
+    card.querySelectorAll('.mmh-station-names').forEach(function(box) {
+      if (box.dataset.sbDone) return;
+      /* Collect raw text before clearing */
+      var rawText = box.textContent.replace(/nearest.*stations/gi,'').replace(/nearest metro.*/gi,'').trim();
+      if (!rawText) return; /* content not loaded yet */
+      box.dataset.sbDone = '1';
+
+      /* Clear original content entirely */
+      box.innerHTML = '';
+
+      /* Headline: "No metro / train nearby" */
+      var headline = document.createElement('span');
+      headline.className = 'mmh-no-metro';
+      headline.textContent = 'No metro / train nearby';
+      box.appendChild(headline);
+
+      /* Bus routes as fine print — strip the "no metro" message */
+      var busRoutes = rawText
+        .replace(/no metro.*?800m\.?/gi, '')
+        .replace(/no metro\/train.*?800m\.?/gi, '')
+        .replace(/\s+/g, ' ').trim();
+      if (busRoutes.length > 3) {
+        var busDiv = document.createElement('span');
+        busDiv.className = 'mmh-bus-routes';
+        busDiv.textContent = busRoutes;
+        box.appendChild(busDiv);
+      }
+
+      /* Yellow footer label */
+      var lbl = document.createElement('span');
       lbl.className = 'mmh-transport-label';
-      lbl.textContent = 'NEAREST METRO & TRAIN STATIONS';
-      box.insertBefore(lbl, box.firstChild);
+      lbl.textContent = 'Nearest Metro & Train Stations';
+      box.appendChild(lbl);
     });
   }
 
-  function fixBrand(card) {
+
+    function fixBrand(card) {
     /* ── Landmark items: circle numbers, name links, badges, transport ── */
     card.querySelectorAll('.picks-list').forEach(function(list) {
       Array.from(list.children).forEach(function(row) {
@@ -5535,6 +5630,19 @@ window.addEventListener('scroll', () => {
           });
           el.style.cssText = 'font-size:11px;color:#9A8E7A;display:flex;align-items:center;gap:4px;margin-bottom:5px;';
         });
+        /* Also strip emoji from distance span and any remaining inline text */
+        row.querySelectorAll('span,div').forEach(function(el) {
+          if (el.dataset.emojiFixed) return;
+          el.dataset.emojiFixed = '1';
+          var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+          var tnodes = [], tn;
+          while ((tn = tw.nextNode())) {
+            if (/[\uD83C-\uDBFF]/.test(tn.nodeValue)) tnodes.push(tn);
+          }
+          tnodes.forEach(function(tn) {
+            tn.nodeValue = tn.nodeValue.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]/g,'').replace(/\s+/g,' ');
+          });
+        });
 
         /* Tip line */
         row.querySelectorAll('[style*="font-style:italic"]').forEach(function(el) {
@@ -5568,6 +5676,16 @@ window.addEventListener('scroll', () => {
     grid.className = 'mmh-tile-grid';
     secs[0].parentNode.insertBefore(grid, secs[0]);
     secs.forEach(function(s){ grid.appendChild(s); });
+
+    /* Mark station tile immediately — don't wait for fixAmenityTiles */
+    card.querySelectorAll('[id*="-stations"]').forEach(function(cnt) {
+      var tile = cnt.closest('.mmh-a-tile');
+      if (tile && !tile.dataset.mmhTiled) {
+        tile.dataset.mmhTiled = '1';
+        tile.setAttribute('data-mmh-tiled','1');
+        tile.setAttribute('data-key','stations');
+      }
+    });
 
     secs.forEach(function(sec, idx) {
       var head = sec.querySelector('.mmh-sec-head');
@@ -5617,6 +5735,15 @@ window.addEventListener('scroll', () => {
       }
     });
 
+    /* Watch landmarks lists for async load — strip emoji when items appear */
+    card.querySelectorAll('[id^="landmarks-list-"]').forEach(function(list) {
+      if (list._mmhObserved) return;
+      list._mmhObserved = true;
+      new MutationObserver(function() {
+        fixBrand(card);
+      }).observe(list, {childList: true});
+    });
+
     /* force station-names always visible, add label if missing */
     setTimeout(function() {
       card.querySelectorAll('.mmh-station-names').forEach(function(el) {
@@ -5650,6 +5777,67 @@ window.addEventListener('scroll', () => {
       area.querySelectorAll('.mmh-card').forEach(transformCard);
     }, 80);
   }).observe(area, {childList: true, subtree: true});
+
+  /* Global interval scanner: catches slow-loading tiles and city guide emoji
+     regardless of API response timing. Runs every 400ms for 20 seconds. */
+  var scanCount = 0;
+  var scanner = setInterval(function() {
+    scanCount++;
+    if (scanCount > 50) { clearInterval(scanner); return; }
+
+    /* Bus stops → Metro & Train tile */
+    document.querySelectorAll('.mmh-a-tile:not([data-mmh-tiled])').forEach(function(tile) {
+      var lbl = tile.querySelector('.mmh-a-label');
+      if (!lbl) return;
+      var t = lbl.textContent.trim().toLowerCase();
+      if (t === 'bus stops' || t === 'bus stop') {
+        tile.dataset.mmhTiled = '1';
+        tile.setAttribute('data-mmh-tiled', '1');
+        tile.setAttribute('data-key', 'stations');
+        var cntEl = tile.querySelector('.mmh-a-count');
+        if (cntEl && !cntEl._stationLocked) {
+          cntEl._stationLocked = true;
+          cntEl.textContent = '0';
+          new MutationObserver(function() {
+            if (cntEl.textContent !== '0') cntEl.textContent = '0';
+          }).observe(cntEl, {childList: true, subtree: true, characterData: true});
+        }
+      }
+      if (t === 'parks') {
+        tile.dataset.parksFixed = '1';
+        lbl.textContent = 'GREEN AREAS';
+      }
+    });
+
+    /* City guide transport emoji — target landmarks lists specifically */
+    document.querySelectorAll('[id^="landmarks-list-"] [style*="gap:4px"]:not([data-tf])').forEach(function(el) {
+      el.setAttribute('data-tf', '1');
+      var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+      var tnodes = [], tn;
+      while ((tn = tw.nextNode())) tnodes.push(tn);
+      tnodes.forEach(function(tn) {
+        tn.nodeValue = tn.nodeValue.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').replace(/\s+/g, ' ');
+      });
+      el.style.color = '#9A8E7A';
+    });
+
+    /* Station box: clear bus routes text, show message */
+    document.querySelectorAll('.mmh-station-names:not([data-sb-done])').forEach(function(box) {
+      var msgDiv = null;
+      box.querySelectorAll('div').forEach(function(d) {
+        if (/metro|tram/i.test(d.textContent)) msgDiv = d;
+      });
+      if (!msgDiv) return;
+      box.setAttribute('data-sb-done', '1');
+      Array.from(box.childNodes).forEach(function(n) {
+        if (n.nodeType === 3) n.nodeValue = '';
+        if (n.nodeType === 1 && n !== msgDiv && !n.classList.contains('mmh-transport-label')) n.style.display = 'none';
+      });
+      msgDiv.textContent = 'No metro/train stations within 800m';
+      msgDiv.style.cssText = 'font-size:14px;color:rgba(250,247,242,0.75);font-weight:600;margin-top:4px;';
+    });
+
+  }, 400);
 })();
 </script>
 </body>
