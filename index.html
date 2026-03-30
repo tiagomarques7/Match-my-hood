@@ -1921,32 +1921,55 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   display: block !important;
 }
 
-/* Bus-only state: JS adds .mmh-bus-only — CSS takes over entirely */
-.mmh-station-names.mmh-bus-only > * { display: none !important; }
+/* Bus-only state: JS adds .mmh-bus-only */
+/* Hide raw text nodes (bus names arrive as divs via renderResults) */
 .mmh-station-names.mmh-bus-only {
-  font-size: 0 !important; /* hide raw text nodes */
+  font-size: 0 !important;
+  color: transparent !important;
 }
+/* Show div children — bus names + sub-label */
+.mmh-station-names.mmh-bus-only > * {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #FAF7F2 !important;
+  line-height: 1.7 !important;
+}
+/* ::before — prominent NO METRO statement */
 .mmh-station-names.mmh-bus-only::before {
-  content: 'No metro / train nearby';
+  content: 'NO METRO & TRAIN WITHIN 800M';
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
+  font-style: normal;
   color: #FAF7F2;
-  line-height: 1.1;
   display: block;
-  margin-bottom: 0;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(240,201,58,0.18);
+  letter-spacing: 0;
 }
+/* ::after — removed */
 .mmh-station-names.mmh-bus-only::after {
-  content: 'Nearest Metro & Train Stations';
+  content: none;
+}
+/* Last child div: was "No metro/train/tram within 800m" → renamed via ::before */
+/* Guard: only apply when it's NOT the only child (two divs = enrichment arrived) */
+.mmh-station-names.mmh-bus-only > div:last-child:not(:only-child) {
+  font-size: 0 !important;
+  color: transparent !important;
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px solid rgba(240,201,58,0.12) !important;
+}
+.mmh-station-names.mmh-bus-only > div:last-child:not(:only-child)::before {
+  content: 'Nearest metro / train stations';
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 20px;
+  font-size: 13px;
   font-style: italic;
   font-weight: 600;
-  color: #F0C93A;
+  color: rgba(240,201,58,0.65);
   display: block;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(240,201,58,0.18);
 }
 
 /* Metro-present state */
@@ -2276,7 +2299,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   color: transparent !important;
 }
 .mmh-a-tile[data-mmh-tiled="1"] .mmh-a-label::before {
-  content: 'METRO & TRAIN' !important;
+  content: 'BUS STOPS' !important;
   display: block !important;
   font-size: 10px !important;
   font-weight: 700 !important;
