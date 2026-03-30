@@ -1574,7 +1574,7 @@ section.suggestions-section { background:#FEF9EE !important; border-top:1.5px so
 section.suggestions-section .section-label { color:#9A8E7A !important; }
 section.suggestions-section .section-label::before { background:#9A8E7A !important; }
 section.suggestions-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
-section.suggestions-section .suggestion-card { background:white !important; border-radius:0 !important; border:1.5px solid #EDE0C4 !important; box-shadow:none !important; }
+section.suggestions-section .suggestion-card { background:#FEF9EE !important; border-radius:0 !important; border:1.5px solid #EDE0C4 !important; box-shadow:none !important; }
 section.suggestions-section .suggestion-card h3 { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; font-size:20px !important; }
 section.suggestions-section .suggestion-card p { color:#6B5E4A !important; }
 section.suggestions-section .suggestion-input { border:1.5px solid #EDE0C4 !important; border-radius:0 !important; background:#FEF9EE !important; color:#3D3528 !important; font-family:'DM Sans',sans-serif !important; }
@@ -1620,9 +1620,51 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .error-msg { display:none;padding:16px 20px;background:#FDF3C4;border:1.5px solid #D4A820;color:#6B5E4A;font-size:14px;margin-top:12px; }
 .error-msg.visible { display:block; }
 
-
 /* ══════════════════════════════════════════
-   RESULTS SECTION — Option C: Dark header / Cream body
+   v12 BRAND AUDIT — Section fixes
+   Why cards · Newsletter input · Suggestions · Pricing
+══════════════════════════════════════════ */
+
+/* Why cards: dark ones must match city card .dk exactly */
+.why-card:not(.why-card-yl) {
+  background: #1A1510 !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+.why-card:not(.why-card-yl):hover {
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55) !important;
+  transform: translateY(-5px) !important;
+}
+
+/* Newsletter input: sharp corners, yellow focus, brand success state */
+.newsletter-form input {
+  border-radius: 0 !important;
+}
+.newsletter-form input:focus {
+  border-color: #D4A820 !important;
+}
+.newsletter-success {
+  background: rgba(240,201,58,0.10) !important;
+  border: 1.5px solid rgba(240,201,58,0.30) !important;
+  border-radius: 0 !important;
+  color: #F0C93A !important;
+}
+
+/* Pricing feature rows */
+.pricing-feature-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #EDE0C4;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #6B5E4A;
+}
+.pricing-feature-row:first-child { border-top: none; padding-top: 0; }
+.pricing-feature-row.highlight { color: #3D3528; font-weight: 500; }
+.pricing-feature-row svg { flex-shrink: 0; margin-top: 2px; }
+
+ — Option C: Dark header / Cream body
    CSS-only. No JS changes.
 ══════════════════════════════════════════ */
 
@@ -3150,12 +3192,12 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     </div>
     <div style="padding:32px 36px;">
       <p style="font-size:15px; color:#6B5E4A; line-height:1.75; margin-bottom:28px; max-width:480px;">Unlimited neighbourhood matches, full maps, real amenity data — all free while we're in beta. Join the waitlist to lock in early-bird pricing.</p>
-      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:32px;">
-        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">✓</span> Neighbourhood character matching</div>
-        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">✓</span> Interactive maps with real data</div>
-        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">✓</span> Top restaurants &amp; bars</div>
-        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">✓</span> Transit lines &amp; amenity counts</div>
-        <div style="display:flex; align-items:center; gap:12px; font-family:'DM Sans',sans-serif; font-size:14px; color:#3D3528; font-weight:500; padding:10px 0; border-top:1px solid #EDE0C4;"><span style="color:#D4A820; font-size:15px; flex-shrink:0;">★</span> Early-bird pricing for waitlist members</div>
+      <div style="display:flex; flex-direction:column; margin-bottom:32px;">
+        <div class="pricing-feature-row"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="#D4A820" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Neighbourhood character matching</div>
+        <div class="pricing-feature-row"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="#D4A820" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Interactive maps with real data</div>
+        <div class="pricing-feature-row"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="#D4A820" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Top restaurants &amp; bars</div>
+        <div class="pricing-feature-row"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="2,7 5.5,11 12,3" stroke="#D4A820" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Transit lines &amp; amenity counts</div>
+        <div class="pricing-feature-row highlight"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polygon points="7,1 8.8,5.2 13.5,5.6 10.1,8.6 11.2,13.2 7,10.7 2.8,13.2 3.9,8.6 0.5,5.6 5.2,5.2" stroke="#D4A820" stroke-width="1.4" stroke-linejoin="round" fill="none"/></svg> Early-bird pricing for waitlist members</div>
       </div>
       <a href="#newsletter" style="display:block; background:#F0C93A; color:#3D3528; text-decoration:none; padding:15px 32px; font-family:'DM Sans',sans-serif; font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; border:1.5px solid #D4A820; border-radius:0; text-align:center; transition:background 0.2s;" onmouseover="this.style.background='#D4A820'" onmouseout="this.style.background='#F0C93A'">Join the waitlist →</a>
     </div>
@@ -3262,6 +3304,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     <div class="suggestions-grid">
 
       <div class="suggestion-card" style="border-radius:0;box-shadow:none;border:1.5px solid #EDE0C4;background:white;">
+        <h3>Suggest a city</h3>
         <p>Which city should we add next? Tell us where you're travelling and we'll prioritise it.</p>
         <form name="city-suggestion" method="POST" data-netlify="true" onsubmit="handleSuggestion(event,'city')">
           <input type="hidden" name="form-name" value="city-suggestion" />
@@ -3272,6 +3315,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
       </div>
 
       <div class="suggestion-card" style="border-radius:0;box-shadow:none;border:1.5px solid #EDE0C4;background:white;">
+        <h3>Shape the product</h3>
         <p>What would make MatchMyHood more useful for you? We read every suggestion.</p>
         <form name="feature-suggestion" method="POST" data-netlify="true" onsubmit="handleSuggestion(event,'feature')">
           <input type="hidden" name="form-name" value="feature-suggestion" />
