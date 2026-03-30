@@ -1883,6 +1883,113 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-city-guide-sec .mmh-sec-icon { background: rgba(240,201,58,0.1) !important; border: 1px solid rgba(240,201,58,0.25) !important; }
 .mmh-city-guide-sec .mmh-sec-title { color: #D4A820 !important; }
 
+/* ════════════════════════════════════════════
+   TILE GRID — Option D results layout
+   ════════════════════════════════════════════ */
+.mmh-tile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  background: #1A1510;
+  padding: 3px;
+}
+.mmh-tile-grid .mmh-sec {
+  border-top: none !important;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+/* CLOSED TILE: tall face */
+.mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-head {
+  min-height: 148px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  padding: 16px 18px !important;
+}
+/* OPEN TILE: spans both cols */
+.mmh-tile-grid .mmh-sec.tile-open {
+  grid-column: 1 / -1;
+}
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-head {
+  background: #1A1510 !important;
+  border-bottom: 3px solid #F0C93A !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  min-height: unset !important;
+  padding: 14px 20px !important;
+}
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-head:hover { background: #231d14 !important; }
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-title { color: #FAF7F2 !important; font-size: 13px !important; font-family: 'DM Sans',sans-serif !important; font-weight: 600 !important; }
+.mmh-tile-grid .mmh-sec.tile-open .mmh-chev { color: #F0C93A !important; display: inline-block !important; }
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-icon { display: flex !important; background: rgba(240,201,58,0.12) !important; }
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-body.open { background: #FEF9EE; }
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-inner { padding: 18px 22px 22px !important; }
+/* Tile color palette (4-step pattern) */
+.mmh-tile-grid .mmh-sec:nth-child(4n+1) { background: #1A1510; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) { background: #F0C93A; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) { background: #FEF9EE; border: 1.5px solid #EDE0C4 !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+4) { background: #231d14; }
+/* Ghost number */
+.tile-num-ghost {
+  position: absolute; top: 10px; left: 14px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 54px; font-weight: 600; line-height: 1;
+  pointer-events: none; z-index: 0;
+}
+.mmh-tile-grid .mmh-sec:nth-child(4n+1) .tile-num-ghost,
+.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-num-ghost { color: rgba(250,247,242,0.09); }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-num-ghost { color: rgba(61,53,40,0.11); }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-num-ghost { color: #EDE0C4; }
+/* Eyebrow */
+.tile-eyebrow {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; display: block;
+  position: relative; z-index: 1; margin-bottom: 5px;
+}
+.mmh-tile-grid .mmh-sec:nth-child(4n+1) .tile-eyebrow,
+.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-eyebrow { color: #F0C93A; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-eyebrow { color: rgba(61,53,40,0.5); }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-eyebrow { color: #9A8E7A; }
+/* Title in closed tile */
+.mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-title {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 21px !important; font-weight: 600 !important;
+  line-height: 1.1 !important; position: relative; z-index: 1;
+}
+.mmh-tile-grid .mmh-sec:nth-child(4n+1):not(.tile-open) .mmh-sec-title,
+.mmh-tile-grid .mmh-sec:nth-child(4n+4):not(.tile-open) .mmh-sec-title { color: #FAF7F2 !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2):not(.tile-open) .mmh-sec-title { color: #1A1510 !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3):not(.tile-open) .mmh-sec-title { color: #1A1510 !important; }
+/* Expand hint */
+.tile-expand-hint {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; margin-top: 10px;
+  display: flex; align-items: center; gap: 4px;
+  position: relative; z-index: 1;
+}
+.mmh-tile-grid .mmh-sec:nth-child(4n+1) .tile-expand-hint,
+.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-expand-hint { color: rgba(250,247,242,0.28); }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-expand-hint { color: rgba(61,53,40,0.28); }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-expand-hint { color: rgba(61,53,40,0.28); }
+/* Hide decorative elements when open */
+.mmh-tile-grid .mmh-sec.tile-open .tile-eyebrow,
+.mmh-tile-grid .mmh-sec.tile-open .tile-expand-hint,
+.mmh-tile-grid .mmh-sec.tile-open .tile-num-ghost { display: none !important; }
+/* Hide icon + preview in closed tile (ghost number replaces icon) */
+.mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-icon,
+.mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-preview,
+.mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-chev { display: none !important; }
+/* Chev visible when open */
+.mmh-tile-grid .mmh-sec.tile-open .mmh-chev { display: inline-block !important; }
+/* Metro & Train: always show station-names div */
+.mmh-tile-grid .mmh-sec.tile-open .mmh-station-names { display: block !important; }
+/* Station tile: always prominent with yellow accent when > 0 */
+.mmh-a-tile[data-key="stations"] { border-bottom: 3px solid #F0C93A !important; }
+
+
 /* Pick items — sharp, consistent */
 .picks-list { display: flex !important; flex-direction: column !important; gap: 3px !important; }
 .pick-photo { border-radius: 0 !important; width: 68px !important; height: 68px !important; }
@@ -4981,6 +5088,89 @@ window.addEventListener('scroll', () => {
       startCycle();
     }
   }, 6000);
+})();
+</script>
+
+<script>
+/* ── MMH Tile Grid Transform ── */
+(function(){
+  var area = document.getElementById('resultsArea');
+  if (!area) return;
+  var processed = new WeakSet();
+  var eyebrows = ['Your match','Around','City guide','Restaurants','Bars','Cafés','Things to do','Strengths','Rent & move','Map'];
+  
+  function fixText(root) {
+    if (!root) return;
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    var nodes = [], n;
+    while ((n = walker.nextNode())) {
+      if (!n.nodeValue) continue;
+      var tag = n.parentElement && n.parentElement.tagName;
+      if (tag === 'SCRIPT' || tag === 'STYLE') continue;
+      if (n.nodeValue.match(/PARKS|Parks|tram within/)) nodes.push(n);
+    }
+    nodes.forEach(function(nd) {
+      nd.nodeValue = nd.nodeValue
+        .replace(/PARKS/g, 'GREEN AREAS')
+        .replace(/Parks/g, 'Green areas')
+        .replace(/metro\/train\/tram/gi, 'metro/train')
+        .replace(/tram within/gi, 'within');
+    });
+  }
+
+  function transformCard(card) {
+    if (processed.has(card)) return;
+    var secs = Array.from(card.querySelectorAll(':scope .mmh-sec'));
+    if (!secs.length) return;
+    processed.add(card);
+
+    /* wrap in grid */
+    var grid = document.createElement('div');
+    grid.className = 'mmh-tile-grid';
+    secs[0].parentNode.insertBefore(grid, secs[0]);
+    secs.forEach(function(s){ grid.appendChild(s); });
+
+    secs.forEach(function(sec, idx){
+      var head = sec.querySelector('.mmh-sec-head');
+      if (!head) return;
+      var body = sec.querySelector('.mmh-sec-body');
+
+      /* inject ghost number */
+      var ghost = document.createElement('span');
+      ghost.className = 'tile-num-ghost';
+      ghost.textContent = idx < 9 ? '0'+(idx+1) : ''+(idx+1);
+      head.appendChild(ghost);
+
+      /* inject eyebrow before first child */
+      var ey = document.createElement('span');
+      ey.className = 'tile-eyebrow';
+      ey.textContent = eyebrows[idx] || ('0'+(idx+1));
+      head.insertBefore(ey, head.firstChild);
+
+      /* inject expand hint */
+      var hint = document.createElement('span');
+      hint.className = 'tile-expand-hint';
+      hint.textContent = 'Expand →';
+      head.appendChild(hint);
+
+      /* sync tile-open class with body */
+      if (body) {
+        if (body.classList.contains('open')) sec.classList.add('tile-open');
+        new MutationObserver(function(){
+          sec.classList.toggle('tile-open', body.classList.contains('open'));
+        }).observe(body, {attributes:true, attributeFilter:['class']});
+      }
+    });
+
+    fixText(card);
+    /* watch for async amenity updates */
+    new MutationObserver(function(){ fixText(card); })
+      .observe(card, {childList:true, subtree:true, characterData:true});
+  }
+
+  new MutationObserver(function(){
+    area.querySelectorAll('.mmh-card').forEach(transformCard);
+  }).observe(area, {childList:true, subtree:true});
 })();
 </script>
 </body>
