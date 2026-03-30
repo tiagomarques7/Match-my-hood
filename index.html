@@ -1881,8 +1881,34 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 /* Transport section — prominent, always shown */
 /* ══ STATION NAMES BOX ══ */
 
-/* Hide the duplicate station-names element that has no class */
-[id^="station-names-"]:not(.mmh-station-names) { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
+/* Hide the duplicate station-names element that has no class — nuclear rules */
+/* Layer 1: zero it out even if display is forced back by JS */
+[id^="station-names-"]:not(.mmh-station-names) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  font-size: 0 !important;
+  color: transparent !important;
+  line-height: 0 !important;
+}
+/* Layer 2: hide every child regardless of parent display state */
+[id^="station-names-"]:not(.mmh-station-names) > *,
+[id^="station-names-"]:not(.mmh-station-names) * {
+  display: none !important;
+  visibility: hidden !important;
+  font-size: 0 !important;
+  color: transparent !important;
+  opacity: 0 !important;
+}
 
 .mmh-station-names {
   background: #1A1510 !important;
@@ -5524,10 +5550,21 @@ window.addEventListener('scroll', () => {
     /* ── Force-hide ALL non-class station-names (belt+suspenders) ── */
     card.querySelectorAll('[id^="station-names-"]').forEach(function(el) {
       if (el.classList.contains('mmh-station-names')) return;
-      el.style.setProperty('display', 'none', 'important');
-      el.style.setProperty('visibility', 'hidden', 'important');
-      el.style.setProperty('height', '0', 'important');
-      el.style.setProperty('overflow', 'hidden', 'important');
+      var props = [
+        ['display','none'],['visibility','hidden'],['opacity','0'],
+        ['height','0'],['min-height','0'],['max-height','0'],
+        ['padding','0'],['margin','0'],['border','none'],
+        ['overflow','hidden'],['pointer-events','none'],
+        ['position','absolute'],['font-size','0'],
+        ['color','transparent'],['line-height','0']
+      ];
+      props.forEach(function(p){ el.style.setProperty(p[0], p[1], 'important'); });
+      el.querySelectorAll('*').forEach(function(c){
+        c.style.setProperty('display','none','important');
+        c.style.setProperty('visibility','hidden','important');
+        c.style.setProperty('font-size','0','important');
+        c.style.setProperty('opacity','0','important');
+      });
     });
 
     /* ── Station names box — add .mmh-bus-only class ── */
@@ -5728,8 +5765,13 @@ window.addEventListener('scroll', () => {
       fixText(card); fixAmenityTiles(card); fixBrand(card);
       card.querySelectorAll('[id^="station-names-"]').forEach(function(el){
         if(!el.classList.contains('mmh-station-names')){
-          el.style.setProperty('display','none','important');
-          el.style.setProperty('visibility','hidden','important');
+          var props = [
+            ['display','none'],['visibility','hidden'],['opacity','0'],
+            ['height','0'],['min-height','0'],['max-height','0'],
+            ['padding','0'],['margin','0'],['overflow','hidden'],
+            ['position','absolute'],['font-size','0'],['color','transparent']
+          ];
+          props.forEach(function(p){ el.style.setProperty(p[0], p[1], 'important'); });
         }
       });
     }, 1800);
@@ -5813,21 +5855,59 @@ window.addEventListener('scroll', () => {
 <script>
 /* Popup dedup: CSS-only — .mmh-popup hidden, only simple popup shows */
 
-/* ── Global sweep: hide any non-class station-names that escaped card-level hide ── */
+/* ── Global sweep: nuclear hide for non-class station-names ── */
 (function(){
-  function sweepStationNames() {
-    document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)').forEach(function(el){
-      el.style.setProperty('display','none','important');
-      el.style.setProperty('visibility','hidden','important');
+  /* Apply every hide property via setProperty so !important is honoured */
+  function nukeEl(el) {
+    var props = [
+      ['display','none'],['visibility','hidden'],['opacity','0'],
+      ['height','0'],['min-height','0'],['max-height','0'],
+      ['padding','0'],['margin','0'],['border','none'],
+      ['overflow','hidden'],['pointer-events','none'],
+      ['position','absolute'],['font-size','0'],
+      ['color','transparent'],['line-height','0']
+    ];
+    props.forEach(function(p){ el.style.setProperty(p[0], p[1], 'important'); });
+    /* Also hide all descendants */
+    el.querySelectorAll('*').forEach(function(child){
+      child.style.setProperty('display','none','important');
+      child.style.setProperty('visibility','hidden','important');
+      child.style.setProperty('font-size','0','important');
+      child.style.setProperty('opacity','0','important');
     });
   }
-  /* Run once now, again after results load */
+
+  /* Attach a per-element MutationObserver so any re-show by renderResults is caught */
+  var watched = new WeakSet();
+  function watchEl(el) {
+    if (watched.has(el)) return;
+    watched.add(el);
+    nukeEl(el);
+    new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        if (m.attributeName === 'style' || m.type === 'childList') {
+          nukeEl(el);
+        }
+      });
+    }).observe(el, { attributes: true, attributeFilter: ['style'], childList: true, subtree: true });
+  }
+
+  function sweepStationNames() {
+    document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)').forEach(watchEl);
+  }
+
   sweepStationNames();
   var area = document.getElementById('resultsArea');
   if (area) {
     new MutationObserver(function(){ setTimeout(sweepStationNames, 50); })
       .observe(area, {childList: true, subtree: true});
   }
+  /* Belt-and-suspenders interval for the first 30 seconds after page load */
+  var _sweepCount = 0;
+  var _sweepInterval = setInterval(function(){
+    sweepStationNames();
+    if (++_sweepCount > 60) clearInterval(_sweepInterval);
+  }, 500);
 })();
 
 /* ── 3D layer fix: capture every Mapbox map + lift layers on pitch ── */
