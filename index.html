@@ -2493,6 +2493,70 @@ section.suggestions-section .suggestion-card { background:#FEF9EE !important; bo
 .pick-item:nth-child(odd) { border-left:3px solid #F0C93A !important; }
 .pick-item:nth-child(even) { border-left:3px solid #EDE0C4 !important; }
 
+/* ══════════════════════════════════════════
+   v13 — Layout, parallax, mobile
+══════════════════════════════════════════ */
+
+/* Layout alignment */
+.search-inner-landing { margin: 0 auto; }
+#pricing-beta-card { margin: 0 auto !important; max-width: 640px !important; }
+
+/* Consistent section padding */
+section.pricing-section { padding: 80px 48px !important; }
+section.roadmap-section { padding: 80px 48px !important; }
+.match-showcase { padding: 80px 24px !important; }
+@media(min-width:600px){ .match-showcase { padding: 96px 48px !important; } }
+@media(max-width:600px){
+  section.pricing-section { padding: 56px 24px !important; }
+  section.roadmap-section { padding: 56px 24px !important; }
+}
+
+/* How it works: parallax background setup */
+.how-section-new { position: relative; overflow: hidden; }
+.how-parallax-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 130%;
+  top: -15%;
+  object-fit: cover;
+  object-position: center;
+  will-change: transform;
+  opacity: 0.07;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
+}
+.how-section-new .sec-ey,
+.how-section-new .sec-title-dark,
+.how-section-new .how-steps { position: relative; z-index: 1; }
+@media(max-width:700px){ .how-parallax-img { display: none !important; } }
+
+/* Newsletter: parallax background setup */
+section.newsletter-section { position: relative; overflow: hidden; }
+.newsletter-parallax-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 130%;
+  top: -15%;
+  object-fit: cover;
+  object-position: center 60%;
+  will-change: transform;
+  opacity: 0.09;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
+}
+@media(max-width:700px){ .newsletter-parallax-img { display: none !important; } }
+
+/* Mobile: search form tightening */
+@media(max-width:600px){
+  .search-section-landing { padding: 48px 20px !important; }
+  .search-inner-landing { max-width: 100%; }
+  .mmh-search-form { border-width: 1.5px; }
+}
+
 </style>
 
 
@@ -2569,6 +2633,26 @@ section.suggestions-section .suggestion-card { background:#FEF9EE !important; bo
   </div>
   <div class="hero-scroll"><span>Scroll</span><div class="hero-scroll-line"></div></div>
 </section>
+
+<script>
+(function(){
+  var heroImg = document.querySelector('.hero-img');
+  if (!heroImg || window.innerWidth <= 700) return;
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (!ticking) {
+      requestAnimationFrame(function(){
+        var scrolled = window.pageYOffset;
+        if (scrolled < window.innerHeight * 1.5) {
+          heroImg.style.transform = 'translateY(' + (scrolled * 0.32) + 'px)';
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+})();
+</script>
 
 <!-- MARQUEE YELLOW -->
 <div class="marquee-strip">
@@ -2761,6 +2845,7 @@ section.suggestions-section .suggestion-card { background:#FEF9EE !important; bo
 
 <!-- HOW IT WORKS -->
 <div class="how-section-new" id="how">
+  <img class="how-parallax-img" src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=80" alt="" aria-hidden="true" loading="lazy">
   <div class="sec-ey">How it works</div>
   <h2 class="sec-title-dark">Three steps to your <em>perfect neighbourhood</em></h2>
   <div class="how-steps">
@@ -3058,7 +3143,7 @@ section.suggestions-section .suggestion-card { background:#FEF9EE !important; bo
   <div class="section-label">Pricing</div>
   <h2 class="section-title">Pricing <em>coming soon</em></h2>
   <p style="color:#6B5E4A; font-size:16px; margin-bottom:56px; max-width:520px;">We're still building. MatchMyHood is free to use while we're in beta — join the waitlist to be first to know when plans launch and lock in an early-bird rate.</p>
-  <div id="pricing-beta-card" style="max-width:640px; background:white; border:1.5px solid #EDE0C4; border-radius:0; padding:0;">
+  <div id="pricing-beta-card" style="max-width:640px; margin:0 auto; background:white; border:1.5px solid #EDE0C4; border-radius:0; padding:0;">
     <div style="background:#F0C93A; padding:24px 36px; border-bottom:1.5px solid #D4A820;">
       <div style="font-family:'DM Sans',sans-serif; font-size:9px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:#6B5E4A; margin-bottom:6px;">Current plan</div>
       <div style="font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:600; color:#3D3528; line-height:1.0;">Free during beta</div>
@@ -3153,6 +3238,7 @@ section.suggestions-section .suggestion-card { background:#FEF9EE !important; bo
 
 <!-- NEWSLETTER -->
 <section class="newsletter-section" id="newsletter">
+  <img class="newsletter-parallax-img" src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1600&q=80" alt="" aria-hidden="true" loading="lazy">
   <div class="newsletter-inner">
     <h2>The neighbourhood you'll love is out there</h2>
     <p>Join the waitlist. Get early access, our weekly Neighbourhood of the Week email, and a founding member discount when we launch.</p>
@@ -6094,5 +6180,38 @@ window.addEventListener('scroll', () => {
   patchMapGL();
 })();
 </script>
+
+<script>
+/* Mid-page section parallax — v13 */
+(function(){
+  if (window.innerWidth <= 700) return;
+  var sections = [
+    { img: document.querySelector('.how-parallax-img'),        wrap: document.querySelector('.how-section-new') },
+    { img: document.querySelector('.newsletter-parallax-img'), wrap: document.querySelector('.newsletter-section') }
+  ].filter(function(s){ return s.img && s.wrap; });
+
+  if (!sections.length) return;
+  var ticking = false;
+
+  function update(){
+    sections.forEach(function(s){
+      var rect = s.wrap.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 200 && rect.bottom > -200) {
+        s.img.style.transform = 'translateY(' + (rect.top * 0.28) + 'px)';
+      }
+    });
+  }
+
+  window.addEventListener('scroll', function(){
+    if (!ticking){
+      requestAnimationFrame(function(){ update(); ticking = false; });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  update();
+})();
+</script>
+
 </body>
 </html>
