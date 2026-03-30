@@ -1882,7 +1882,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 /* ══ STATION NAMES BOX ══ */
 
 /* Hide the duplicate station-names element that has no class */
-[id^="station-names-"]:not(.mmh-station-names) { display: none !important; }
+[id^="station-names-"]:not(.mmh-station-names) { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
 
 .mmh-station-names {
   background: #1A1510 !important;
@@ -5521,22 +5521,13 @@ window.addEventListener('scroll', () => {
       }
     });
 
-    /* ── Force-hide non-class station-names via JS (beats inline display:block) ── */
+    /* ── Force-hide ALL non-class station-names (belt+suspenders) ── */
     card.querySelectorAll('[id^="station-names-"]').forEach(function(el) {
       if (el.classList.contains('mmh-station-names')) return;
-      var rawContent = el.textContent
-        .replace(/no metro.*?800m\.?/gi, '')
-        .replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]/g, '')
-        .replace(/\s+/g, ' ').trim();
       el.style.setProperty('display', 'none', 'important');
-      /* Sync content to .mmh-station-names if empty */
-      var classBox = card.querySelector('.mmh-station-names');
-      if (classBox && rawContent && rawContent.length > 2) {
-        var existingText = classBox.textContent.replace(/nearest.*stations/gi,'').trim();
-        if (!existingText) {
-          classBox.insertBefore(document.createTextNode(rawContent), classBox.firstChild);
-        }
-      }
+      el.style.setProperty('visibility', 'hidden', 'important');
+      el.style.setProperty('height', '0', 'important');
+      el.style.setProperty('overflow', 'hidden', 'important');
     });
 
     /* ── Station names box — add .mmh-bus-only class ── */
@@ -5733,7 +5724,15 @@ window.addEventListener('scroll', () => {
     fixAmenityTiles(card);
     fixBrand(card);
     /* Repeat after async content loads */
-    setTimeout(function(){ fixText(card); fixAmenityTiles(card); fixBrand(card); }, 1800);
+    setTimeout(function(){
+      fixText(card); fixAmenityTiles(card); fixBrand(card);
+      card.querySelectorAll('[id^="station-names-"]').forEach(function(el){
+        if(!el.classList.contains('mmh-station-names')){
+          el.style.setProperty('display','none','important');
+          el.style.setProperty('visibility','hidden','important');
+        }
+      });
+    }, 1800);
     setTimeout(function(){ fixText(card); fixAmenityTiles(card); fixBrand(card); }, 4500);
     setTimeout(function(){ fixText(card); fixAmenityTiles(card); fixBrand(card); }, 8000);
   }
@@ -5812,65 +5811,70 @@ window.addEventListener('scroll', () => {
 })();
 </script>
 <script>
-/* ── Popup dedup: close all existing popups before adding a new one ── */
+/* Popup dedup: CSS-only — .mmh-popup hidden, only simple popup shows */
+
+/* ── Global sweep: hide any non-class station-names that escaped card-level hide ── */
 (function(){
-  function patchPopup() {
-    if (!window.mapboxgl) { setTimeout(patchPopup, 200); return; }
-    var origAddTo = mapboxgl.Popup.prototype.addTo;
-    mapboxgl.Popup.prototype.addTo = function(map) {
-      document.querySelectorAll('.mapboxgl-popup').forEach(function(p){ p.remove(); });
-      return origAddTo.call(this, map);
-    };
+  function sweepStationNames() {
+    document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)').forEach(function(el){
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('visibility','hidden','important');
+    });
   }
-  patchPopup();
+  /* Run once now, again after results load */
+  sweepStationNames();
+  var area = document.getElementById('resultsArea');
+  if (area) {
+    new MutationObserver(function(){ setTimeout(sweepStationNames, 50); })
+      .observe(area, {childList: true, subtree: true});
+  }
 })();
 
-/* ── 3D layer fix: move our custom pin layers above buildings on pitch change ── */
+/* ── 3D layer fix: capture every Mapbox map + lift layers on pitch ── */
 (function(){
-  var CUSTOM_LAYERS = [
-    'restaurants-layer','bars-layer','coffee-layer',
-    'toppicks-layer','transport-layer','supermarkets-layer',
-    'gyms-layer','museums-layer','parks-layer',
-    'neighbourhood-fill','neighbourhood-outline',
-    'station-circles'
-  ];
+  var CUSTOM_LAYERS = ['restaurants-layer','bars-layer','coffee-layer',
+    'toppicks-layer','transport-layer','supermarkets-layer','gyms-layer',
+    'museums-layer','parks-layer','neighbourhood-fill','neighbourhood-outline'];
+  window._mmhMaps = window._mmhMaps || [];
+
   function liftLayers(map) {
     CUSTOM_LAYERS.forEach(function(id) {
-      try {
-        if (map.getLayer(id)) map.moveLayer(id);
-      } catch(e) {}
+      try { if (map.getLayer && map.getLayer(id)) map.moveLayer(id); } catch(e) {}
     });
   }
-  /* Observe resultsArea for new maps, then patch each */
-  var area = document.getElementById('resultsArea');
-  if (!area) return;
-  new MutationObserver(function() {
-    document.querySelectorAll('[id^="map-"]').forEach(function(el) {
-      if (el._mmhPitchPatched) return;
-      el._mmhPitchPatched = true;
-      /* Wait for Mapbox map instance */
-      var attempts = 0;
-      var checker = setInterval(function() {
-        attempts++;
-        if (attempts > 40) { clearInterval(checker); return; }
-        var mapInst = el._mapboxMap || (el.__mbMap);
-        /* Try to find map on the element */
-        if (!mapInst) {
-          /* Search global maps store */
-          if (window._mmhMaps) {
-            var idx = el.id.replace('map-','');
-            mapInst = window._mmhMaps[idx];
-          }
+
+  function patchMapGL() {
+    if (!window.mapboxgl) { setTimeout(patchMapGL, 300); return; }
+
+    /* Intercept Map.prototype.on to capture every map instance */
+    var origOn = mapboxgl.Map.prototype.on;
+    mapboxgl.Map.prototype.on = function(type, layerOrFn, fn) {
+      if (window._mmhMaps.indexOf(this) === -1) window._mmhMaps.push(this);
+      return origOn.apply(this, arguments);
+    };
+
+    /* Intercept setPitch to lift layers when 3D activates */
+    var origSetPitch = mapboxgl.Map.prototype.setPitch;
+    mapboxgl.Map.prototype.setPitch = function(pitch) {
+      var r = origSetPitch.apply(this, arguments);
+      var self = this;
+      setTimeout(function() { liftLayers(self); }, 150);
+      return r;
+    };
+
+    /* Also lift on pitch event (covers bearing/pitch reset) */
+    var origFire = mapboxgl.Map.prototype.fire;
+    if (origFire) {
+      mapboxgl.Map.prototype.fire = function(type) {
+        if (type === 'pitchend') {
+          var self = this;
+          setTimeout(function() { liftLayers(self); }, 50);
         }
-        if (mapInst && mapInst.on) {
-          clearInterval(checker);
-          mapInst.on('pitch', function() { liftLayers(mapInst); });
-          mapInst.on('style.load', function() { liftLayers(mapInst); });
-          mapInst.on('sourcedata', function() { liftLayers(mapInst); });
-        }
-      }, 300);
-    });
-  }).observe(area, {childList: true, subtree: true});
+        return origFire.apply(this, arguments);
+      };
+    }
+  }
+  patchMapGL();
 })();
 </script>
 </body>
