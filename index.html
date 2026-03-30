@@ -1695,6 +1695,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-sec-preview { color: #9A8E7A !important; }
 .mmh-sec-icon { background: rgba(61,53,40,0.06) !important; border-radius: 0 !important; }
 .mmh-sec-icon svg { filter: saturate(0) brightness(0.5) !important; }
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-icon svg { filter: brightness(10) !important; opacity: 0.7 !important; }
 .mmh-chev { color: #D4A820 !important; }
 .mmh-sec-body.open { background: white !important; }
 .mmh-section-sub-label { color: #9A8E7A !important; }
@@ -1830,8 +1831,12 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   transition: background 0.2s, border-bottom-color 0.2s !important;
 }
 .mmh-a-tile:hover { background: #FEFADF !important; border-bottom-color: #F0C93A !important; }
-.mmh-a-icon { margin: 0 auto 6px !important; }
-.mmh-a-icon svg { filter: saturate(0) brightness(0.35) !important; opacity: 0.5 !important; }
+.mmh-a-icon { margin: 0 auto 8px !important; width: 28px !important; height: 28px !important; }
+.mmh-a-icon svg { filter: saturate(0) brightness(0.35) !important; opacity: 1 !important; width: 22px !important; height: 22px !important; }
+/* Stations tile — always prominent with yellow treatment */
+.mmh-a-tile[data-key="stations"] .mmh-a-icon svg { filter: saturate(0.4) brightness(0.6) sepia(0.5) !important; opacity: 1 !important; }
+.mmh-a-tile[data-key="stations"] .mmh-a-count { color: #1A1510 !important; }
+.mmh-a-tile[data-key="stations"] .mmh-a-label { color: #D4A820 !important; font-weight: 700 !important; }
 .mmh-a-count {
   font-family: 'Cormorant Garamond', serif !important;
   font-size: 28px !important;
@@ -1865,16 +1870,31 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   border-bottom: 1px solid #EDE0C4;
 }
 
-/* Station names — yellow rule strip */
+/* Transport section — prominent, always shown */
 .mmh-station-names {
-  background: #FEFADF !important;
+  background: #1A1510 !important;
   border: none !important;
-  border-left: 3px solid #F0C93A !important;
+  border-left: none !important;
+  border-top: 3px solid #F0C93A !important;
   border-radius: 0 !important;
-  padding: 10px 14px !important;
-  font-size: 12px !important;
-  color: #6B5E4A !important;
+  padding: 14px 16px !important;
   margin-top: 12px !important;
+  display: block !important;
+}
+.mmh-station-names > *:first-child,
+.mmh-station-names {
+  font-size: 12px !important;
+  color: #FAF7F2 !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  line-height: 1.6 !important;
+}
+.mmh-station-names div {
+  font-size: 10px !important;
+  color: rgba(250,247,242,0.45) !important;
+  font-weight: 400 !important;
+  margin-top: 4px !important;
+  letter-spacing: 0.5px !important;
 }
 
 /* City guide section — yellow replaces gold accent */
@@ -5146,28 +5166,30 @@ window.addEventListener('scroll', () => {
     return el.textContent.trim();
   }
 
+  /* fixText — marks processed nodes so observer never re-enters */
   function fixText(root) {
     if (!root) return;
-    /* parks -> green areas; tram cleanup */
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
     var nodes = [], n;
     while ((n = walker.nextNode())) {
-      if (!n.nodeValue) continue;
+      if (!n.nodeValue || n._mmhDone) continue;
       var tag = n.parentElement && n.parentElement.tagName;
       if (tag === 'SCRIPT' || tag === 'STYLE') continue;
       if (/PARKS|Parks|tram within/.test(n.nodeValue)) nodes.push(n);
     }
     nodes.forEach(function(nd) {
+      nd._mmhDone = true;
       nd.nodeValue = nd.nodeValue
         .replace(/PARKS/g, 'GREEN AREAS')
         .replace(/Parks/g, 'Green areas')
         .replace(/metro\/train\/tram/gi, 'metro/train')
         .replace(/tram within/gi, 'within');
     });
-    /* strip emoji from pick-links so they use brand text color */
-    root.querySelectorAll('.pick-link').forEach(function(a) {
-      var clean = a.textContent.replace(/[\u{1F300}-\u{1F9FF}]/gu,'').replace(/\s+/g,' ').trim();
-      if (clean) a.textContent = clean;
+    /* strip emoji — skip already-processed links */
+    root.querySelectorAll('.pick-link:not([data-fx])').forEach(function(a) {
+      a.setAttribute('data-fx','1');
+      var t = a.textContent.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF\u2600-\u27BF]/g,'').replace(/\s+/g,' ').trim();
+      if (t) a.textContent = t;
     });
   }
 
@@ -5224,15 +5246,31 @@ window.addEventListener('scroll', () => {
       }
     });
 
+    /* force station-names always visible, add label if missing */
+    setTimeout(function() {
+      card.querySelectorAll('.mmh-station-names').forEach(function(el) {
+        el.style.display = 'block';
+        if (!el.querySelector('.station-transport-label')) {
+          var lbl = document.createElement('div');
+          lbl.className = 'station-transport-label';
+          lbl.style.cssText = 'font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#F0C93A;margin-bottom:6px;';
+          lbl.textContent = 'Metro & Train';
+          el.insertBefore(lbl, el.firstChild);
+        }
+      });
+    }, 800);
+
     fixText(card);
-    /* watch for async amenity + place card updates */
-    new MutationObserver(function(){ fixText(card); })
-      .observe(card, {childList: true, subtree: true, characterData: true});
+    /* Run fixText once more after async content loads — no observer needed */
+    setTimeout(function(){ fixText(card); }, 2500);
+    setTimeout(function(){ fixText(card); }, 5000);
   }
 
+  /* Watch area direct children only — fires when a new result card is added,
+     NOT on every amenity update inside cards (which caused infinite loops) */
   new MutationObserver(function(){
     area.querySelectorAll('.mmh-card').forEach(transformCard);
-  }).observe(area, {childList: true, subtree: true});
+  }).observe(area, {childList: true, subtree: false});
 })();
 </script>
 </body>
