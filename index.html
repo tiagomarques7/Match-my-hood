@@ -1882,7 +1882,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 /* ══ STATION NAMES BOX ══ */
 
 /* Hide the duplicate station-names element that has no class — nuclear rules */
-/* Layer 1: zero it out even if display is forced back by JS */
+/* Layer 1: clip-path wins even when JS forces display:block!important */
 [id^="station-names-"]:not(.mmh-station-names) {
   display: none !important;
   visibility: hidden !important;
@@ -1895,10 +1895,11 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   border: none !important;
   overflow: hidden !important;
   pointer-events: none !important;
-  position: absolute !important;
   font-size: 0 !important;
   color: transparent !important;
   line-height: 0 !important;
+  clip-path: inset(100%) !important;
+  -webkit-clip-path: inset(100%) !important;
 }
 /* Layer 2: hide every child regardless of parent display state */
 [id^="station-names-"]:not(.mmh-station-names) > *,
@@ -5547,24 +5548,14 @@ window.addEventListener('scroll', () => {
       }
     });
 
-    /* ── Force-hide ALL non-class station-names (belt+suspenders) ── */
+    /* ── Force-hide ALL non-class station-names — move to hidden bin ── */
     card.querySelectorAll('[id^="station-names-"]').forEach(function(el) {
       if (el.classList.contains('mmh-station-names')) return;
-      var props = [
-        ['display','none'],['visibility','hidden'],['opacity','0'],
-        ['height','0'],['min-height','0'],['max-height','0'],
-        ['padding','0'],['margin','0'],['border','none'],
-        ['overflow','hidden'],['pointer-events','none'],
-        ['position','absolute'],['font-size','0'],
-        ['color','transparent'],['line-height','0']
-      ];
-      props.forEach(function(p){ el.style.setProperty(p[0], p[1], 'important'); });
-      el.querySelectorAll('*').forEach(function(c){
-        c.style.setProperty('display','none','important');
-        c.style.setProperty('visibility','hidden','important');
-        c.style.setProperty('font-size','0','important');
-        c.style.setProperty('opacity','0','important');
-      });
+      var bin = document.getElementById('mmh-hidden-bin');
+      if (bin && !bin.contains(el)) {
+        bin.appendChild(el);
+      }
+      el.style.setProperty('display', 'none', 'important');
     });
 
     /* ── Station names box — add .mmh-bus-only class ── */
@@ -5855,58 +5846,64 @@ window.addEventListener('scroll', () => {
 <script>
 /* Popup dedup: CSS-only — .mmh-popup hidden, only simple popup shows */
 
-/* ── Global sweep: nuclear hide for non-class station-names ── */
+/* ── Global sweep: MOVE non-class station-names into a hidden off-screen bin ── */
+/* Moving is unbeatable — display/visibility/style on the element no longer matter */
 (function(){
-  /* Apply every hide property via setProperty so !important is honoured */
-  function nukeEl(el) {
-    var props = [
-      ['display','none'],['visibility','hidden'],['opacity','0'],
-      ['height','0'],['min-height','0'],['max-height','0'],
-      ['padding','0'],['margin','0'],['border','none'],
-      ['overflow','hidden'],['pointer-events','none'],
-      ['position','absolute'],['font-size','0'],
-      ['color','transparent'],['line-height','0']
-    ];
-    props.forEach(function(p){ el.style.setProperty(p[0], p[1], 'important'); });
-    /* Also hide all descendants */
-    el.querySelectorAll('*').forEach(function(child){
-      child.style.setProperty('display','none','important');
-      child.style.setProperty('visibility','hidden','important');
-      child.style.setProperty('font-size','0','important');
-      child.style.setProperty('opacity','0','important');
-    });
+  /* Create hidden bin appended to body — anything inside is invisible and out of flow */
+  var bin = document.getElementById('mmh-hidden-bin');
+  if (!bin) {
+    bin = document.createElement('div');
+    bin.id = 'mmh-hidden-bin';
+    bin.setAttribute('aria-hidden', 'true');
+    bin.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;z-index:-9999;';
+    document.body.appendChild(bin);
   }
 
-  /* Attach a per-element MutationObserver so any re-show by renderResults is caught */
-  var watched = new WeakSet();
-  function watchEl(el) {
-    if (watched.has(el)) return;
-    watched.add(el);
-    nukeEl(el);
-    new MutationObserver(function(mutations) {
-      mutations.forEach(function(m) {
-        if (m.attributeName === 'style' || m.type === 'childList') {
-          nukeEl(el);
-        }
-      });
-    }).observe(el, { attributes: true, attributeFilter: ['style'], childList: true, subtree: true });
+  var moved = new WeakSet();
+
+  function moveEl(el) {
+    if (moved.has(el)) return;
+    moved.add(el);
+    bin.appendChild(el); /* physically moves el out of card layout */
+    /* Also nuke inline style so getElementById reads still work but element is safe */
+    el.style.setProperty('display', 'none', 'important');
   }
 
   function sweepStationNames() {
-    document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)').forEach(watchEl);
+    /* Find all non-class station-names that are still in the visible DOM (not in bin) */
+    document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)').forEach(function(el) {
+      if (!bin.contains(el)) moveEl(el);
+    });
   }
 
+  /* Run immediately */
   sweepStationNames();
+
+  /* Watch resultsArea for new cards being injected */
   var area = document.getElementById('resultsArea');
   if (area) {
-    new MutationObserver(function(){ setTimeout(sweepStationNames, 50); })
-      .observe(area, {childList: true, subtree: true});
+    new MutationObserver(function() {
+      /* Use rAF so element is in DOM before we query */
+      requestAnimationFrame(sweepStationNames);
+    }).observe(area, { childList: true, subtree: true });
   }
-  /* Belt-and-suspenders interval for the first 30 seconds after page load */
-  var _sweepCount = 0;
-  var _sweepInterval = setInterval(function(){
+
+  /* Belt-and-suspenders: also watch whole document body for late injections */
+  new MutationObserver(function(mutations) {
+    var needsSweep = false;
+    mutations.forEach(function(m) {
+      m.addedNodes.forEach(function(n) {
+        if (n.nodeType === 1) needsSweep = true;
+      });
+    });
+    if (needsSweep) requestAnimationFrame(sweepStationNames);
+  }).observe(document.body, { childList: true, subtree: true });
+
+  /* Safety interval for first 30s — catches anything that slips through */
+  var _c = 0;
+  var _iv = setInterval(function() {
     sweepStationNames();
-    if (++_sweepCount > 60) clearInterval(_sweepInterval);
+    if (++_c > 60) clearInterval(_iv);
   }, 500);
 })();
 
