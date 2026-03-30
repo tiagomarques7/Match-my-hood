@@ -1574,7 +1574,7 @@ section.suggestions-section { background:#FEF9EE !important; border-top:1.5px so
 section.suggestions-section .section-label { color:#9A8E7A !important; }
 section.suggestions-section .section-label::before { background:#9A8E7A !important; }
 section.suggestions-section .section-title { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; }
-section.suggestions-section .suggestion-card { background:#FEF9EE !important; border-radius:0 !important; border:1.5px solid #EDE0C4 !important; box-shadow:none !important; }
+section.suggestions-section .suggestion-card { background:white !important; border-radius:0 !important; border:1.5px solid #EDE0C4 !important; box-shadow:none !important; }
 section.suggestions-section .suggestion-card h3 { color:#3D3528 !important; font-family:'Cormorant Garamond',serif !important; font-size:20px !important; }
 section.suggestions-section .suggestion-card p { color:#6B5E4A !important; }
 section.suggestions-section .suggestion-input { border:1.5px solid #EDE0C4 !important; border-radius:0 !important; background:#FEF9EE !important; color:#3D3528 !important; font-family:'DM Sans',sans-serif !important; }
@@ -1620,52 +1620,9 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .error-msg { display:none;padding:16px 20px;background:#FDF3C4;border:1.5px solid #D4A820;color:#6B5E4A;font-size:14px;margin-top:12px; }
 .error-msg.visible { display:block; }
 
-/* ══════════════════════════════════════════
-   v12 BRAND AUDIT — Section fixes
-   Why cards · Newsletter input · Suggestions · Pricing
-══════════════════════════════════════════ */
-
-/* Why cards: dark ones must match city card .dk exactly */
-.why-card:not(.why-card-yl) {
-  background: #1A1510 !important;
-  border: 1px solid rgba(255,255,255,0.07) !important;
-}
-.why-card:not(.why-card-yl):hover {
-  box-shadow: 0 24px 64px rgba(0,0,0,0.55) !important;
-  transform: translateY(-5px) !important;
-}
-
-/* Newsletter input: sharp corners, yellow focus, brand success state */
-.newsletter-form input {
-  border-radius: 0 !important;
-}
-.newsletter-form input:focus {
-  border-color: #D4A820 !important;
-}
-.newsletter-success {
-  background: rgba(240,201,58,0.10) !important;
-  border: 1.5px solid rgba(240,201,58,0.30) !important;
-  border-radius: 0 !important;
-  color: #F0C93A !important;
-}
-
-/* Pricing feature rows */
-.pricing-feature-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 10px 0;
-  border-top: 1px solid #EDE0C4;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  color: #6B5E4A;
-}
-.pricing-feature-row:first-child { border-top: none; padding-top: 0; }
-.pricing-feature-row.highlight { color: #3D3528; font-weight: 500; }
-.pricing-feature-row svg { flex-shrink: 0; margin-top: 2px; }
 
 /* ══════════════════════════════════════════
-   RESULTS SECTION — Dark header / Cream body
+   RESULTS SECTION — Option C: Dark header / Cream body
    CSS-only. No JS changes.
 ══════════════════════════════════════════ */
 
@@ -2507,46 +2464,34 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   .match-pair { height: 240px !important; }
 }
 
+
+/* ══════════════════════════════════════════
+   v12 BRAND AUDIT — Section fixes
+══════════════════════════════════════════ */
+.why-card:not(.why-card-yl) { background:#1A1510 !important; border:1px solid rgba(255,255,255,0.07) !important; }
+.why-card:not(.why-card-yl):hover { box-shadow:0 24px 64px rgba(0,0,0,0.55) !important; transform:translateY(-5px) !important; }
+section.suggestions-section .suggestion-card { background:#FEF9EE !important; border-radius:0 !important; border:1.5px solid #EDE0C4 !important; box-shadow:none !important; }
+.newsletter-form input { border-radius:0 !important; }
+.newsletter-form input:focus { border-color:#D4A820 !important; }
+.newsletter-success { background:rgba(240,201,58,0.10) !important; border:1.5px solid rgba(240,201,58,0.30) !important; border-radius:0 !important; color:#F0C93A !important; }
+.pricing-feature-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-top:1px solid #EDE0C4; font-family:'DM Sans',sans-serif; font-size:14px; color:#6B5E4A; }
+.pricing-feature-row:first-child { border-top:none; padding-top:0; }
+.pricing-feature-row.highlight { color:#3D3528; font-weight:500; }
+.pricing-feature-row svg { flex-shrink:0; margin-top:2px; }
+
 /* ══════════════════════════════════════════
    v12b — Full results polish
-   White→cream · Pick typography · Alternating pick borders
 ══════════════════════════════════════════ */
-
-/* 1. Kill white surface leaks — everything uses brand cream */
-.mmh-card { background: #FEF9EE !important; }
-.mmh-sec { background: #FEF9EE !important; }
-.mmh-sec-body.open { background: #FEF9EE !important; }
-.pick-item { background: #FEF9EE !important; }
-.mmh-stat-tile { background: #FEF9EE !important; }
-
-/* 2. Pick link → yellow-gold (matches site-wide link convention) */
-.pick-link {
-  color: #D4A820 !important;
-  border-bottom-color: rgba(212,168,32,0.25) !important;
-}
-.pick-link:hover {
-  color: #F0C93A !important;
-  border-bottom-color: #F0C93A !important;
-}
-
-/* 3. Pick name → Cormorant Garamond editorial serif */
-.pick-name {
-  font-family: 'Cormorant Garamond', Georgia, serif !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  color: #1A1510 !important;
-  letter-spacing: -0.2px !important;
-  line-height: 1.2 !important;
-  margin-bottom: 4px !important;
-}
-
-/* 4. Alternating yellow left-border on pick items — odd=yellow, even=neutral */
-.pick-item:nth-child(odd) {
-  border-left: 3px solid #F0C93A !important;
-}
-.pick-item:nth-child(even) {
-  border-left: 3px solid #EDE0C4 !important;
-}
+.mmh-card { background:#FEF9EE !important; }
+.mmh-sec { background:#FEF9EE !important; }
+.mmh-sec-body.open { background:#FEF9EE !important; }
+.pick-item { background:#FEF9EE !important; }
+.mmh-stat-tile { background:#FEF9EE !important; }
+.pick-link { color:#D4A820 !important; border-bottom-color:rgba(212,168,32,0.25) !important; }
+.pick-link:hover { color:#F0C93A !important; border-bottom-color:#F0C93A !important; }
+.pick-name { font-family:'Cormorant Garamond',Georgia,serif !important; font-size:16px !important; font-weight:600 !important; color:#1A1510 !important; letter-spacing:-0.2px !important; line-height:1.2 !important; margin-bottom:4px !important; }
+.pick-item:nth-child(odd) { border-left:3px solid #F0C93A !important; }
+.pick-item:nth-child(even) { border-left:3px solid #EDE0C4 !important; }
 
 </style>
 
@@ -2652,6 +2597,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 </div>
 
 <!-- PHOTO STRIP DARK -->
+
 <!-- CITY CARDS DARK — ANIMATED, BLACK/YELLOW ALTERNATING -->
 <div class="city-section" id="cities">
   <div class="sec-ey-light">Cities we know</div>
@@ -2813,6 +2759,39 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 </div>
 
 
+<!-- HOW IT WORKS -->
+<div class="how-section-new" id="how">
+  <div class="sec-ey">How it works</div>
+  <h2 class="sec-title-dark">Three steps to your <em>perfect neighbourhood</em></h2>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-step-num">01</div>
+      <div class="how-step-content">
+        <svg class="how-step-illus" viewBox="0 0 72 72" fill="none"><rect x="6" y="32" width="60" height="34" rx="2" fill="#FDF3C4" stroke="#D4A820" stroke-width="1.2"/><path d="M3 34 L36 10 L69 34" stroke="#D4A820" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="24" y="47" width="24" height="19" rx="1" fill="rgba(255,255,255,0.08)" stroke="rgba(245,240,232,0.5)" stroke-width="1"/><rect x="12" y="40" width="14" height="14" rx="1" fill="white" stroke="#D4A820" stroke-width="1"/><rect x="46" y="40" width="14" height="14" rx="1" fill="white" stroke="#D4A820" stroke-width="1"/></svg>
+        <div class="how-step-title">Tell us your neighbourhood</div>
+        <div class="how-step-body">The one that just feels right — the coffee, the streets, the pace, the people.</div>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">02</div>
+      <div class="how-step-content">
+        <svg class="how-step-illus" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="28" stroke="#D4A820" stroke-width="1.2" fill="#FDF3C4"/><ellipse cx="36" cy="36" rx="10" ry="28" stroke="#D4A820" stroke-width="1" fill="none"/><line x1="8" y1="36" x2="64" y2="36" stroke="#D4A820" stroke-width="1" stroke-dasharray="3 3"/><circle cx="52" cy="20" r="6" fill="#D4A820"/><path d="M49.5 20 L51.5 22 L55.5 17.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="how-step-title">Choose your destination</div>
+        <div class="how-step-body">30+ cities across Europe, the Americas and Asia. We know the streets, the vibes, the hidden corners.</div>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-num">03</div>
+      <div class="how-step-content">
+        <svg class="how-step-illus" viewBox="0 0 72 72" fill="none"><rect x="4" y="18" width="28" height="36" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(245,240,232,0.35)" stroke-width="1.2"/><rect x="40" y="18" width="28" height="36" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(245,240,232,0.35)" stroke-width="1.2"/><line x1="9" y1="27" x2="27" y2="27" stroke="rgba(245,240,232,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="32" x2="27" y2="32" stroke="rgba(245,240,232,0.4)" stroke-width="1" stroke-linecap="round"/><path d="M32 36 L40 36" stroke="rgba(245,240,232,0.7)" stroke-width="1.5" stroke-linecap="round"/><path d="M38 32.5 L41.5 36 L38 39.5" stroke="rgba(245,240,232,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="50" width="32" height="9" rx="1.5" fill="#F0C93A"/></svg>
+        <div class="how-step-title">Get your perfect match</div>
+        <div class="how-step-body">Restaurants, a map, transport and real neighbourhood character. Ready before you land.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- MATCH SHOWCASE — single crossfade example -->
 <div class="match-showcase">
   <div class="strip-header">
@@ -2859,39 +2838,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
       </div>
     </div>
 
-  </div>
-</div>
-
-
-<!-- HOW IT WORKS -->
-<div class="how-section-new" id="how">
-  <div class="sec-ey">How it works</div>
-  <h2 class="sec-title-dark">Three steps to your <em>perfect neighbourhood</em></h2>
-  <div class="how-steps">
-    <div class="how-step">
-      <div class="how-step-num">01</div>
-      <div class="how-step-content">
-        <svg class="how-step-illus" viewBox="0 0 72 72" fill="none"><rect x="6" y="32" width="60" height="34" rx="2" fill="#FDF3C4" stroke="#D4A820" stroke-width="1.2"/><path d="M3 34 L36 10 L69 34" stroke="#D4A820" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="24" y="47" width="24" height="19" rx="1" fill="rgba(255,255,255,0.08)" stroke="rgba(245,240,232,0.5)" stroke-width="1"/><rect x="12" y="40" width="14" height="14" rx="1" fill="white" stroke="#D4A820" stroke-width="1"/><rect x="46" y="40" width="14" height="14" rx="1" fill="white" stroke="#D4A820" stroke-width="1"/></svg>
-        <div class="how-step-title">Tell us your neighbourhood</div>
-        <div class="how-step-body">The one that just feels right — the coffee, the streets, the pace, the people.</div>
-      </div>
-    </div>
-    <div class="how-step">
-      <div class="how-step-num">02</div>
-      <div class="how-step-content">
-        <svg class="how-step-illus" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="28" stroke="#D4A820" stroke-width="1.2" fill="#FDF3C4"/><ellipse cx="36" cy="36" rx="10" ry="28" stroke="#D4A820" stroke-width="1" fill="none"/><line x1="8" y1="36" x2="64" y2="36" stroke="#D4A820" stroke-width="1" stroke-dasharray="3 3"/><circle cx="52" cy="20" r="6" fill="#D4A820"/><path d="M49.5 20 L51.5 22 L55.5 17.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div class="how-step-title">Choose your destination</div>
-        <div class="how-step-body">30+ cities across Europe, the Americas and Asia. We know the streets, the vibes, the hidden corners.</div>
-      </div>
-    </div>
-    <div class="how-step">
-      <div class="how-step-num">03</div>
-      <div class="how-step-content">
-        <svg class="how-step-illus" viewBox="0 0 72 72" fill="none"><rect x="4" y="18" width="28" height="36" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(245,240,232,0.35)" stroke-width="1.2"/><rect x="40" y="18" width="28" height="36" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(245,240,232,0.35)" stroke-width="1.2"/><line x1="9" y1="27" x2="27" y2="27" stroke="rgba(245,240,232,0.4)" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="32" x2="27" y2="32" stroke="rgba(245,240,232,0.4)" stroke-width="1" stroke-linecap="round"/><path d="M32 36 L40 36" stroke="rgba(245,240,232,0.7)" stroke-width="1.5" stroke-linecap="round"/><path d="M38 32.5 L41.5 36 L38 39.5" stroke="rgba(245,240,232,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="50" width="32" height="9" rx="1.5" fill="#F0C93A"/></svg>
-        <div class="how-step-title">Get your perfect match</div>
-        <div class="how-step-body">Restaurants, a map, transport and real neighbourhood character. Ready before you land.</div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -3131,7 +3077,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </section>
 
-
 <!-- ROADMAP -->
 <section class="roadmap-section" id="roadmap">
   <div class="section-label">What's coming</div>
@@ -3206,7 +3151,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 </section>
 
-
 <!-- NEWSLETTER -->
 <section class="newsletter-section" id="newsletter">
   <div class="newsletter-inner">
@@ -3224,7 +3168,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
     <p style="font-size:12px; color:rgba(248,241,231,0.3); margin-top:16px;">No spam. Unsubscribe anytime. We hate tourist traps as much as you do.</p>
   </div>
 </section>
-
 
 <!-- SUGGESTIONS -->
 <section class="suggestions-section">
@@ -3259,7 +3202,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   </div>
 </section>
 
-
 <!-- FOOTER -->
 
 <!-- FOOTER -->
@@ -3278,6 +3220,91 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   <div class="footer-copy-new">© 2026 MatchMyHood</div>
 </footer>
 
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+<script>
+/* ── VIBE OVERLAY BRIDGE ──
+   These functions are NEW — they do not modify toggleVibe / setIntent / runMatch.
+   They sync overlay selections directly into the existing activeVibes global array. */
+function openVibeOverlay() {
+  document.getElementById('vibeOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeVibeOverlay() {
+  document.getElementById('vibeOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  // Read selected items and sync into activeVibes (in-place mutation avoids let/scope issues)
+  var selected = document.querySelectorAll('#vibeOverlay .vibe-item.selected');
+  try {
+    activeVibes.length = 0;
+    selected.forEach(function(el) {
+      var vibe = el.getAttribute('data-vibe');
+      if (vibe) activeVibes.push(vibe);
+    });
+  } catch(e) {
+    // Fallback: create window-level copy if let activeVibes not in scope yet
+    window._mmhVibesSync = Array.from(selected).map(function(el){ return el.getAttribute('data-vibe'); }).filter(Boolean);
+  }
+  // Update vibe row display
+  var displayEl = document.getElementById('vibeRowDisplay');
+  if (displayEl) {
+    if (activeVibes.length > 0) {
+      var names = Array.from(selected).map(function(el){ return el.querySelector('.vibe-item-name').textContent; });
+      displayEl.textContent = names.join(' · ');
+      displayEl.classList.add('has-vibes');
+    } else {
+      displayEl.textContent = 'What kind of neighbourhood feels like you?';
+      displayEl.classList.remove('has-vibes');
+    }
+  }
+}
+function overlayVibeToggle(el) {
+  el.classList.toggle('selected');
+  var count = document.querySelectorAll('#vibeOverlay .vibe-item.selected').length;
+  var countEl = document.getElementById('vibeCount');
+  if (countEl) countEl.textContent = count;
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeVibeOverlay();
+});
+</script>
+<script>
+const UNSPLASH_KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
+const MAPBOX_TOKEN = 'pk.eyJ1IjoidGlhZ283MDEiLCJhIjoiY21uNjBkbHIxMDBzcDJyc2I1czFrdWt1biJ9.v1XnI4B7BwOQDV17LE-nIg';
+
+const METRO_LINKS = {
+  "Lisbon":        { name: "Metro de Lisboa", url: "https://www.metrolisboa.pt/en/travel/diagrams-and-maps/" },
+  "Porto":         { name: "Metro do Porto", url: "https://en.metrodoporto.pt/pages/364" },
+  "London":        { name: "London Underground", url: "https://tfl.gov.uk/maps/track/tube" },
+  "Paris":         { name: "RATP Paris Métro", url: "https://www.ratp.fr/en/plans-lignes/plans-metro" },
+  "Barcelona":     { name: "Metro Barcelona", url: "https://www.tmb.cat/en/barcelona-metro/map" },
+  "Madrid":        { name: "Metro Madrid", url: "https://www.metromadrid.es/en/travel-on-metro/metro-map" },
+  "Amsterdam":     { name: "GVB Metro Map", url: "https://en.gvb.nl/en/travel-information/journey-planner/route-maps" },
+  "Rome":          { name: "Roma Metropolitana", url: "https://www.atac.roma.it/en/page/metro-rail-connections-and-night-buses" },
+  "Milan":         { name: "ATM Milano Metro", url: "https://www.atm.it/en/ViaggiaConNoi/Pagine/mappa_rete.aspx" },
+  "Berlin":        { name: "BVG Berlin U-Bahn", url: "https://www.bvg.de/en/connections/bvg-maps/tube-map" },
+  "Munich":        { name: "MVV München U-Bahn", url: "https://www.mvv-muenchen.de/en/maps-stations/maps/index.html" },
+  "Vienna":        { name: "Wiener Linien U-Bahn", url: "https://www.wienerlinien.at/en/netzplan.html" },
+  "Copenhagen":    { name: "Copenhagen Metro", url: "https://www.m.dk/en/find-your-route/metro-map/" },
+  "Stockholm":     { name: "SL Tunnelbana", url: "https://sl.se/en/in-english/maps--timetables/" },
+  "Prague":        { name: "Prague Metro", url: "https://www.dpp.cz/en/travelling/network-maps" },
+  "Budapest":      { name: "BKK Budapest Metro", url: "https://bkk.hu/en/maps-and-timetables/maps/" },
+  "Brussels":      { name: "STIB Metro Brussels", url: "https://www.stib-mivb.be/article.html?l=en&_guid=9bc60d5c-6a3d-35a0-3e40-27c2d7dde2b4" },
+  "Istanbul":      { name: "İstanbul Metro", url: "https://www.metro.istanbul/en/haritalar" },
+  "New York":      { name: "MTA NYC Subway", url: "https://new.mta.info/maps" },
+  "Los Angeles":   { name: "LA Metro Rail", url: "https://www.metro.net/riding/maps/" },
+  "San Francisco": { name: "BART Map", url: "https://www.bart.gov/sites/default/files/docs/system-map.pdf" },
+  "Chicago":       { name: "CTA L Map", url: "https://www.transitchicago.com/maps/" },
+  "Washington DC": { name: "WMATA Metro Map", url: "https://www.wmata.com/schedules/maps/" },
+  "Boston":        { name: "MBTA T Map", url: "https://www.mbta.com/maps" },
+  "Toronto":       { name: "TTC Subway Map", url: "https://www.ttc.ca/routes-and-schedules/subway-map" },
+  "Montreal":      { name: "STM Métro", url: "https://www.stm.info/en/info/networks/metro/map" },
+  "Mexico City":   { name: "Metro CDMX", url: "https://metro.cdmx.gob.mx/red-del-metro" },
+  "São Paulo":     { name: "Metrô SP", url: "https://www.metro.sp.gov.br/sua-viagem/mapa-da-rede-metro-cptm.aspx" },
+  "Buenos Aires":  { name: "Subte Buenos Aires", url: "https://www.buenosaires.gob.ar/subte/mapa-de-la-red" },
+  "Tokyo":         { name: "Tokyo Metro Map", url: "https://www.tokyometro.jp/en/subwaymap/" },
+  "Seoul":         { name: "Seoul Metro Map", url: "https://www.seoulmetro.co.kr/en/cyberStation.do" },
+  "Singapore":     { name: "MRT Network Map", url: "https://www.lta.gov.sg/content/ltagov/en/getting_around/public_transport/mrt_and_lrt_trains/system_map.html" },
+  "Dubai":         { name: "Dubai Metro Map", url: "https://dubai.ae/en/information-and-services/transport/dubai-metro" },
   "Sydney":        { name: "Sydney Metro Map", url: "https://transportnsw.info/routes/maps" },
   "Melbourne":     { name: "Melbourne Metro", url: "https://www.ptv.vic.gov.au/more/travelling-on-the-network/maps/" },
   "Bangkok":       { name: "BTS/MRT Bangkok", url: "https://www.bangkokmasstransit.com/" },
