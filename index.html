@@ -1975,17 +1975,17 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-station-names.mmh-bus-only > div:last-child:not(:only-child) {
   font-size: 0 !important;
   color: transparent !important;
-  margin-top: 8px !important;
-  padding-top: 8px !important;
-  border-top: 1px solid rgba(240,201,58,0.12) !important;
+  margin-top: 10px !important;
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(240,201,58,0.18) !important;
 }
 .mmh-station-names.mmh-bus-only > div:last-child:not(:only-child)::before {
   content: 'Nearest metro / train stations';
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 13px;
+  font-size: 18px;
   font-style: italic;
-  font-weight: 600;
-  color: rgba(240,201,58,0.65);
+  font-weight: 700;
+  color: #F0C93A;
   display: block;
 }
 
@@ -5951,11 +5951,11 @@ window.addEventListener('scroll', () => {
 
     box.classList.add('mmh-bus-only');
 
-    /* Nearest-metro slot — populated from data-metro-fallback attribute.
-       This attribute will be set by a future server.js update that expands
-       the Overpass metro search radius for busOnly hoods.
-       Format: "StationName|1.2km,StationName2|1.5km" */
-    var fallback = box.getAttribute('data-metro-fallback');
+    /* Nearest-metro slot — from XHR-captured nearestMetroFallback (server.js upgrade)
+       or from data-metro-fallback attribute as fallback */
+    var matchIdx = parseInt((box.id || '').replace('station-names-', '')) || 0;
+    var fallback = (window._mmhMetroFallback && window._mmhMetroFallback[matchIdx])
+                || box.getAttribute('data-metro-fallback');
     if (fallback && !box.querySelector('.mmh-metro-fallback')) {
       var stations = fallback.split(',').slice(0, 2);
       var slot = document.createElement('div');
@@ -6000,6 +6000,38 @@ window.addEventListener('scroll', () => {
   }
 
 })();
+
+/* ── XHR intercept: capture nearestMetroFallback from /api/match response ── */
+(function(){
+  window._mmhMetroFallback = window._mmhMetroFallback || {};
+
+  var origOpen = XMLHttpRequest.prototype.open;
+  var origSend = XMLHttpRequest.prototype.send;
+
+  XMLHttpRequest.prototype.open = function(method, url) {
+    this._mmhApiUrl = url || '';
+    return origOpen.apply(this, arguments);
+  };
+
+  XMLHttpRequest.prototype.send = function(body) {
+    if (this._mmhApiUrl && this._mmhApiUrl.includes('/api/match')) {
+      var xhr = this;
+      xhr.addEventListener('load', function() {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          var matches = data.matches || [];
+          matches.forEach(function(m, i) {
+            if (m.nearestMetroFallback) {
+              window._mmhMetroFallback[i] = m.nearestMetroFallback;
+            }
+          });
+        } catch(e) {}
+      });
+    }
+    return origSend.apply(this, arguments);
+  };
+})();
+
 (function(){
   var CUSTOM_LAYERS = ['restaurants-layer','bars-layer','coffee-layer',
     'toppicks-layer','transport-layer','supermarkets-layer','gyms-layer',
