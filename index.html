@@ -1874,7 +1874,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 }
 
 /* Transport section — prominent, always shown */
-/* ══ STATION NAMES BOX — complete redesign ══ */
+/* ══ STATION NAMES BOX ══ */
 .mmh-station-names {
   background: #1A1510 !important;
   border: none !important;
@@ -1883,40 +1883,61 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   padding: 18px 20px 16px !important;
   margin-top: 12px !important;
   display: block !important;
+  font-size: 12px !important;
+  color: rgba(250,247,242,0.55) !important;
+  line-height: 1.6 !important;
 }
-/* "No metro / train nearby" — large prominent headline */
-.mmh-no-metro {
-  font-family: 'Cormorant Garamond', Georgia, serif !important;
-  font-size: 32px !important;
+
+/* Bus-only state: JS adds .mmh-bus-only — CSS takes over entirely */
+.mmh-station-names.mmh-bus-only > * { display: none !important; }
+.mmh-station-names.mmh-bus-only {
+  font-size: 0 !important; /* hide raw text nodes */
+}
+.mmh-station-names.mmh-bus-only::before {
+  content: 'No metro / train nearby';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: #FAF7F2;
+  line-height: 1.1;
+  display: block;
+  margin-bottom: 0;
+}
+.mmh-station-names.mmh-bus-only::after {
+  content: 'Nearest Metro & Train Stations';
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 600;
+  color: #F0C93A;
+  display: block;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(240,201,58,0.18);
+}
+
+/* Metro-present state: show station names cleanly */
+.mmh-station-names:not(.mmh-bus-only) {
+  font-size: 12px !important;
   font-weight: 600 !important;
   color: #FAF7F2 !important;
-  line-height: 1.1 !important;
-  margin-bottom: 10px !important;
-  display: block !important;
 }
-/* Bus routes fine print */
-.mmh-bus-routes {
-  font-size: 10px !important;
-  color: rgba(250,247,242,0.35) !important;
-  line-height: 1.6 !important;
-  margin-bottom: 12px !important;
-  display: block !important;
-}
-/* "Nearest Metro & Train Stations" — Cormorant Garamond, yellow, prominent */
-.mmh-transport-label {
-  font-family: 'Cormorant Garamond', Georgia, serif !important;
-  font-size: 20px !important;
-  font-weight: 600 !important;
-  font-style: italic !important;
-  letter-spacing: 0.3px !important;
-  text-transform: none !important;
+.mmh-station-names:not(.mmh-bus-only) > div {
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
   color: #F0C93A !important;
-  margin-top: 14px !important;
-  padding-top: 12px !important;
-  border-top: 1px solid rgba(240,201,58,0.15) !important;
-  display: block !important;
+  margin-top: 8px !important;
 }
-/* JS rebuilds content — no CSS hide needed */
+
+/* Legacy elements from old JS — hidden */
+.mmh-no-metro, .mmh-bus-routes, .mmh-transport-label { display: none !important; }
+.mmh-station-names.mmh-bus-only .mmh-no-metro,
+.mmh-station-names.mmh-bus-only .mmh-bus-routes,
+.mmh-station-names.mmh-bus-only .mmh-transport-label { display: none !important; }
+
+/* JS rebuilds content — no extra CSS hide needed */
 
 
 /* City guide section — yellow replaces gold accent */
@@ -5524,43 +5545,17 @@ window.addEventListener('scroll', () => {
       }
     });
 
-    /* ── Station names box — clean rebuild ── */
+    /* ── Station names box — add .mmh-bus-only class, CSS handles the rest ── */
     card.querySelectorAll('.mmh-station-names').forEach(function(box) {
-      if (box.dataset.sbDone) return;
-      /* Collect raw text before clearing */
-      var rawText = box.textContent.replace(/nearest.*stations/gi,'').replace(/nearest metro.*/gi,'').trim();
-      if (!rawText) return; /* content not loaded yet — retry on next timer */
-      box.dataset.sbDone = '1';
-
-      /* Hide original children via JS (not CSS, to avoid empty flash) */
-      Array.from(box.childNodes).forEach(function(n) {
-        if (n.nodeType === 1) n.style.display = 'none';
-        if (n.nodeType === 3) n.nodeValue = '';
-      });
-
-      /* Headline: "No metro / train nearby" */
-      var headline = document.createElement('span');
-      headline.className = 'mmh-no-metro';
-      headline.textContent = 'No metro / train nearby';
-      box.appendChild(headline);
-
-      /* Bus routes as fine print — strip the "no metro" message */
-      var busRoutes = rawText
-        .replace(/no metro.*?800m\.?/gi, '')
-        .replace(/no metro\/train.*?800m\.?/gi, '')
-        .replace(/\s+/g, ' ').trim();
-      if (busRoutes.length > 3) {
-        var busDiv = document.createElement('span');
-        busDiv.className = 'mmh-bus-routes';
-        busDiv.textContent = busRoutes;
-        box.appendChild(busDiv);
+      if (box.dataset.stationClassed) return;
+      /* Check if bus-only: has "no metro" message or bus intersection names */
+      var txt = box.textContent;
+      var isBusOnly = /no metro|\/tram|tram within|maguire|saint-viateur|fairmount|saint-urbain/i.test(txt)
+                   || (!txt.trim() && true); /* empty = force bus-only label */
+      if (isBusOnly || box.querySelector('div[style*="rgba(248"]')) {
+        box.classList.add('mmh-bus-only');
       }
-
-      /* Yellow footer label */
-      var lbl = document.createElement('span');
-      lbl.className = 'mmh-transport-label';
-      lbl.textContent = 'Nearest Metro & Train Stations';
-      box.appendChild(lbl);
+      box.dataset.stationClassed = '1';
     });
   }
 
