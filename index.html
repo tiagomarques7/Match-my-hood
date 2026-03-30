@@ -2041,9 +2041,9 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-tile-grid .mmh-sec:nth-child(4n+2) { background: #F0C93A !important; }
 .mmh-tile-grid .mmh-sec:nth-child(4n+3) { background: #FEF9EE !important; border: 1.5px solid #EDE0C4 !important; }
 .mmh-tile-grid .mmh-sec:nth-child(4n+4) { background: #231d14 !important; }
-/* CLOSED TILE: tall tile face */
+/* CLOSED TILE: tall tile face — 190px ensures ghost number never overlaps eyebrow */
 .mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-head {
-  min-height: 148px !important;
+  min-height: 190px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
@@ -2075,15 +2075,15 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-tile-grid .mmh-sec.tile-open .mmh-sec-inner { padding: 18px 22px 22px !important; }
 /* Ghost number */
 .tile-num-ghost {
-  position: absolute !important; top: 10px !important; left: 14px !important;
+  position: absolute !important; top: 12px !important; right: 14px !important; left: auto !important;
   font-family: 'Cormorant Garamond', Georgia, serif !important;
-  font-size: 54px !important; font-weight: 600 !important; line-height: 1 !important;
+  font-size: 48px !important; font-weight: 600 !important; line-height: 1 !important;
   pointer-events: none !important; z-index: 0 !important;
 }
 .mmh-tile-grid .mmh-sec:nth-child(4n+1) .tile-num-ghost,
 .mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-num-ghost { color: rgba(250,247,242,0.1) !important; }
-.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-num-ghost { color: rgba(61,53,40,0.12) !important; }
-.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-num-ghost { color: #EAD9B8 !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-num-ghost { color: rgba(61,53,40,0.11) !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-num-ghost { color: #E5D4AE !important; }
 /* Eyebrow */
 .tile-eyebrow {
   font-size: 8px !important; font-weight: 700 !important; letter-spacing: 2px !important;
@@ -5818,12 +5818,59 @@ window.addEventListener('scroll', () => {
     if (!window.mapboxgl) { setTimeout(patchPopup, 200); return; }
     var origAddTo = mapboxgl.Popup.prototype.addTo;
     mapboxgl.Popup.prototype.addTo = function(map) {
-      /* Remove any open popups first */
       document.querySelectorAll('.mapboxgl-popup').forEach(function(p){ p.remove(); });
       return origAddTo.call(this, map);
     };
   }
   patchPopup();
+})();
+
+/* ── 3D layer fix: move our custom pin layers above buildings on pitch change ── */
+(function(){
+  var CUSTOM_LAYERS = [
+    'restaurants-layer','bars-layer','coffee-layer',
+    'toppicks-layer','transport-layer','supermarkets-layer',
+    'gyms-layer','museums-layer','parks-layer',
+    'neighbourhood-fill','neighbourhood-outline',
+    'station-circles'
+  ];
+  function liftLayers(map) {
+    CUSTOM_LAYERS.forEach(function(id) {
+      try {
+        if (map.getLayer(id)) map.moveLayer(id);
+      } catch(e) {}
+    });
+  }
+  /* Observe resultsArea for new maps, then patch each */
+  var area = document.getElementById('resultsArea');
+  if (!area) return;
+  new MutationObserver(function() {
+    document.querySelectorAll('[id^="map-"]').forEach(function(el) {
+      if (el._mmhPitchPatched) return;
+      el._mmhPitchPatched = true;
+      /* Wait for Mapbox map instance */
+      var attempts = 0;
+      var checker = setInterval(function() {
+        attempts++;
+        if (attempts > 40) { clearInterval(checker); return; }
+        var mapInst = el._mapboxMap || (el.__mbMap);
+        /* Try to find map on the element */
+        if (!mapInst) {
+          /* Search global maps store */
+          if (window._mmhMaps) {
+            var idx = el.id.replace('map-','');
+            mapInst = window._mmhMaps[idx];
+          }
+        }
+        if (mapInst && mapInst.on) {
+          clearInterval(checker);
+          mapInst.on('pitch', function() { liftLayers(mapInst); });
+          mapInst.on('style.load', function() { liftLayers(mapInst); });
+          mapInst.on('sourcedata', function() { liftLayers(mapInst); });
+        }
+      }, 300);
+    });
+  }).observe(area, {childList: true, subtree: true});
 })();
 </script>
 </body>
