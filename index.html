@@ -276,9 +276,9 @@ nav { background:#FEF9EE;border-bottom:1.5px solid #3D3528;padding:0 20px;displa
 @media(min-width:700px){ .split-photo { height:auto; } }
 .split-photo img { width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.7s; }
 .split-photo:hover img { transform:scale(1.04); }
-.split-photo-cap { position:absolute;bottom:0;left:0;right:0;padding:16px 22px;background:linear-gradient(to top,rgba(16,12,8,0.72),transparent); }
-.split-photo-cap span { font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#FAF7F2; }
-.split-photo-cap small { display:block;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.38);margin-top:2px; }
+.split-photo-cap { position:absolute;bottom:0;left:0;right:0;padding:28px 24px 22px;background:linear-gradient(to top,rgba(16,12,8,0.92) 0%,rgba(16,12,8,0.55) 60%,transparent 100%); }
+.split-photo-cap span { font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:#FAF7F2;text-shadow:0 2px 12px rgba(0,0,0,0.5);line-height:1.1; }
+.split-photo-cap small { display:block;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.75);margin-top:5px;text-shadow:0 1px 6px rgba(0,0,0,0.4); }
 .split-text { padding:36px 24px;display:flex;flex-direction:column;justify-content:center;order:2; }
 @media(min-width:600px){ .split-text { padding:56px 48px; } }
 .split-text.yl-bg { background:#FEFADF;border:1px solid rgba(212,168,32,0.12); }
@@ -2930,7 +2930,7 @@ section.newsletter-section { position: relative; overflow: hidden; }
 <!-- SPLIT VISIT / MOVE -->
 <div>
   <div class="split-row">
-    <div class="split-photo"><img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1000&h=700&fit=crop&q=80" alt="Visit" loading="lazy" crossorigin="anonymous"><div class="split-photo-cap"><span>Visiting?</span><small>Find where to stay</small></div></div>
+    <div class="split-photo"><img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1000&h=700&fit=crop&q=80" alt="Visit" loading="lazy" crossorigin="anonymous"><div class="split-photo-cap"><span>Visiting?</span><small>Find where to stay</small></div></div>
     <div class="split-text yl-bg">
       <div class="split-ey">Visit mode</div>
       <h3 class="split-h">Stop staying in the <em>wrong part of town</em></h3>
@@ -2945,7 +2945,7 @@ section.newsletter-section { position: relative; overflow: hidden; }
       <p class="split-body-lt">Real amenity counts, rent search links, walkability and safety feel. Not generated — curated and validated.</p>
       <a class="btn-cr" href="#match" onclick="event.preventDefault();setIntent('move');document.getElementById('match').scrollIntoView({behavior:'smooth'})">Find where to live</a>
     </div>
-    <div class="split-photo" style="order:1"><img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1000&h=700&fit=crop&q=80" alt="Move" loading="lazy" crossorigin="anonymous"><div class="split-photo-cap"><span>Moving?</span><small>Find where to live</small></div></div>
+    <div class="split-photo" style="order:1"><img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1000&h=700&fit=crop&q=80" alt="Move" loading="lazy" crossorigin="anonymous"><div class="split-photo-cap"><span>Moving?</span><small>Find where to live</small></div></div>
   </div>
 </div>
 
