@@ -2845,7 +2845,7 @@ section.newsletter-section { position: relative; overflow: hidden; }
 
 <!-- HOW IT WORKS -->
 <div class="how-section-new" id="how">
-  <img class="how-parallax-img" src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=80" alt="" aria-hidden="true" loading="lazy">
+  <img class="how-parallax-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" aria-hidden="true">
   <div class="sec-ey">How it works</div>
   <h2 class="sec-title-dark">Three steps to your <em>perfect neighbourhood</em></h2>
   <div class="how-steps">
@@ -2930,7 +2930,7 @@ section.newsletter-section { position: relative; overflow: hidden; }
 <!-- SPLIT VISIT / MOVE -->
 <div>
   <div class="split-row">
-    <div class="split-photo"><img class="split-photo-img" data-query="outdoor cafe terrace neighbourhood street europe people" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Visit" loading="lazy" crossorigin="anonymous" style="opacity:0;transition:opacity 0.9s ease;"><div class="split-photo-cap"><span>Visiting?</span><small>Find where to stay</small></div></div>
+    <div class="split-photo"><img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1000&h=700&fit=crop&q=80" alt="Visit" loading="lazy" crossorigin="anonymous"><div class="split-photo-cap"><span>Visiting?</span><small>Find where to stay</small></div></div>
     <div class="split-text yl-bg">
       <div class="split-ey">Visit mode</div>
       <h3 class="split-h">Stop staying in the <em>wrong part of town</em></h3>
@@ -2945,7 +2945,7 @@ section.newsletter-section { position: relative; overflow: hidden; }
       <p class="split-body-lt">Real amenity counts, rent search links, walkability and safety feel. Not generated — curated and validated.</p>
       <a class="btn-cr" href="#match" onclick="event.preventDefault();setIntent('move');document.getElementById('match').scrollIntoView({behavior:'smooth'})">Find where to live</a>
     </div>
-    <div class="split-photo" style="order:1"><img class="split-photo-img" data-query="street market neighbourhood park community morning welcoming" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Move" loading="lazy" crossorigin="anonymous" style="opacity:0;transition:opacity 0.9s ease;"><div class="split-photo-cap"><span>Moving?</span><small>Find where to live</small></div></div>
+    <div class="split-photo" style="order:1"><img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1000&h=700&fit=crop&q=80" alt="Move" loading="lazy" crossorigin="anonymous"><div class="split-photo-cap"><span>Moving?</span><small>Find where to live</small></div></div>
   </div>
 </div>
 
@@ -6214,59 +6214,41 @@ window.addEventListener('scroll', () => {
 </script>
 
 
+
+
 <script>
-/* Split photo loader — staggered to avoid demo key rate limits
-   Visit loads at +900ms, mirrors to newsletter parallax once ready.
-   Move loads at +1400ms. */
+/* Mirror showcase photos to section parallax backgrounds.
+   West Village (sc-src) → How it works.
+   Príncipe Real (sc-tgt) → Newsletter.
+   Uses MutationObserver so it fires whenever the src is set, no timing dependency. */
 (function(){
-  var KEY = 'OaKCSMFgv0aiRZGozXW1aPGh7R8IXoWfPpk24cZOXYA';
-
-  function loadSplitImg(img, delay, onLoaded) {
-    setTimeout(function(){
-      var query = img.getAttribute('data-query');
-      var apiUrl = 'https://api.unsplash.com/photos/random?query='
-        + encodeURIComponent(query)
-        + '&orientation=landscape&client_id=' + KEY;
-      fetch(apiUrl)
-        .then(function(r){ return r.json(); })
-        .then(function(d){
-          var src = (d && d.urls) ? (d.urls.raw
-            ? d.urls.raw + '&w=1200&h=800&fit=crop&q=80&auto=format'
-            : d.urls.regular) : null;
-          if (!src) return;
-          var tmp = new Image();
-          tmp.crossOrigin = 'anonymous';
-          tmp.onload = function(){
-            img.src = src;
-            img.style.opacity = '1';
-            if (onLoaded) onLoaded(src);
-          };
-          tmp.src = src;
-        })
-        .catch(function(){});
-    }, delay);
-  }
-
-  var imgs = document.querySelectorAll('.split-photo-img[data-query]');
-  var visitImg = imgs[0];  // Visit — neighbourly cafe
-  var moveImg  = imgs[1];  // Move  — street market park
-
-  // Visit: load at 900ms, then mirror to newsletter parallax
-  if (visitImg) {
-    loadSplitImg(visitImg, 900, function(src){
-      var nlParallax = document.querySelector('.newsletter-parallax-img');
-      if (nlParallax) {
-        var tmp = new Image();
-        tmp.onload = function(){ nlParallax.src = src; };
-        tmp.src = src;
+  function mirrorWhenLoaded(sourceImg, targetImg) {
+    if (!sourceImg || !targetImg) return;
+    function tryMirror() {
+      if (sourceImg.src && sourceImg.src.indexOf('gif') === -1 && sourceImg.naturalWidth > 0) {
+        targetImg.src = sourceImg.src;
+        return true;
       }
-    });
+      return false;
+    }
+    if (!tryMirror()) {
+      var obs = new MutationObserver(function(){
+        if (tryMirror()) obs.disconnect();
+      });
+      obs.observe(sourceImg, { attributes: true, attributeFilter: ['src'] });
+      sourceImg.addEventListener('load', function(){ tryMirror(); obs.disconnect(); });
+    }
   }
 
-  // Move: load at 1400ms
-  if (moveImg) loadSplitImg(moveImg, 1400);
+  mirrorWhenLoaded(
+    document.querySelector('.sc-src'),
+    document.querySelector('.how-parallax-img')
+  );
+  mirrorWhenLoaded(
+    document.querySelector('.sc-tgt'),
+    document.querySelector('.newsletter-parallax-img')
+  );
 })();
 </script>
-
 </body>
 </html>
