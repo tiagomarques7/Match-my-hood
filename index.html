@@ -1664,7 +1664,8 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .pricing-feature-row.highlight { color: #3D3528; font-weight: 500; }
 .pricing-feature-row svg { flex-shrink: 0; margin-top: 2px; }
 
- — Option C: Dark header / Cream body
+/* ══════════════════════════════════════════
+   RESULTS SECTION — Dark header / Cream body
    CSS-only. No JS changes.
 ══════════════════════════════════════════ */
 
@@ -2504,6 +2505,47 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   /* Match showcase labels */
   .match-pair-names { font-size: 16px !important; }
   .match-pair { height: 240px !important; }
+}
+
+/* ══════════════════════════════════════════
+   v12b — Full results polish
+   White→cream · Pick typography · Alternating pick borders
+══════════════════════════════════════════ */
+
+/* 1. Kill white surface leaks — everything uses brand cream */
+.mmh-card { background: #FEF9EE !important; }
+.mmh-sec { background: #FEF9EE !important; }
+.mmh-sec-body.open { background: #FEF9EE !important; }
+.pick-item { background: #FEF9EE !important; }
+.mmh-stat-tile { background: #FEF9EE !important; }
+
+/* 2. Pick link → yellow-gold (matches site-wide link convention) */
+.pick-link {
+  color: #D4A820 !important;
+  border-bottom-color: rgba(212,168,32,0.25) !important;
+}
+.pick-link:hover {
+  color: #F0C93A !important;
+  border-bottom-color: #F0C93A !important;
+}
+
+/* 3. Pick name → Cormorant Garamond editorial serif */
+.pick-name {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #1A1510 !important;
+  letter-spacing: -0.2px !important;
+  line-height: 1.2 !important;
+  margin-bottom: 4px !important;
+}
+
+/* 4. Alternating yellow left-border on pick items — odd=yellow, even=neutral */
+.pick-item:nth-child(odd) {
+  border-left: 3px solid #F0C93A !important;
+}
+.pick-item:nth-child(even) {
+  border-left: 3px solid #EDE0C4 !important;
 }
 
 </style>
