@@ -1875,6 +1875,10 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 
 /* Transport section — prominent, always shown */
 /* ══ STATION NAMES BOX ══ */
+
+/* Hide the duplicate station-names element that has no class */
+[id^="station-names-"]:not(.mmh-station-names) { display: none !important; }
+
 .mmh-station-names {
   background: #1A1510 !important;
   border: none !important;
@@ -1883,9 +1887,6 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   padding: 18px 20px 16px !important;
   margin-top: 12px !important;
   display: block !important;
-  font-size: 12px !important;
-  color: rgba(250,247,242,0.55) !important;
-  line-height: 1.6 !important;
 }
 
 /* Bus-only state: JS adds .mmh-bus-only — CSS takes over entirely */
@@ -1916,13 +1917,7 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   border-top: 1px solid rgba(240,201,58,0.18);
 }
 
-/* Metro-present state: show station names cleanly */
-.mmh-station-names:not(.mmh-bus-only) {
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  color: #FAF7F2 !important;
-  line-height: 1.6 !important;
-}
+/* Metro-present state */
 .mmh-station-names:not(.mmh-bus-only)::before {
   content: 'Nearest Metro & Train Stations';
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -1931,26 +1926,26 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   font-weight: 600;
   color: #F0C93A;
   display: block;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
   border-bottom: 1px solid rgba(240,201,58,0.18);
 }
+/* Station names — white, normal case, readable */
+.mmh-station-names:not(.mmh-bus-only) {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #FAF7F2 !important;
+  line-height: 1.7 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+/* Hide the "no metro" child div if it exists in a metro box */
 .mmh-station-names:not(.mmh-bus-only) > div {
-  font-size: 9px !important;
-  font-weight: 700 !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
-  color: rgba(250,247,242,0.35) !important;
-  margin-top: 6px !important;
+  display: none !important;
 }
 
-/* Legacy elements from old JS — hidden */
+/* Legacy elements from old JS — always hidden */
 .mmh-no-metro, .mmh-bus-routes, .mmh-transport-label { display: none !important; }
-.mmh-station-names.mmh-bus-only .mmh-no-metro,
-.mmh-station-names.mmh-bus-only .mmh-bus-routes,
-.mmh-station-names.mmh-bus-only .mmh-transport-label { display: none !important; }
-
-/* JS rebuilds content — no extra CSS hide needed */
 
 
 /* City guide section — yellow replaces gold accent */
