@@ -5552,10 +5552,8 @@ window.addEventListener('scroll', () => {
     card.querySelectorAll('[id^="station-names-"]').forEach(function(el) {
       if (el.classList.contains('mmh-station-names')) return;
       var bin = document.getElementById('mmh-hidden-bin');
-      if (bin && !bin.contains(el)) {
-        bin.appendChild(el);
-      }
-      el.style.setProperty('display', 'none', 'important');
+      if (bin && !bin.contains(el)) bin.appendChild(el);
+      el.style.setProperty('display','none','important');
     });
 
     /* ── Station names box — add .mmh-bus-only class ── */
@@ -5846,63 +5844,59 @@ window.addEventListener('scroll', () => {
 <script>
 /* Popup dedup: CSS-only — .mmh-popup hidden, only simple popup shows */
 
-/* ── Global sweep: MOVE non-class station-names into a hidden off-screen bin ── */
-/* Moving is unbeatable — display/visibility/style on the element no longer matter */
+/* ── Station names: synchronous bin — moves elements BEFORE next paint ── */
 (function(){
-  /* Create hidden bin appended to body — anything inside is invisible and out of flow */
+  /* Off-screen bin. getElementById still finds elements inside it. */
   var bin = document.getElementById('mmh-hidden-bin');
   if (!bin) {
     bin = document.createElement('div');
     bin.id = 'mmh-hidden-bin';
-    bin.setAttribute('aria-hidden', 'true');
-    bin.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;z-index:-9999;';
+    bin.setAttribute('aria-hidden','true');
+    bin.style.cssText='position:fixed;left:-99999px;top:-99999px;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;';
     document.body.appendChild(bin);
   }
 
-  var moved = new WeakSet();
-
-  function moveEl(el) {
-    if (moved.has(el)) return;
-    moved.add(el);
-    bin.appendChild(el); /* physically moves el out of card layout */
-    /* Also nuke inline style so getElementById reads still work but element is safe */
-    el.style.setProperty('display', 'none', 'important');
+  function moveIfBad(el) {
+    if (!el || el.nodeType !== 1) return;
+    if (bin.contains(el)) return;
+    /* Non-class station-names element — move it */
+    if (/^station-names-/.test(el.id) && !el.classList.contains('mmh-station-names')) {
+      bin.appendChild(el);
+      return;
+    }
+    /* Recurse into children added in bulk (e.g. card innerHTML swap) */
+    var bad = el.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)');
+    for (var i = 0; i < bad.length; i++) {
+      if (!bin.contains(bad[i])) bin.appendChild(bad[i]);
+    }
   }
 
-  function sweepStationNames() {
-    /* Find all non-class station-names that are still in the visible DOM (not in bin) */
-    document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)').forEach(function(el) {
-      if (!bin.contains(el)) moveEl(el);
-    });
-  }
-
-  /* Run immediately */
-  sweepStationNames();
-
-  /* Watch resultsArea for new cards being injected */
+  /* ── Synchronous observer on resultsArea ── runs as microtask, before paint */
   var area = document.getElementById('resultsArea');
   if (area) {
-    new MutationObserver(function() {
-      /* Use rAF so element is in DOM before we query */
-      requestAnimationFrame(sweepStationNames);
+    new MutationObserver(function(mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        var added = mutations[i].addedNodes;
+        for (var j = 0; j < added.length; j++) {
+          moveIfBad(added[j]);
+        }
+      }
     }).observe(area, { childList: true, subtree: true });
   }
 
-  /* Belt-and-suspenders: also watch whole document body for late injections */
-  new MutationObserver(function(mutations) {
-    var needsSweep = false;
-    mutations.forEach(function(m) {
-      m.addedNodes.forEach(function(n) {
-        if (n.nodeType === 1) needsSweep = true;
-      });
-    });
-    if (needsSweep) requestAnimationFrame(sweepStationNames);
-  }).observe(document.body, { childList: true, subtree: true });
+  /* ── Also sweep any elements already in the DOM ── */
+  function fullSweep() {
+    var bad = document.querySelectorAll('[id^="station-names-"]:not(.mmh-station-names)');
+    for (var i = 0; i < bad.length; i++) {
+      if (!bin.contains(bad[i])) bin.appendChild(bad[i]);
+    }
+  }
 
-  /* Safety interval for first 30s — catches anything that slips through */
-  var _c = 0;
-  var _iv = setInterval(function() {
-    sweepStationNames();
+  fullSweep(); /* immediate */
+
+  /* Safety net interval for 30s after load */
+  var _c = 0, _iv = setInterval(function(){
+    fullSweep();
     if (++_c > 60) clearInterval(_iv);
   }, 500);
 })();
