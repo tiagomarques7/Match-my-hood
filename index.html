@@ -2202,11 +2202,11 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   border-bottom: 3px solid #F0C93A !important;
   background: #FEF9EE !important;
 }
-.mmh-a-tile:has([id$="-stations"]) .mmh-a-label {
+.mmh-a-tile:has([id$="-stations"]):not([data-mmh-tiled="1"]) .mmh-a-label {
   visibility: hidden !important;
   position: relative !important;
 }
-.mmh-a-tile:has([id$="-stations"]) .mmh-a-label::after {
+.mmh-a-tile:has([id$="-stations"]):not([data-mmh-tiled="1"]) .mmh-a-label::after {
   content: 'METRO & TRAIN' !important;
   visibility: visible !important;
   position: absolute !important;
@@ -2307,13 +2307,13 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   letter-spacing: 1px !important;
   text-transform: uppercase !important;
 }
-/* CSS-only fallback: always rename "Bus stops" label via ID sibling selector */
-[id$="-stations"] + .mmh-a-label {
+/* CSS-only fallback: rename "Stations" label — exclude bus-only tiles */
+:not([data-mmh-tiled="1"]) > [id$="-stations"] + .mmh-a-label {
   font-size: 0 !important;
   color: transparent !important;
   position: relative !important;
 }
-[id$="-stations"] + .mmh-a-label::before {
+:not([data-mmh-tiled="1"]) > [id$="-stations"] + .mmh-a-label::before {
   content: 'METRO & TRAIN' !important;
   display: block !important;
   font-size: 10px !important;
@@ -5577,15 +5577,30 @@ window.addEventListener('scroll', () => {
       if (el.parentNode) el.parentNode.removeChild(el);
     });
 
-    /* ── Station names box — add .mmh-bus-only class ── */
+    /* ── Station names box — add .mmh-bus-only class (runs every call, no guard) ── */
     card.querySelectorAll('.mmh-station-names').forEach(function(box) {
-      if (box.dataset.stationClassed) return;
-      box.dataset.stationClassed = '1';
       var txt = box.textContent;
-      var hasNoMetro = box.querySelector('div[style*="rgba(248"]') || /no metro|tram within/i.test(txt);
+      var hasNoMetro = /no metro|tram within|no metro\/train/i.test(txt);
       var hasBusNames = /maguire|saint-viateur|fairmount|saint-urbain/i.test(txt);
-      if (txt.trim() && (hasNoMetro || hasBusNames)) {
+      var isBusOnly = txt.trim() && (hasNoMetro || hasBusNames);
+
+      if (isBusOnly && !box.classList.contains('mmh-bus-only')) {
         box.classList.add('mmh-bus-only');
+
+        /* Also update the stations tile to BUS STOPS */
+        var id = box.id; /* e.g. station-names-0 */
+        var idx = id ? id.replace('station-names-','') : '';
+        if (idx !== '') {
+          var cntEl = card.querySelector('#amenity-' + idx + '-stations');
+          if (cntEl) {
+            var tile = cntEl.closest('.mmh-a-tile');
+            if (tile && !tile.dataset.mmhBusTiled) {
+              tile.dataset.mmhBusTiled = '1';
+              tile.setAttribute('data-mmh-tiled','1');
+              tile.setAttribute('data-key','stations');
+            }
+          }
+        }
       }
     });
   }
@@ -5930,7 +5945,58 @@ window.addEventListener('scroll', () => {
 
 })();
 
-/* ── 3D layer fix: capture every Mapbox map + lift layers on pitch ── */
+/* ── Bus-only post-enrichment: re-detect after renderResults writes content ──
+   m.busOnly is unknown at initial render (set by Overpass in enrichment).
+   fixAmenityTiles marks stationClassed=1 on first run, preventing re-check.
+   This observer watches .mmh-station-names for childList changes (when our
+   getElementById override routes renderResults writes to it) and updates:
+   1. Adds .mmh-bus-only class to the box → CSS shows correct state
+   2. Sets data-mmh-tiled="1" on the stations tile → CSS shows "BUS STOPS"
+─────────────────────────────────────────────────────────────────────────── */
+(function(){
+
+  function applyBusOnly(box) {
+    if (box.classList.contains('mmh-bus-only')) return; /* already done */
+    var txt = box.textContent || '';
+    /* "No metro/train/tram within 800m" or "No metro/train within 800m" */
+    if (!/no metro/i.test(txt)) return;
+
+    box.classList.add('mmh-bus-only');
+
+    /* Also update the stations tile in the same card */
+    var card = box.closest('.mmh-card') || box.closest('[id^="result-card"]') || box.parentElement;
+    if (!card) return;
+    /* Find station count element — id ends with "-stations" */
+    var cntEl = card.querySelector('[id$="-stations"]');
+    if (!cntEl) return;
+    var tile = cntEl.parentElement;
+    /* Walk up to find .mmh-a-tile ancestor */
+    while (tile && !tile.classList.contains('mmh-a-tile')) tile = tile.parentElement;
+    if (tile) {
+      tile.setAttribute('data-mmh-tiled', '1');
+      tile.setAttribute('data-key', 'stations');
+    }
+  }
+
+  var area = document.getElementById('resultsArea');
+  if (area) {
+    new MutationObserver(function(mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        var t = mutations[i].target;
+        /* Direct change to .mmh-station-names (childList — renderResults set innerHTML) */
+        if (t.nodeType === 1 && t.classList.contains('mmh-station-names')) {
+          applyBusOnly(t);
+        }
+        /* Change inside .mmh-station-names */
+        var p = t.parentElement;
+        if (p && p.classList && p.classList.contains('mmh-station-names')) {
+          applyBusOnly(p);
+        }
+      }
+    }).observe(area, { childList: true, subtree: true });
+  }
+
+})();
 (function(){
   var CUSTOM_LAYERS = ['restaurants-layer','bars-layer','coffee-layer',
     'toppicks-layer','transport-layer','supermarkets-layer','gyms-layer',
