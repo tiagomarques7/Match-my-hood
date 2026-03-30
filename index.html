@@ -2009,6 +2009,24 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
   display: block !important;
 }
 
+/* Metro map link — sits below the dark station names box */
+.mmh-metro-map-link-wrap {
+  text-align: right;
+  margin-top: 4px;
+}
+.mmh-metro-map-link {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  color: #D4A820 !important;
+  text-decoration: none !important;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.mmh-metro-map-link:hover { opacity: 1; color: #F0C93A !important; }
+
 /* Metro-present state */
 .mmh-station-names:not(.mmh-bus-only)::before {
   content: 'Nearest Metro & Train Stations';
@@ -4437,6 +4455,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
               ${m.busOnly ? (m.nearestBus?.join(' · ') || '') : (m.nearestMetro?.join(' · ') || '')}
               ${m.busOnly ? '<div style="font-size:10px;color:var(--text-muted);margin-top:3px;">No metro/train/tram within 800m</div>' : ''}
             </div>
+            ${metroLink && (m.nearestMetro?.length || m.busOnly) ? `<div class="mmh-metro-map-link-wrap"><a href="${metroLink.url}" target="_blank" class="mmh-metro-map-link">↗ ${metroLink.name} map</a></div>` : ''}
             <div id="transit-wrap-${i}" style="display:none;">
               <div id="transit-${i}"></div>
             </div>
