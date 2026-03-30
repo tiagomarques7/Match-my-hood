@@ -1903,6 +1903,67 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-city-guide-sec .mmh-sec-icon { background: rgba(240,201,58,0.1) !important; border: 1px solid rgba(240,201,58,0.25) !important; }
 .mmh-city-guide-sec .mmh-sec-title { color: #D4A820 !important; }
 
+/* ── City guide pick items — override inline styles ── */
+/* Number circles → sharp yellow squares */
+.mmh-sec-inner [style*="border-radius:50%"],
+.mmh-sec-inner [style*="border-radius: 50%"] {
+  border-radius: 0 !important;
+  background: #F0C93A !important;
+  border: none !important;
+  color: #1A1510 !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  width: 24px !important; height: 24px !important;
+}
+/* "Book ahead" badge → yellow */
+.mmh-sec-inner [style*="border-radius:100px"],
+.mmh-sec-inner [style*="border-radius: 100px"] {
+  border-radius: 0 !important;
+  background: #F0C93A !important;
+  color: #1A1510 !important;
+  border: none !important;
+}
+/* Item border → cream */
+.mmh-sec-inner [style*="border-bottom:1px solid var(--sage-border)"],
+.mmh-sec-inner [style*="border-bottom: 1px solid"] {
+  border-bottom-color: #EDE0C4 !important;
+}
+/* Name link */
+.mmh-sec-inner a[style*="color:var(--text-primary)"],
+.mmh-sec-inner a[style*="color: var(--text-primary)"] {
+  color: #1A1510 !important;
+  text-decoration: none !important;
+}
+/* Distance/muted text */
+.mmh-sec-inner [style*="color:var(--text-muted)"],
+.mmh-sec-inner [style*="color: var(--text-muted)"] { color: #9A8E7A !important; }
+/* Secondary text */
+.mmh-sec-inner [style*="color:var(--text-secondary)"],
+.mmh-sec-inner [style*="color: var(--text-secondary)"] { color: #6B5E4A !important; }
+/* Tip text */
+.mmh-sec-inner [style*="color:var(--gold)"] { color: #D4A820 !important; }
+/* Description */
+.mmh-sec-inner [style*="font-size:12px;color:var(--text-secondary)"] { color: #6B5E4A !important; line-height: 1.55 !important; }
+
+/* ── Station names box ── */
+.mmh-station-names::before {
+  content: 'Metro & Train Stations';
+  display: block !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: #F0C93A !important;
+  margin-bottom: 8px !important;
+}
+/* Transport emoji in station text — give it space */
+.mmh-station-names [id*="station-names-text"] {
+  font-size: 12px !important;
+  color: #FAF7F2 !important;
+  line-height: 1.6 !important;
+}
+
 /* ════════════════════════════════════════════
    TILE GRID — Option D results layout
    ════════════════════════════════════════════ */
@@ -2010,8 +2071,63 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-tile-grid .mmh-sec.tile-open .mmh-chev { display: inline-block !important; }
 /* Station names always visible when section open */
 .mmh-tile-grid .mmh-sec.tile-open .mmh-station-names { display: block !important; }
+/* Transport box: NEAREST METRO & TRAIN label */
+.mmh-transport-label {
+  font-size: 8px !important; font-weight: 700 !important;
+  letter-spacing: 2px !important; text-transform: uppercase !important;
+  color: #F0C93A !important; margin-bottom: 10px !important;
+  display: block !important;
+}
 /* Station tile yellow accent */
-.mmh-a-tile[data-key="stations"] { border-bottom: 3px solid #F0C93A !important; }
+.mmh-a-tile[data-key="stations"] { border-bottom: 3px solid #F0C93A !important; background: #FEF9EE !important; }
+.mmh-a-tile[data-key="stations"] .mmh-a-label { color: #D4A820 !important; font-weight: 700 !important; }
+.mmh-a-tile[data-key="stations"] .mmh-a-count { color: #1A1510 !important; }
+
+/* Station names transport box */
+.mmh-station-names {
+  background: #1A1510 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  padding: 16px 18px !important;
+  margin-top: 10px !important;
+  display: block !important;
+}
+.mmh-station-names div, .mmh-station-names span { color: rgba(250,247,242,0.6) !important; }
+.mmh-transport-label {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: #F0C93A !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+/* Landmark circle number → CG numeral */
+[data-ln-styled] {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  width: auto !important; height: auto !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 26px !important; font-weight: 600 !important;
+  color: #F0C93A !important; line-height: 1 !important;
+}
+
+/* Book ahead badge → yellow sharp */
+[data-book-ahead] {
+  background: #F0C93A !important; color: #1A1510 !important;
+  border-radius: 0 !important; font-size: 9px !important;
+  font-weight: 700 !important; letter-spacing: 0.5px !important;
+  padding: 3px 8px !important;
+}
+
+/* Permanently closed: hidden */
+.mmh-perm-closed { display: none !important; }
+
+/* Landmark item separator */
+[data-landmark-item] { border-bottom: 1px solid #EDE0C4 !important; }
+[data-landmark-item]:last-child { border-bottom: none !important; }
 
 /* ── PICK LIST & PLACE CARDS — brand consistency ── */
 .mmh-tile-grid .mmh-sec.tile-open .mmh-sec-body.open { color: #3D3528; }
@@ -2038,6 +2154,43 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-pc-box.pro .mmh-pc-title { color: #D4A820 !important; }
 /* City guide picks */
 .picks-list { gap: 3px !important; }
+/* City guide: Book ahead badge */
+.pick-item [style*="rgba(184,148,72"] {
+  background: #F0C93A !important; color: #1A1510 !important;
+  border-radius: 0 !important; font-weight: 700 !important;
+  font-size: 9px !important; padding: 3px 8px !important;
+}
+/* Distance/transport text below pick title */
+.pick-item > div > div:not(.pick-name):not(.pick-desc):not([class]) {
+  font-size: 11px !important; color: #9A8E7A !important;
+}
+/* Tip text — yellow italic */
+.pick-item [style*="font-style:italic"],
+.pick-item [style*="font-style: italic"] {
+  color: #D4A820 !important; font-size: 12px !important;
+  font-family: 'Cormorant Garamond',Georgia,serif !important;
+}
+/* Bookable / Free badge override */
+.pick-item [style*="rgba(196,98"],
+.pick-item [style*="rgba(107,124"] {
+  border-radius: 0 !important; font-size: 9px !important;
+  font-weight: 700 !important;
+}
+/* Free badge → yellow tint */
+.pick-item [style*="rgba(107,124"] {
+  background: rgba(240,201,58,0.15) !important;
+  color: #3D3528 !important;
+}
+/* pick-num: large CG number, no background circle */
+.pick-num {
+  background: none !important; border-radius: 0 !important;
+  border: none !important; padding: 0 !important;
+  color: #F0C93A !important;
+  font-family: 'Cormorant Garamond',Georgia,serif !important;
+  font-size: 22px !important; font-weight: 600 !important;
+  line-height: 1 !important; min-width: 22px !important;
+  margin-top: 2px !important;
+}
 
 
 /* Pick items — sharp, consistent */
@@ -5166,7 +5319,7 @@ window.addEventListener('scroll', () => {
     return el.textContent.trim();
   }
 
-  /* fixText — marks processed nodes so observer never re-enters */
+  /* fixText — marks processed nodes to prevent re-entrancy */
   function fixText(root) {
     if (!root) return;
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
@@ -5175,7 +5328,7 @@ window.addEventListener('scroll', () => {
       if (!n.nodeValue || n._mmhDone) continue;
       var tag = n.parentElement && n.parentElement.tagName;
       if (tag === 'SCRIPT' || tag === 'STYLE') continue;
-      if (/PARKS|Parks|tram within/.test(n.nodeValue)) nodes.push(n);
+      if (/PARKS|Parks|tram within|tram/i.test(n.nodeValue)) nodes.push(n);
     }
     nodes.forEach(function(nd) {
       nd._mmhDone = true;
@@ -5185,11 +5338,107 @@ window.addEventListener('scroll', () => {
         .replace(/metro\/train\/tram/gi, 'metro/train')
         .replace(/tram within/gi, 'within');
     });
-    /* strip emoji — skip already-processed links */
+    /* Directly fix station-name divs every call — no _mmhDone, they can load late */
+    root.querySelectorAll('[id^="station-names-"]').forEach(function(box) {
+      box.querySelectorAll('div').forEach(function(d) {
+        if (d.textContent.includes('tram')) {
+          d.textContent = d.textContent.replace(/metro\/train\/tram/gi,'metro/train').replace(/\/tram/gi,'');
+        }
+      });
+    });
+    /* strip emoji from pick-links */
     root.querySelectorAll('.pick-link:not([data-fx])').forEach(function(a) {
       a.setAttribute('data-fx','1');
       var t = a.textContent.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF\u2600-\u27BF]/g,'').replace(/\s+/g,' ').trim();
       if (t) a.textContent = t;
+    });
+  }
+
+  /* Fix amenity tiles: rename busOnly "Bus stops" → "Metro & Train" at 0 */
+  function fixAmenityTiles(card) {
+    card.querySelectorAll('.mmh-a-tile:not([data-mmh-tiled])').forEach(function(tile) {
+      var lbl = tile.querySelector('.mmh-a-label');
+      var cnt = tile.querySelector('.mmh-a-count');
+      if (!lbl) return;
+      var t = lbl.textContent.trim().toLowerCase();
+      if (t === 'bus stops' || t === 'bus stop') {
+        tile.setAttribute('data-mmh-tiled','1');
+        tile.setAttribute('data-key','stations');
+        lbl.textContent = 'METRO & TRAIN';
+        if (cnt) cnt.textContent = '0';
+      }
+      if (t === 'parks') {
+        lbl.textContent = 'GREEN AREAS';
+      }
+    });
+
+    /* Add NEAREST METRO & TRAIN label to transport box */
+    card.querySelectorAll('.mmh-station-names:not([data-mmh-labelled])').forEach(function(box) {
+      box.setAttribute('data-mmh-labelled','1');
+      var lbl = document.createElement('div');
+      lbl.className = 'mmh-transport-label';
+      lbl.textContent = 'NEAREST METRO & TRAIN STATIONS';
+      box.insertBefore(lbl, box.firstChild);
+    });
+  }
+
+  function fixBrand(card) {
+    /* ── Landmark items: circle numbers, name links, badges, transport ── */
+    card.querySelectorAll('.picks-list').forEach(function(list) {
+      Array.from(list.children).forEach(function(row) {
+        if (row.dataset.lmBranded) return;
+
+        /* Number circle → CG numeral */
+        var numEl = row.querySelector('[style*="border-radius:50%"]');
+        if (numEl) {
+          numEl.dataset.lmBranded = '1';
+          numEl.setAttribute('data-ln-styled','1');
+          numEl.style.cssText = 'flex-shrink:0;min-width:28px;font-family:"Cormorant Garamond",Georgia,serif;font-size:26px;font-weight:600;color:#F0C93A;line-height:1;margin-top:2px;background:transparent;border:none;';
+        }
+
+        /* Name link → brand color */
+        var nameLink = row.querySelector('a[style*="var(--text-primary)"], a[style*="color:var(--text-primary)"]');
+        if (nameLink) {
+          nameLink.style.color = '#1A1510';
+          nameLink.setAttribute('onmouseover', "this.style.color='#F0C93A'");
+          nameLink.setAttribute('onmouseout', "this.style.color='#1A1510'");
+        }
+
+        /* Book ahead badge → yellow sharp */
+        row.querySelectorAll('[style*="border-radius:100px"]').forEach(function(el) {
+          if (/book ahead/i.test(el.textContent)) {
+            el.setAttribute('data-book-ahead','1');
+            el.style.cssText = 'flex-shrink:0;font-size:9px;background:#F0C93A;color:#1A1510;padding:3px 8px;font-weight:700;letter-spacing:0.5px;white-space:nowrap;border-radius:0;';
+          }
+        });
+
+        /* Transport row: replace emoji, style as muted */
+        row.querySelectorAll('[style*="gap:4px"]').forEach(function(el) {
+          if (el.dataset.transportFixed) return;
+          el.dataset.transportFixed = '1';
+          var txt = el.textContent.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]/g,'').replace(/\s+/g,' ').trim();
+          el.textContent = txt;
+          el.style.cssText = 'font-size:11px;color:#9A8E7A;display:flex;align-items:center;gap:4px;margin-bottom:5px;';
+        });
+
+        /* Tip line */
+        row.querySelectorAll('[style*="font-style:italic"]').forEach(function(el) {
+          el.style.color = '#D4A820';
+          el.style.fontSize = '11px';
+        });
+
+        /* Item border */
+        row.setAttribute('data-landmark-item','1');
+        row.dataset.lmBranded = '1';
+      });
+    });
+
+    /* ── Permanently closed: hide pick items ── */
+    card.querySelectorAll('.pick-open.closed').forEach(function(badge) {
+      if (/permanently/i.test(badge.textContent)) {
+        var item = badge.closest('.pick-item');
+        if (item) item.classList.add('mmh-perm-closed');
+      }
     });
   }
 
@@ -5261,16 +5510,24 @@ window.addEventListener('scroll', () => {
     }, 800);
 
     fixText(card);
-    /* Run fixText once more after async content loads — no observer needed */
-    setTimeout(function(){ fixText(card); }, 2500);
-    setTimeout(function(){ fixText(card); }, 5000);
+    fixAmenityTiles(card);
+    fixBrand(card);
+    /* Repeat after async content loads */
+    setTimeout(function(){ fixText(card); fixAmenityTiles(card); fixBrand(card); }, 1800);
+    setTimeout(function(){ fixText(card); fixAmenityTiles(card); fixBrand(card); }, 4500);
+    setTimeout(function(){ fixText(card); fixAmenityTiles(card); fixBrand(card); }, 8000);
   }
 
-  /* Watch area direct children only — fires when a new result card is added,
-     NOT on every amenity update inside cards (which caused infinite loops) */
+  /* Debounced area observer — subtree:true so it catches cards inside result-card-wrap */
+  var tfPending = false;
   new MutationObserver(function(){
-    area.querySelectorAll('.mmh-card').forEach(transformCard);
-  }).observe(area, {childList: true, subtree: false});
+    if (tfPending) return;
+    tfPending = true;
+    setTimeout(function(){
+      tfPending = false;
+      area.querySelectorAll('.mmh-card').forEach(transformCard);
+    }, 80);
+  }).observe(area, {childList: true, subtree: true});
 })();
 </script>
 </body>
