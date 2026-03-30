@@ -1887,31 +1887,40 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
    TILE GRID — Option D results layout
    ════════════════════════════════════════════ */
 .mmh-tile-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3px;
-  background: #1A1510;
-  padding: 3px;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 3px !important;
+  background: #1A1510 !important;
+  padding: 3px !important;
 }
 .mmh-tile-grid .mmh-sec {
   border-top: none !important;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
+  border: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
 }
-/* CLOSED TILE: tall face */
+/* Tile color palette — !important beats white !important */
+.mmh-tile-grid .mmh-sec:nth-child(4n+1) { background: #1A1510 !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) { background: #F0C93A !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) { background: #FEF9EE !important; border: 1.5px solid #EDE0C4 !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+4) { background: #231d14 !important; }
+/* CLOSED TILE: tall tile face */
 .mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-head {
-  min-height: 148px;
+  min-height: 148px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
   justify-content: flex-end !important;
   padding: 16px 18px !important;
 }
+.mmh-tile-grid .mmh-sec:nth-child(4n+1):not(.tile-open) .mmh-sec-head,
+.mmh-tile-grid .mmh-sec:nth-child(4n+4):not(.tile-open) .mmh-sec-head { background: transparent !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2):not(.tile-open) .mmh-sec-head,
+.mmh-tile-grid .mmh-sec:nth-child(4n+3):not(.tile-open) .mmh-sec-head { background: transparent !important; }
 /* OPEN TILE: spans both cols */
-.mmh-tile-grid .mmh-sec.tile-open {
-  grid-column: 1 / -1;
-}
+.mmh-tile-grid .mmh-sec.tile-open { grid-column: 1 / -1 !important; }
+.mmh-tile-grid .mmh-sec.tile-open { background: #1A1510 !important; }
 .mmh-tile-grid .mmh-sec.tile-open .mmh-sec-head {
   background: #1A1510 !important;
   border-bottom: 3px solid #F0C93A !important;
@@ -1924,70 +1933,91 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 .mmh-tile-grid .mmh-sec.tile-open .mmh-sec-head:hover { background: #231d14 !important; }
 .mmh-tile-grid .mmh-sec.tile-open .mmh-sec-title { color: #FAF7F2 !important; font-size: 13px !important; font-family: 'DM Sans',sans-serif !important; font-weight: 600 !important; }
 .mmh-tile-grid .mmh-sec.tile-open .mmh-chev { color: #F0C93A !important; display: inline-block !important; }
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-left { display: flex !important; align-items: center !important; gap: 10px !important; }
 .mmh-tile-grid .mmh-sec.tile-open .mmh-sec-icon { display: flex !important; background: rgba(240,201,58,0.12) !important; }
-.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-body.open { background: #FEF9EE; }
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-body.open { background: #FEF9EE !important; }
 .mmh-tile-grid .mmh-sec.tile-open .mmh-sec-inner { padding: 18px 22px 22px !important; }
-/* Tile color palette (4-step pattern) */
-.mmh-tile-grid .mmh-sec:nth-child(4n+1) { background: #1A1510; }
-.mmh-tile-grid .mmh-sec:nth-child(4n+2) { background: #F0C93A; }
-.mmh-tile-grid .mmh-sec:nth-child(4n+3) { background: #FEF9EE; border: 1.5px solid #EDE0C4 !important; }
-.mmh-tile-grid .mmh-sec:nth-child(4n+4) { background: #231d14; }
 /* Ghost number */
 .tile-num-ghost {
-  position: absolute; top: 10px; left: 14px;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 54px; font-weight: 600; line-height: 1;
-  pointer-events: none; z-index: 0;
+  position: absolute !important; top: 10px !important; left: 14px !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 54px !important; font-weight: 600 !important; line-height: 1 !important;
+  pointer-events: none !important; z-index: 0 !important;
 }
 .mmh-tile-grid .mmh-sec:nth-child(4n+1) .tile-num-ghost,
-.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-num-ghost { color: rgba(250,247,242,0.09); }
-.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-num-ghost { color: rgba(61,53,40,0.11); }
-.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-num-ghost { color: #EDE0C4; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-num-ghost { color: rgba(250,247,242,0.1) !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-num-ghost { color: rgba(61,53,40,0.12) !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-num-ghost { color: #EAD9B8 !important; }
 /* Eyebrow */
 .tile-eyebrow {
-  font-size: 8px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; display: block;
-  position: relative; z-index: 1; margin-bottom: 5px;
+  font-size: 8px !important; font-weight: 700 !important; letter-spacing: 2px !important;
+  text-transform: uppercase !important; display: block !important;
+  position: relative !important; z-index: 1 !important; margin-bottom: 5px !important;
 }
 .mmh-tile-grid .mmh-sec:nth-child(4n+1) .tile-eyebrow,
-.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-eyebrow { color: #F0C93A; }
-.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-eyebrow { color: rgba(61,53,40,0.5); }
-.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-eyebrow { color: #9A8E7A; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-eyebrow { color: #F0C93A !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-eyebrow { color: rgba(61,53,40,0.5) !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-eyebrow { color: #9A8E7A !important; }
 /* Title in closed tile */
 .mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-title {
   font-family: 'Cormorant Garamond', Georgia, serif !important;
   font-size: 21px !important; font-weight: 600 !important;
-  line-height: 1.1 !important; position: relative; z-index: 1;
+  line-height: 1.15 !important; position: relative !important; z-index: 1 !important;
 }
 .mmh-tile-grid .mmh-sec:nth-child(4n+1):not(.tile-open) .mmh-sec-title,
 .mmh-tile-grid .mmh-sec:nth-child(4n+4):not(.tile-open) .mmh-sec-title { color: #FAF7F2 !important; }
-.mmh-tile-grid .mmh-sec:nth-child(4n+2):not(.tile-open) .mmh-sec-title { color: #1A1510 !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2):not(.tile-open) .mmh-sec-title,
 .mmh-tile-grid .mmh-sec:nth-child(4n+3):not(.tile-open) .mmh-sec-title { color: #1A1510 !important; }
 /* Expand hint */
 .tile-expand-hint {
-  font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase; margin-top: 10px;
-  display: flex; align-items: center; gap: 4px;
-  position: relative; z-index: 1;
+  font-size: 9px !important; font-weight: 700 !important; letter-spacing: 1.5px !important;
+  text-transform: uppercase !important; margin-top: 10px !important;
+  display: flex !important; align-items: center !important; gap: 4px !important;
+  position: relative !important; z-index: 1 !important;
 }
 .mmh-tile-grid .mmh-sec:nth-child(4n+1) .tile-expand-hint,
-.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-expand-hint { color: rgba(250,247,242,0.28); }
-.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-expand-hint { color: rgba(61,53,40,0.28); }
-.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-expand-hint { color: rgba(61,53,40,0.28); }
+.mmh-tile-grid .mmh-sec:nth-child(4n+4) .tile-expand-hint { color: rgba(250,247,242,0.3) !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+2) .tile-expand-hint { color: rgba(26,21,16,0.28) !important; }
+.mmh-tile-grid .mmh-sec:nth-child(4n+3) .tile-expand-hint { color: rgba(61,53,40,0.3) !important; }
 /* Hide decorative elements when open */
 .mmh-tile-grid .mmh-sec.tile-open .tile-eyebrow,
 .mmh-tile-grid .mmh-sec.tile-open .tile-expand-hint,
 .mmh-tile-grid .mmh-sec.tile-open .tile-num-ghost { display: none !important; }
-/* Hide icon + preview in closed tile (ghost number replaces icon) */
+/* Hide icon + preview + chev in closed tile */
 .mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-icon,
 .mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-sec-preview,
 .mmh-tile-grid .mmh-sec:not(.tile-open) .mmh-chev { display: none !important; }
-/* Chev visible when open */
 .mmh-tile-grid .mmh-sec.tile-open .mmh-chev { display: inline-block !important; }
-/* Metro & Train: always show station-names div */
+/* Station names always visible when section open */
 .mmh-tile-grid .mmh-sec.tile-open .mmh-station-names { display: block !important; }
-/* Station tile: always prominent with yellow accent when > 0 */
+/* Station tile yellow accent */
 .mmh-a-tile[data-key="stations"] { border-bottom: 3px solid #F0C93A !important; }
+
+/* ── PICK LIST & PLACE CARDS — brand consistency ── */
+.mmh-tile-grid .mmh-sec.tile-open .mmh-sec-body.open { color: #3D3528; }
+.pick-item { border-radius: 0 !important; border: 1.5px solid #EDE0C4 !important; background: #fff !important; padding: 14px 16px !important; }
+.pick-num { color: #F0C93A !important; font-family: 'Cormorant Garamond',Georgia,serif !important; font-size: 20px !important; font-weight: 600 !important; min-width: 22px !important; }
+.pick-name { color: #1A1510 !important; font-size: 13px !important; font-weight: 700 !important; margin-bottom: 3px !important; }
+.pick-desc { color: #6B5E4A !important; font-size: 12px !important; }
+.pick-link { color: #1A1510 !important; font-size: 11px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; text-decoration: none !important; border-bottom: 1px solid #EDE0C4 !important; padding-bottom: 1px !important; transition: border-color .2s !important; }
+.pick-link:hover { color: #F0C93A !important; border-bottom-color: #F0C93A !important; }
+.pick-open { border-radius: 0 !important; font-size: 10px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; padding: 3px 8px !important; }
+.pick-open.closed { background: rgba(61,53,40,0.06) !important; color: #9A8E7A !important; }
+.pick-open.open { background: rgba(240,201,58,0.15) !important; color: #3D3528 !important; }
+/* Why it matches section */
+.mmh-why-text { border-left: 3px solid #F0C93A !important; background: transparent !important; border-radius: 0 !important; padding: 12px 16px !important; font-family: 'Cormorant Garamond',Georgia,serif !important; font-size: 17px !important; font-style: italic !important; color: #3D3528 !important; line-height: 1.6 !important; }
+/* Stat tiles in Why section */
+.mmh-stat-tile { border-radius: 0 !important; background: #fff !important; border: 1.5px solid #EDE0C4 !important; border-top: 3px solid #F0C93A !important; padding: 10px 12px !important; }
+.mmh-stat-label { color: #9A8E7A !important; font-size: 9px !important; letter-spacing: 1.5px !important; }
+.mmh-stat-val { color: #1A1510 !important; font-family: 'Cormorant Garamond',Georgia,serif !important; font-size: 22px !important; font-weight: 600 !important; }
+/* Pros/cons boxes */
+.mmh-pc-box { border-radius: 0 !important; }
+.mmh-pc-box.pro { background: rgba(240,201,58,0.08) !important; border: 1.5px solid rgba(240,201,58,0.3) !important; color: #3D3528 !important; }
+.mmh-pc-box.con { background: rgba(61,53,40,0.04) !important; border: 1.5px solid #EDE0C4 !important; color: #6B5E4A !important; }
+.mmh-pc-title { color: #9A8E7A !important; }
+.mmh-pc-box.pro .mmh-pc-title { color: #D4A820 !important; }
+/* City guide picks */
+.picks-list { gap: 3px !important; }
 
 
 /* Pick items — sharp, consistent */
@@ -5097,17 +5127,35 @@ window.addEventListener('scroll', () => {
   var area = document.getElementById('resultsArea');
   if (!area) return;
   var processed = new WeakSet();
-  var eyebrows = ['Your match','Around','City guide','Restaurants','Bars','Cafés','Things to do','Strengths','Rent & move','Map'];
-  
+
+  /* derive eyebrow from actual section title — not an index array */
+  function getEyebrow(sec) {
+    var el = sec.querySelector('.mmh-sec-title');
+    if (!el) return '';
+    var t = el.textContent.toLowerCase().trim();
+    if (t.includes('why')) return 'Your match';
+    if (t.includes('around')) return 'Around';
+    if (t.includes('city guide')) return 'City guide';
+    if (t.includes('restaurant')) return 'Restaurants';
+    if (t.includes('bar') || t.includes('pub')) return 'Bars';
+    if (t.includes('caf')) return 'Cafes';
+    if (t.includes('things to do')) return 'Things to do';
+    if (t.includes('strength') || t.includes('watch')) return 'Strengths';
+    if (t.includes('rent') || t.includes('find a place')) return 'Rent & move';
+    if (t.includes('map')) return 'Map';
+    return el.textContent.trim();
+  }
+
   function fixText(root) {
     if (!root) return;
+    /* parks -> green areas; tram cleanup */
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
     var nodes = [], n;
     while ((n = walker.nextNode())) {
       if (!n.nodeValue) continue;
       var tag = n.parentElement && n.parentElement.tagName;
       if (tag === 'SCRIPT' || tag === 'STYLE') continue;
-      if (n.nodeValue.match(/PARKS|Parks|tram within/)) nodes.push(n);
+      if (/PARKS|Parks|tram within/.test(n.nodeValue)) nodes.push(n);
     }
     nodes.forEach(function(nd) {
       nd.nodeValue = nd.nodeValue
@@ -5115,6 +5163,11 @@ window.addEventListener('scroll', () => {
         .replace(/Parks/g, 'Green areas')
         .replace(/metro\/train\/tram/gi, 'metro/train')
         .replace(/tram within/gi, 'within');
+    });
+    /* strip emoji from pick-links so they use brand text color */
+    root.querySelectorAll('.pick-link').forEach(function(a) {
+      var clean = a.textContent.replace(/[\u{1F300}-\u{1F9FF}]/gu,'').replace(/\s+/g,' ').trim();
+      if (clean) a.textContent = clean;
     });
   }
 
@@ -5124,53 +5177,62 @@ window.addEventListener('scroll', () => {
     if (!secs.length) return;
     processed.add(card);
 
-    /* wrap in grid */
+    /* wrap in tile grid */
     var grid = document.createElement('div');
     grid.className = 'mmh-tile-grid';
     secs[0].parentNode.insertBefore(grid, secs[0]);
     secs.forEach(function(s){ grid.appendChild(s); });
 
-    secs.forEach(function(sec, idx){
+    secs.forEach(function(sec, idx) {
       var head = sec.querySelector('.mmh-sec-head');
       if (!head) return;
       var body = sec.querySelector('.mmh-sec-body');
+      var eyebrow = getEyebrow(sec);
 
-      /* inject ghost number */
+      /* ghost number */
       var ghost = document.createElement('span');
       ghost.className = 'tile-num-ghost';
-      ghost.textContent = idx < 9 ? '0'+(idx+1) : ''+(idx+1);
+      ghost.textContent = (idx < 9 ? '0' : '') + (idx + 1);
       head.appendChild(ghost);
 
-      /* inject eyebrow before first child */
+      /* eyebrow — derived from title, always accurate */
       var ey = document.createElement('span');
       ey.className = 'tile-eyebrow';
-      ey.textContent = eyebrows[idx] || ('0'+(idx+1));
+      ey.textContent = eyebrow;
       head.insertBefore(ey, head.firstChild);
 
-      /* inject expand hint */
+      /* expand hint */
       var hint = document.createElement('span');
       hint.className = 'tile-expand-hint';
-      hint.textContent = 'Expand →';
+      hint.textContent = 'Expand \u2192';
       head.appendChild(hint);
 
-      /* sync tile-open class with body */
+      /* sync tile-open with body.open */
       if (body) {
         if (body.classList.contains('open')) sec.classList.add('tile-open');
-        new MutationObserver(function(){
+        new MutationObserver(function() {
           sec.classList.toggle('tile-open', body.classList.contains('open'));
-        }).observe(body, {attributes:true, attributeFilter:['class']});
+        }).observe(body, {attributes: true, attributeFilter: ['class']});
+      }
+
+      /* auto-open Map section */
+      if (eyebrow === 'Map' && body && !body.classList.contains('open')) {
+        body.classList.add('open');
+        sec.classList.add('tile-open');
+        var chev = sec.querySelector('.mmh-chev');
+        if (chev) chev.classList.add('open');
       }
     });
 
     fixText(card);
-    /* watch for async amenity updates */
+    /* watch for async amenity + place card updates */
     new MutationObserver(function(){ fixText(card); })
-      .observe(card, {childList:true, subtree:true, characterData:true});
+      .observe(card, {childList: true, subtree: true, characterData: true});
   }
 
   new MutationObserver(function(){
     area.querySelectorAll('.mmh-card').forEach(transformCard);
-  }).observe(area, {childList:true, subtree:true});
+  }).observe(area, {childList: true, subtree: true});
 })();
 </script>
 </body>
