@@ -6083,49 +6083,66 @@ window.addEventListener('scroll', () => {
   };
 })();
 
+/* ── 3D layer fix: constructor patch + interval lift on pitch ── */
 (function(){
-  var CUSTOM_LAYERS = ['restaurants-layer','bars-layer','coffee-layer',
-    'toppicks-layer','transport-layer','supermarkets-layer','gyms-layer',
-    'museums-layer','parks-layer','neighbourhood-fill','neighbourhood-outline'];
+  var CUSTOM_LAYERS = [
+    'neighbourhood-fill','neighbourhood-outline',
+    'restaurants-layer','bars-layer','coffee-layer',
+    'toppicks-layer','transport-layer','supermarkets-layer',
+    'gyms-layer','museums-layer','parks-layer'
+  ];
   window._mmhMaps = window._mmhMaps || [];
 
   function liftLayers(map) {
+    if (!map || !map.getLayer) return;
     CUSTOM_LAYERS.forEach(function(id) {
-      try { if (map.getLayer && map.getLayer(id)) map.moveLayer(id); } catch(e) {}
+      try { if (map.getLayer(id)) map.moveLayer(id); } catch(e) {}
     });
   }
 
+  /* Lift repeatedly for 2s after 3D activates — catches layers added async */
+  function liftWithInterval(map) {
+    liftLayers(map);
+    var count = 0;
+    var iv = setInterval(function() {
+      liftLayers(map);
+      if (++count > 20) clearInterval(iv); /* 20 × 100ms = 2s */
+    }, 100);
+  }
+
   function patchMapGL() {
-    if (!window.mapboxgl) { setTimeout(patchMapGL, 300); return; }
+    if (!window.mapboxgl) { setTimeout(patchMapGL, 200); return; }
 
-    /* Intercept Map.prototype.on to capture every map instance */
-    var origOn = mapboxgl.Map.prototype.on;
-    mapboxgl.Map.prototype.on = function(type, layerOrFn, fn) {
-      if (window._mmhMaps.indexOf(this) === -1) window._mmhMaps.push(this);
-      return origOn.apply(this, arguments);
+    /* ── Patch Map constructor — captures every instance before renderResults ── */
+    var OrigMap = mapboxgl.Map;
+    window.mapboxgl.Map = function(opts) {
+      var m = new OrigMap(opts);
+      window._mmhMaps.push(m);
+
+      /* When layers are added after the map loads, lift them if 3D is active */
+      m.on('styledata', function() {
+        if (m.getPitch && m.getPitch() > 0) liftLayers(m);
+      });
+
+      /* Lift on pitch change */
+      m.on('pitchend', function() { liftWithInterval(m); });
+
+      return m;
     };
+    /* Preserve static methods and prototype */
+    window.mapboxgl.Map.prototype = OrigMap.prototype;
+    Object.setPrototypeOf(window.mapboxgl.Map, OrigMap);
 
-    /* Intercept setPitch to lift layers when 3D activates */
-    var origSetPitch = mapboxgl.Map.prototype.setPitch;
-    mapboxgl.Map.prototype.setPitch = function(pitch) {
+    /* ── Also patch setPitch for maps already instantiated ── */
+    var origSetPitch = OrigMap.prototype.setPitch;
+    OrigMap.prototype.setPitch = function(pitch) {
       var r = origSetPitch.apply(this, arguments);
       var self = this;
-      setTimeout(function() { liftLayers(self); }, 150);
+      if (pitch > 0) liftWithInterval(self);
       return r;
     };
-
-    /* Also lift on pitch event (covers bearing/pitch reset) */
-    var origFire = mapboxgl.Map.prototype.fire;
-    if (origFire) {
-      mapboxgl.Map.prototype.fire = function(type) {
-        if (type === 'pitchend') {
-          var self = this;
-          setTimeout(function() { liftLayers(self); }, 50);
-        }
-        return origFire.apply(this, arguments);
-      };
-    }
   }
+
   patchMapGL();
 })();
 </script>
