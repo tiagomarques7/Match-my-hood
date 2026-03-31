@@ -1382,7 +1382,12 @@ footer { background:#1A1510;padding:32px 24px;border-top:1px solid rgba(255,255,
   .pick-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
   .pick-link { font-size: 11px; color: var(--sage); text-decoration: none; margin-top: 4px; display: inline-block; transition: color 0.2s; font-weight: 500; }
   .pick-link:hover { color: var(--sage-dark); }
-  .pick-photo { width: 100px; height: 100px; border-radius: 0; object-fit: cover; flex-shrink: 0; background: var(--sage-bg); }
+  .pick-photo { width: 100px; height: 100px; border-radius: 0; object-fit: cover; flex-shrink: 0; background: var(--sage-bg); cursor: zoom-in; transition: opacity 0.15s; }
+  .pick-photo:hover { opacity: 0.85; }
+  .mmh-lightbox { display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; cursor: zoom-out; }
+  .mmh-lightbox.open { display: flex; }
+  .mmh-lightbox img { max-width: 90vw; max-height: 85vh; object-fit: contain; box-shadow: 0 8px 48px rgba(0,0,0,0.6); }
+  .mmh-lightbox-caption { position: fixed; bottom: 24px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.7); font-size: 13px; font-family: 'DM Sans', sans-serif; pointer-events: none; }
   .pick-open { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px; display: inline-block; margin-top: 4px; }
   .pick-open.open { background: rgba(78,122,64,0.15); color: var(--sage-dark); }
   .pick-open.closed { background: rgba(196,98,45,0.12); color: var(--terracotta-dark); }
@@ -4090,7 +4095,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       const bookUrl = r.website || `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       const bookLabel = r.website ? '🌐 Website & Book →' : '📍 Find & Book →';
       const bookLink = `<a href="${bookUrl}" target="_blank" class="pick-link" style="margin-right:8px;">${bookLabel}</a>`;
-      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
+      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'" onclick="mmhLightbox(this)">` : '';
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         ${photo}
@@ -4109,7 +4114,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       const bookUrl = r.website || `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       const bookLabel = r.website ? '🌐 Website & Book →' : '📍 Find & Book →';
       const bookLink = `<a href="${bookUrl}" target="_blank" class="pick-link" style="margin-right:8px;">${bookLabel}</a>`;
-      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
+      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'" onclick="mmhLightbox(this)">` : '';
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         ${photo}
@@ -4128,7 +4133,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
       const bookUrl = r.website || `https://maps.google.com/?q=${encodeURIComponent(r.name + ' ' + m.name + ' ' + destCity)}`;
       const bookLabel = r.website ? '🌐 Website →' : '📍 Find →';
       const bookLink = `<a href="${bookUrl}" target="_blank" class="pick-link" style="margin-right:8px;">${bookLabel}</a>`;
-      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">` : '';
+      const photo = r.photoUrl ? `<img class="pick-photo" src="${r.photoUrl}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'" onclick="mmhLightbox(this)">` : '';
       return `<div class="pick-item">
         <div class="pick-num">${j+1}</div>
         ${photo}
@@ -6272,6 +6277,24 @@ window.addEventListener('scroll', () => {
     document.querySelector('.newsletter-parallax-img')
   );
 })();
+</script>
+<div class="mmh-lightbox" id="mmhLightbox" onclick="this.classList.remove('open')">
+  <img id="mmhLightboxImg" src="" alt="">
+  <div class="mmh-lightbox-caption" id="mmhLightboxCaption"></div>
+</div>
+
+<script>
+function mmhLightbox(img) {
+  var lb = document.getElementById('mmhLightbox');
+  var lbImg = document.getElementById('mmhLightboxImg');
+  var lbCap = document.getElementById('mmhLightboxCaption');
+  lbImg.src = img.src;
+  lbCap.textContent = img.alt || '';
+  lb.classList.add('open');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.getElementById('mmhLightbox').classList.remove('open');
+});
 </script>
 </body>
 </html>
