@@ -2435,6 +2435,11 @@ section.newsletter-section .newsletter-form button { background:#F0C93A !importa
 /* Pick items — sharp, consistent */
 .picks-list { display: flex !important; flex-direction: column !important; gap: 3px !important; }
 .pick-photo { border-radius: 0 !important; width: 100px !important; height: 100px !important; }
+.pick-badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 6px; margin-right: 4px; margin-bottom: 4px; font-family: 'DM Sans', sans-serif; }
+.pick-badge.unmissable { background: #F0C93A; color: #1A1510; }
+.pick-badge.michelin { background: #1A1510; color: #F0C93A; }
+.pick-badge.under-15 { background: #2D5A27; color: #FEF9EE; }
+.pick-badge.hidden-gem { background: #3D3528; color: #EDE0C4; }
 
 /* Map expand button */
 .map-expand-btn { background: rgba(255,255,255,0.9) !important; color: #3D3528 !important; border-radius: 0 !important; }
@@ -4062,6 +4067,20 @@ async function runMatch(isAlternative = false) {
   }
 }
 
+function renderVenueBadges(tags) {
+  if (!tags || !tags.length) return '';
+  const badgeMap = {
+    'unmissable': ['unmissable', '★ Unmissable'],
+    'michelin':   ['michelin',   '✦ Michelin'],
+    'under-15':   ['under-15',   '≤ €15'],
+    'hidden-gem': ['hidden-gem', '◆ Hidden gem'],
+  };
+  return tags
+    .filter(t => badgeMap[t])
+    .map(t => `<span class="pick-badge ${badgeMap[t][0]}">${badgeMap[t][1]}</span>`)
+    .join('');
+}
+
 async function renderResults(matches, homeHood, homeCity, destCity, isAlternative = false) {
   const results = document.getElementById('resultsArea');
 
@@ -4102,6 +4121,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <div class="pick-info">
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
+          ${r.tags ? `<div style="margin-top:4px;">${renderVenueBadges(r.tags)}</div>` : ''}
           ${openBadge}
           <div style="margin-top:5px;">${bookLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
         </div>
@@ -4121,6 +4141,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <div class="pick-info">
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
+          ${r.tags ? `<div style="margin-top:4px;">${renderVenueBadges(r.tags)}</div>` : ''}
           ${openBadge}
           <div style="margin-top:5px;">${bookLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
         </div>
@@ -4140,6 +4161,7 @@ async function renderResults(matches, homeHood, homeCity, destCity, isAlternativ
         <div class="pick-info">
           <div class="pick-name">${r.name}</div>
           <div class="pick-desc">${r.description}</div>
+          ${r.tags ? `<div style="margin-top:4px;">${renderVenueBadges(r.tags)}</div>` : ''}
           ${openBadge}
           <div style="margin-top:5px;">${bookLink}<a href="${mapsUrl}" target="_blank" class="pick-link">📍 Directions →</a></div>
         </div>
